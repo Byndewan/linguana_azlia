@@ -1,0 +1,653 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Admin;
+use App\Models\HeroItems;
+use App\Models\ClientsTable;
+use App\Models\Service;
+use App\Models\Process;
+use App\Models\Testimonial;
+use App\Models\Language;
+use App\Models\LearningPath;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use App\Mail\Websitemail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Process as FacadesProcess;
+
+class AdminController extends Controller
+{
+    public function AdminDashboard (Request $request)
+    {
+        return view('admin.dashboard');
+    }
+
+    // Authentication
+    public function AdminLogin (Request $request)
+    {
+        if (Auth::guard('admin')->check()) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return view('admin.auth.login');
+    }
+    public function AdminLoginSubmit (Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email', 
+            'password' => 'required',
+        ]);
+
+        $credential = [
+            'email' => $request->email,
+            'password' => $request->password
+        ];
+
+        Auth::guard('admin');
+
+        if(Auth::guard('admin')->attempt($credential)) {
+            return redirect()->route('admin.dashboard');
+        } else {
+            return redirect()->route('admin.login')->with('error', 'Information is not correct!');
+        }
+    }
+    public function AdminLogout()
+    {
+        Auth::guard('admin')->logout();
+        return redirect()->route('admin.login');
+    }
+
+    public function AdminForgotPassword()
+    {
+        return view('admin.auth.forgot-password');
+    }
+    public function AdminForgotPasswordSubmit(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email', 
+        ]);
+
+        $admin_data = Admin::where('email', $request->email)->first();
+        if (!$admin_data) {
+            return redirect()->back()->with('error', 'Email address not found!');
+        }
+
+        $token = hash('sha256', time());
+
+        $admin_data->token = $token;
+        $admin_data->update();
+
+        $reset_link = url('admin/reset-password/' . $token . '/' . $request->email);
+        $subject = 'Reset Password';
+        $message = 'Please check on the following link : <br>';
+        $message = '<a href="'.$reset_link.'">Click here</a>';
+
+        Mail::to($request->input('email'))->send(new Websitemail($subject, $message));
+
+        return redirect()->route('admin.login')->with('success', 'Please check your email and follow the steps there');
+    }
+    // 1. Tambahkan 'string' agar garis biru di VS Code hilang
+    public function AdminResetPassword(string $token, string $email)
+    {
+        $admin_data = Admin::where('token', $token)->where('email', $email)->first();
+
+        if (!$admin_data) {
+            return redirect()->route('admin.login')->with('error', 'Token or email not valid');
+        }
+
+        return view('admin.auth.reset-password', compact('token', 'email'));
+    }
+
+    public function AdminResetPasswordSubmit(Request $request)
+    {
+        $request->validate([ 
+            'password' => 'required',
+            'confirm_password' => 'required|same:password',
+        ]);
+
+        $admin_data = Admin::where('token', $request->token)->where('email', $request->email)->first();
+
+        if (!$admin_data) {
+            return redirect()->route('admin.login')->with('error', 'Token or email not valid');
+        }
+
+        $admin_data->password = Hash::make($request->password);
+        $admin_data->token = ''; 
+        $admin_data->update();
+
+        return redirect()->route('admin.login')->with('success', 'Password is reset successfully');
+    }
+
+    // Profile
+    public function AdminProfile()
+    {
+        return view('admin.profile');
+    }
+    public function AdminProfileSubmit(Request $request)
+    {
+        $admin_data = Admin::where('email', Auth::guard('admin')->user()->email)->first();
+
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email',
+        ]);
+
+        if ($request->password!='') {
+            $request->validate([
+                'password' => 'required',
+                'confirm_password' => 'required|same:password',
+            ]);
+
+            $admin_data->password = Hash::make($request->password);
+        }
+
+        if($request->hasFile('photo')) {
+            $request->validate([
+                'photo' => 'image|mimes:jpg,jpeg,png'
+            ]);
+
+            unlink(public_path('uploads/' . $admin_data->photo));
+
+            $ext = $request->file('photo')->extension();
+            $final_name = 'admin'.'.'.$ext;
+
+            $request->file('photo')->move(public_path('uploads/'), $final_name);
+
+            $admin_data->photo = $final_name;
+        }
+
+        $admin_data->name = $request->name;
+        $admin_data->email = $request->email;
+        $admin_data->update();
+
+        return redirect()->back()->with('success', 'Profile information is saved succesfully!');
+    }
+
+    // Hero Items
+    public function AdminHeroItems()
+    {
+        $page_data = HeroItems::where('id', 1)->first();
+        return view('admin.hero_items', compact('page_data'));
+    }
+    public function AdminHeroItemsSubmit(Request $request)
+    {
+        $page_data = HeroItems::where('id', 1)->first();
+
+        $request->validate([
+            'hero_title' => 'required',
+            'hero_description' => 'required',
+            'hero_button_text' => 'required',
+        ]);
+
+        if($request->hasFile('hero_photo')) {
+            $request->validate([
+                'hero_photo' => 'image|mimes:jpg,jpeg,png'
+            ]);
+
+            unlink(public_path('uploads/' . $page_data->hero_photo));
+
+            $ext = $request->file('hero_photo')->extension();
+            $final_name = 'hero_photo'.'.'.$ext;
+
+            $request->file('hero_photo')->move(public_path('uploads/'), $final_name);
+
+            $page_data->hero_photo = $final_name;
+        }
+
+        $page_data->hero_title = $request->hero_title;
+        $page_data->hero_description = $request->hero_description;
+        $page_data->hero_button_text = $request->hero_button_text;
+        $page_data->update();
+
+        return redirect()->back()->with('success', 'Data is updated successfully');
+    }
+
+    // Clients
+    public function AdminClientShow()
+    {
+        $all_data = ClientsTable::orderBy('id', 'asc')->get();
+        return view('admin.clients_show', compact('all_data'));
+    }
+
+    public function AdminClientSubmit(Request $request)
+    {
+        $request->validate([
+            'photo' => 'required|mimes:jpg,jpeg,png',
+        ]);
+
+        $obj = new ClientsTable();
+
+        $ext = $request->file('photo')->extension();
+        $final_name = 'client_' . time() . '.' . $ext;
+        $request->file('photo')->move(public_path('uploads/'), $final_name);
+        $obj->photo = $final_name;
+
+        $obj->save();
+
+        return redirect()->back()->with('success', 'Data is inserted successfully!');
+    }
+
+    public function AdminClientDelete(int $id)
+        {
+            $row_data = ClientsTable::where('id', $id)->first();
+            
+            $image_path = public_path('uploads/' . $row_data->photo);
+            
+            if(file_exists($image_path) && is_file($image_path)){
+                unlink($image_path);
+            }
+
+            $row_data->delete();
+
+            return redirect()->back()->with('success', 'Data is deleted successfully!');
+        }
+
+    // Service
+    public function AdminServiceShow()
+    {
+        $all_data = Service::orderBy('id', 'asc')->get();
+        return view('admin.service', compact('all_data'));
+    }
+
+    public function AdminServiceAdd()
+    {
+        return view('admin.service_add');
+    }
+    public function AdminServiceSubmit(Request $request)
+    {
+        $request->validate([
+            'service_name' => 'required',
+            'description' => 'required',
+            'icon' => 'required',
+            'color' => 'required|string|max:7',
+            'background_color' => 'required|string|max:7',
+        ]);
+
+        $obj = new Service();
+
+        $obj->service_name = $request->service_name;
+        $obj->description = $request->description;
+        $obj->icon = $request->icon;
+        $obj->color = $request->color;
+        $obj->background_color = $request->background_color;
+        $obj->save();
+
+        return redirect()->route('admin.service.show')->with('success', 'Data is inserted successfully!');
+    }
+
+    public function AdminServiceEdit(int $id)
+    {
+        $row_data = Service::where('id', $id)->first();
+        return view('admin.service_edit', compact('row_data'));
+    }
+    public function AdminServiceUpdate(Request $request,$id)
+    {
+        $request->validate([
+            'service_name' => 'required',
+            'description' => 'required',
+            'icon' => 'required',
+            'color' => 'required|string|max:7',
+            'background_color' => 'required|string|max:7',
+        ]);
+
+        $obj = Service::where('id', $id)->first();
+
+        $obj->service_name = $request->service_name;
+        $obj->description = $request->description;
+        $obj->icon = $request->icon;
+        $obj->color = $request->color;
+        $obj->background_color = $request->background_color;
+        $obj->update();
+
+        return redirect()->route('admin.service.show')->with('success', 'Data is updated successfully!');
+    }
+
+    public function AdminServiceDelete(Request $request, $id)
+    {
+        $row_data = Service::where('id', $id)->first();
+        $row_data->delete();
+
+        return redirect()->back()->with('success', 'Data is deleted successfully!');
+    }
+
+    // Process
+    public function AdminProcessShow()
+    {
+        $all_data = Process::orderBy('id', 'asc')->get();
+        return view('admin.process_show', compact('all_data'));
+    }
+
+    public function AdminProcessAdd()
+    {
+        return view('admin.process_add');
+    }
+
+    public function AdminProcessSubmit(Request $request)
+    {
+        $request->validate([
+            'process' => 'required',
+            'description' => 'required',
+            'icon' => 'required',
+            'color' => 'required|string|max:7',
+        ]);
+
+        $obj = new Process();
+
+        $obj->process = $request->process;
+        $obj->description = $request->description;
+        $obj->icon = $request->icon;
+        $obj->color = $request->color;
+        $obj->save();
+
+        return redirect()->route('admin.process.show')->with('success', 'Data is inserted successfully!');
+    }
+
+    public function AdminProcessEdit(int $id)
+    {
+        $row_data = Process::where('id', $id)->first();
+        return view('admin.process_edit', compact('row_data'));
+    }
+    public function AdminProcessUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'process' => 'required',
+            'description' => 'required',
+            'icon' => 'required',
+            'color' => 'required|string|max:7',
+        ]);
+
+        $obj = Process::where('id', $id)->first();
+
+        $obj->process = $request->process;
+        $obj->description = $request->description;
+        $obj->icon = $request->icon;
+        $obj->color = $request->color;
+        $obj->update();
+
+        return redirect()->route('admin.process.show')->with('success', 'Data is updated successfully!');
+    }
+
+    public function AdminProcessDelete(Request $request, $id)
+    {
+        $row_data = Process::where('id', $id)->first();
+        $row_data->delete();
+
+        return redirect()->back()->with('success', 'Data is deleted successfully!');
+    }
+
+    // Testimonial
+
+    public function AdminTestimonialShow()
+    {
+        $all_data = Testimonial::orderBy('id', 'asc')->get();
+        return view('admin.testimonial_show', compact('all_data'));
+    }
+
+    public function AdminTestimonialAdd()
+    {   
+        return view('admin.testimonial_add');
+    }
+
+    public function AdminTestimonialSubmit(Request $request)
+    {
+        $request->validate([
+            'photo' => 'required|mimes:jpg,jpeg,png',
+            'name' => 'required',
+            'designation' => 'required',
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'required',
+        ]);
+
+        $obj = new Testimonial();
+
+        $ext = $request->file('photo')->extension();
+        $final_name = 'testimonial_' . time() . '.' . $ext;
+        $request->file('photo')->move(public_path('uploads/'), $final_name);
+        $obj->photo = $final_name;
+
+        $obj->name = $request->name;
+        $obj->designation = $request->designation;
+        $obj->rating = $request->rating;
+        $obj->comment = $request->comment;
+        $obj->save();
+
+        return redirect()->route('admin.testimonial.show')->with('success', 'Data is inserted successfully!');
+    }
+
+    public function AdminTestimonialEdit(int $id)
+    {
+        $row_data = Testimonial::where('id', $id)->first();
+        return view('admin.testimonial_edit', compact('row_data'));
+    }
+    public function AdminTestimonialUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'photo' => 'required|mimes:jpg,jpeg,png',
+            'name' => 'required',
+            'designation' => 'required',
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'required',
+        ]);
+
+        $obj = Testimonial::where('id', $id)->first();
+
+        if($request->hasFile('photo')) {
+            $request->validate([
+                'photo' => 'image|mimes:jpg,jpeg,png'
+            ]);
+
+            unlink(public_path('uploads/' . $obj->photo));
+
+            $ext = $request->file('photo')->extension();
+            $final_name = 'testimonial_' . time() . '.' . $ext;
+
+            $request->file('photo')->move(public_path('uploads/'), $final_name);
+
+            $obj->photo = $final_name;
+        }
+
+        $obj->name = $request->name;
+        $obj->designation = $request->designation;
+        $obj->rating = $request->rating;
+        $obj->comment = $request->comment;
+        $obj->update();
+
+        return redirect()->route('admin.testimonial.show')->with('success', 'Data is updated successfully!');
+    }
+
+    public function AdminTestimonialDelete(Request $request, $id)
+    {
+        $row_data = Testimonial::findOrFail($id);
+
+        $image_path = public_path('uploads/'.$row_data->photo);
+    
+        if (!empty($row_data->photo) && file_exists($image_path)) {
+            unlink($image_path);
+        }
+        
+        $row_data->delete();
+
+        return redirect()->back()->with('success', 'Data is deleted successfully!');
+    }
+
+    // Language
+    public function AdminLanguageShow()
+    {   
+        $all_data = Language::orderBy('id', 'asc')->get();
+        return view('admin.language_show', compact('all_data'));
+    }
+
+    public function AdminLanguageAdd()
+    {   
+        return view('admin.language_add');
+    }
+
+    public function AdminLanguageSubmit(Request $request)
+    {
+        $request->validate([
+            'flag' => 'required|mimes:jpg,jpeg,png',
+            'language' => 'required',
+        ]);
+
+        $obj = new Language();
+
+        $ext = $request->file('flag')->extension();
+        $final_name = 'flag_' . time() . '.' . $ext;
+        $request->file('flag')->move(public_path('uploads/'), $final_name);
+        $obj->flag = $final_name;
+
+        $obj->language = $request->language;
+        $obj->save();
+
+        return redirect()->route('admin.language.show')->with('success', 'Data is inserted successfully!');
+    }
+
+    public function AdminLanguageEdit(int $id)
+    {
+        $row_data = Language::where('id', $id)->first();
+        return view('admin.language_edit', compact('row_data'));
+    }
+    public function AdminLanguageUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'flag' => 'required|mimes:jpg,jpeg,png',
+            'language' => 'required',
+        ]);
+
+        $obj = Language::where('id', $id)->first();
+
+        if($request->hasFile('flag')) {
+            $request->validate([
+                'flag' => 'image|mimes:jpg,jpeg,png'
+            ]);
+
+            unlink(public_path('uploads/' . $obj->flag));
+
+            $ext = $request->file('flag')->extension();
+            $final_name = 'flag_' . time() . '.' . $ext;
+
+            $request->file('flag')->move(public_path('uploads/'), $final_name);
+
+            $obj->flag = $final_name;
+        }
+
+        $obj->language = $request->language;
+        $obj->update();
+
+        return redirect()->route('admin.language.show')->with('success', 'Data is updated successfully!');
+    }
+
+    public function AdminLanguageDelete(Request $request, $id)
+    {
+        $row_data = Language::findOrFail($id);
+
+        $image_path = public_path('uploads/'.$row_data->flag);
+    
+        if (!empty($row_data->flag) && file_exists($image_path)) {
+            unlink($image_path);
+        }
+        
+        $row_data->delete();
+
+        return redirect()->back()->with('success', 'Data is deleted successfully!');
+    }
+
+    // Learning Path 
+    public function AdminLearningPathShow()
+    {
+        $all_data = LearningPath::with('rLanguage')->orderBy('id', 'asc')->get();
+        return view('admin.learning_path_show', compact('all_data'));
+    }
+
+    public function AdminLearningPathAdd()
+    {
+        $languages = Language::get();
+        return view('admin.learning_path_add', compact('languages'));
+    }
+
+    public function AdminLearningPathSubmit(Request $request)
+    {
+        $request->validate([
+            'language_id' => 'required|exists:languages,id',
+            'type' => 'required|in:general,test_prep',
+            'title'       => 'required|string|max:255',
+            'short_description' => 'required',
+        ]);
+
+        $obj = new LearningPath();
+
+        if ($request->hasFile('photo')) {
+            $ext = $request->file('photo')->extension();
+            $final_name = 'logo_' . time() . '.' . $ext;
+            $request->file('photo')->move(public_path('uploads/'), $final_name);
+            
+            $obj->photo = $final_name;
+        }
+
+        $obj->language_id = $request->language_id;
+        $obj->type = $request->type;
+        $obj->title = $request->title;
+        $obj->short_description = $request->short_description;
+        $obj->save();
+
+        return redirect()->route('admin.learning-path.show')->with('success', 'Data is inserted successfully!');
+    }
+
+    public function AdminLearningPathEdit(int $id)
+    {
+        $languages = Language::get();
+        $row_data = LearningPath::where('id', $id)->first();
+        return view('admin.learning_path_edit', compact('row_data', 'languages'));
+    }
+    public function AdminLearningPathUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'language_id' => 'required|exists:languages,id',
+            'type' => 'required|in:general,test_prep',
+            'title' => 'required|string|max:255',
+            'short_description' => 'required',
+        ]);
+
+        $obj = LearningPath::where('id', $id)->first();
+
+        if($request->hasFile('photo')) {
+            $request->validate([
+                'photo' => 'image|mimes:jpg,jpeg,png'
+            ]);
+
+            unlink(public_path('uploads/' . $obj->photo));
+
+            $ext = $request->file('photo')->extension();
+            $final_name = 'logo_' . time() . '.' . $ext;
+
+            $request->file('photo')->move(public_path('uploads/'), $final_name);
+
+            $obj->photo = $final_name;
+        }
+
+        $obj->language_id = $request->language_id;
+        $obj->type = $request->type;
+        $obj->title = $request->title;
+        $obj->short_description = $request->short_description;
+        $obj->update();
+
+        return redirect()->route('admin.learning-path.show')->with('success', 'Data is updated successfully!');
+    }
+
+    public function AdminLearningPathDelete(Request $request, $id)
+    {
+        $row_data = LearningPath::findOrFail($id);
+
+        $image_path = public_path('uploads/'.$row_data->photo);
+    
+        if (!empty($row_data->photo) && file_exists($image_path)) {
+            unlink($image_path);
+        }
+        
+        $row_data->delete();
+
+        return redirect()->back()->with('success', 'Data is deleted successfully!');
+    }
+}

@@ -1,0 +1,116 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
+use App\Http\Middleware\Admin;
+use App\Http\Middleware\CheckOnBoarding;
+
+Route::get('/', [UserController::class, 'index'])->name('home');
+
+// ===== Start User ========
+Route::get('/choose-language', [UserController::class, 'ChooseLanguage'])->name('choose-language');
+Route::post('/choose-language', [UserController::class, 'PostChooseLanguage'])->name('post.choose.language');
+
+Route::middleware(['onboarding.guard:2'])->group(function () {
+    Route::get('/choose-path', [UserController::class, 'ChoosePath'])->name('choose-path');
+    Route::post('/choose-path', [UserController::class, 'PostChoosePath'])->name('post.choose.path');
+});
+
+Route::get('/choose-daily-goal', [UserController::class, 'ChooseGoal'])->name('choose-daily-goal');
+
+Route::middleware(['onboarding.guard:test'])->group(function () { 
+    Route::get('/choose-test', [UserController::class, 'ChooseTest'])->name('choose-test');
+    Route::post('/choose-test', [UserController::class, 'PostChooseTest'])->name('post.choose.test');
+});
+
+Route::get('/sign-up', [UserController::class, 'SignUp'])->name('user.sign-up');
+Route::get('/login', [UserController::class, 'Login'])->name('user.login');
+Route::get('/forgot-password', [UserController::class, 'ForgotPassword'])->name('user.forgot-password');
+Route::get('/reset-password', [UserController::class, 'ResetPassword'])->name('user.reset-password');
+
+// General Test
+Route::get('/general/dashboard', [UserController::class, 'UserGeneralDashboard'])->name('user.general.dashboard');
+Route::get('/general/module', [UserController::class, 'UserGeneralModule'])->name('user.general.module');
+Route::get('/general/flashcard', [UserController::class, 'UserGeneralFlashcard'])->name('user.general.flashcard');
+Route::get('/general/final-quiz', [UserController::class, 'UserFinalQuiz'])->name('user.general.final-quiz');
+Route::get('/general/final-quiz/quiz-result', [UserController::class, 'UserQuizResult'])->name('user.general.quiz-result');
+Route::get('/general/profile', [UserController::class, 'UserProfile'])->name('user.profile');
+
+// Test Prep
+Route::get('/test-prep/dashboard', [UserController::class, 'UserTestDashboard'])->name('user.test-prep.dashboard');
+Route::get('/test-prep/module', [UserController::class, 'UserTestModule'])->name('user.test-prep.module');
+Route::get('/test-prep/video-lesson', [UserController::class, 'UserVideoLesson'])->name('user.test-prep.video-lesson');
+Route::get('/test-prep/full-mock-test', [UserController::class, 'UserFullMockTest'])->name('user.test-prep.full-mock-test');
+Route::get('/test-prep/full-mock-test/result', [UserController::class, 'UserFullMockTestResult'])->name('user.test-prep.full-mock-test-result');
+// ===== End User ========
+
+// ===== Start Admin ========
+Route::get('/admin/login', [AdminController::class, 'AdminLogin'])->name('admin.login');
+Route::post('/admin/login-submit', [AdminController::class, 'AdminLoginSubmit'])->name('admin.login.submit');
+
+Route::middleware([Admin::class])->group(function () { 
+    Route::get('/admin/dashboard', [AdminController::class, 'AdminDashboard'])->name('admin.dashboard');
+    Route::get('/admin/logout', [AdminController::class, 'AdminLogout'])->name('admin.logout');
+    Route::get('/admin/profile', [AdminController::class, 'AdminProfile'])->name('admin.profile');
+    Route::post('/admin/edit-profile-submit', [AdminController::class, 'AdminProfileSubmit'])->name('admin.profile.submit');
+
+    // Hero
+    Route::get('/admin/hero-items', [AdminController::class, 'AdminHeroItems'])->name('admin.hero.items');
+    Route::post('/admin/hero-items-submit', [AdminController::class, 'AdminHeroItemsSubmit'])->name('admin.hero.items.submit');
+
+    // Clients
+    Route::get('/admin/client/show', [AdminController::class, 'AdminClientShow'])->name('admin.client.show');
+    Route::post('/admin/client/submit', [AdminController::class, 'AdminClientSubmit'])->name('admin.client.submit');
+    Route::post('/admin/client/delete/{id}', [AdminController::class, 'AdminClientDelete'])->name('admin.client.delete');
+
+    // Service
+    Route::get('/admin/service/show', [AdminController::class, 'AdminServiceShow'])->name('admin.service.show');
+    Route::get('/admin/service/add', [AdminController::class, 'AdminServiceAdd'])->name('admin.service.add');
+    Route::post('/admin/service/submit', [AdminController::class, 'AdminServiceSubmit'])->name('admin.service.submit');
+    Route::get('/admin/service/edit/{id}', [AdminController::class, 'AdminServiceEdit'])->name('admin.service.edit');
+    Route::post('/admin/service/update/{id}', [AdminController::class, 'AdminServiceUpdate'])->name('admin.service.update');
+    Route::post('/admin/service/delete/{id}', [AdminController::class, 'AdminServiceDelete'])->name('admin.service.delete');
+
+    // Process
+    Route::get('/admin/process/show', [AdminController::class, 'AdminProcessShow'])->name('admin.process.show');
+    Route::get('/admin/process/add', [AdminController::class, 'AdminProcessAdd'])->name('admin.process.add');
+    Route::post('/admin/process/submit', [AdminController::class, 'AdminProcessSubmit'])->name('admin.process.submit');
+    Route::get('/admin/process/edit/{id}', [AdminController::class, 'AdminProcessEdit'])->name('admin.process.edit');
+    Route::post('/admin/process/update/{id}', [AdminController::class, 'AdminProcessUpdate'])->name('admin.process.update');
+    Route::post('/admin/process/delete/{id}', [AdminController::class, 'AdminProcessDelete'])->name('admin.process.delete');
+
+    // Testimonial
+    Route::get('/admin/testimonial/show', [AdminController::class, 'AdminTestimonialShow'])->name('admin.testimonial.show');
+    Route::get('/admin/testimonial/add', [AdminController::class, 'AdminTestimonialAdd'])->name('admin.testimonial.add');
+    Route::post('/admin/testimonial/submit', [AdminController::class, 'AdminTestimonialSubmit'])->name('admin.testimonial.submit');
+    Route::get('/admin/testimonial/edit/{id}', [AdminController::class, 'AdminTestimonialEdit'])->name('admin.testimonial.edit');
+    Route::post('/admin/testimonial/update/{id}', [AdminController::class, 'AdminTestimonialUpdate'])->name('admin.testimonial.update');
+    Route::post('/admin/testimonial/delete/{id}', [AdminController::class, 'AdminTestimonialDelete'])->name('admin.testimonial.delete');
+
+    // Language 
+    Route::get('/admin/language/show', [AdminController::class, 'AdminLanguageShow'])->name('admin.language.show');
+    Route::get('/admin/language/add', [AdminController::class, 'AdminLanguageAdd'])->name('admin.language.add');
+    Route::post('/admin/language/submit', [AdminController::class, 'AdminLanguageSubmit'])->name('admin.language.submit');
+    Route::get('/admin/language/edit/{id}', [AdminController::class, 'AdminLanguageEdit'])->name('admin.language.edit');
+    Route::post('/admin/language/update/{id}', [AdminController::class, 'AdminLanguageUpdate'])->name('admin.language.update');
+    Route::post('/admin/language/delete/{id}', [AdminController::class, 'AdminLanguageDelete'])->name('admin.language.delete');
+
+    // Learning Path
+    Route::get('/admin/learning-path/show', [AdminController::class, 'AdminLearningPathShow'])->name('admin.learning-path.show');
+    Route::get('/admin/learning-path/add', [AdminController::class, 'AdminLearningPathAdd'])->name('admin.learning-path.add');
+    Route::post('/admin/learning-path/submit', [AdminController::class, 'AdminLearningPathSubmit'])->name('admin.learning-path.submit');
+    Route::get('/admin/learning-path/edit/{id}', [AdminController::class, 'AdminLearningPathEdit'])->name('admin.learning-path.edit');
+    Route::post('/admin/learning-path/update/{id}', [AdminController::class, 'AdminLearningPathUpdate'])->name('admin.learning-path.update');
+    Route::post('/admin/learning-path/delete/{id}', [AdminController::class, 'AdminLearningPathDelete'])->name('admin.learning-path.delete');
+});
+
+Route::get('/admin/forgot-password', [AdminController::class, 'AdminForgotPassword'])->name('admin.forgot-password');
+Route::post('/admin/forgot-password-submit', [AdminController::class, 'AdminForgotPasswordSubmit'])->name('admin.forgot-password-submit');
+Route::get('/admin/reset-password/{token}/{email}', [AdminController::class, 'AdminResetPassword'])->name('admin.reset-password');
+Route::post('/admin/reset-password-submit', [AdminController::class, 'AdminResetPasswordSubmit'])->name('admin.reset-password-submit');
+// End Admin
+
+
+
+
