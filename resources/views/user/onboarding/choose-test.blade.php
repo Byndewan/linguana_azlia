@@ -10,6 +10,9 @@
             @forelse($tests as $item)
             <form action="{{ route('post.choose.test') }}" method="POST" class="flex flex-col gap-6 w-full max-w-3xl">
             @csrf
+
+            <input type="hidden" name="learning_path_id" value="{{ $item->id }}">
+
                 <button class="cursor-pointer group flex flex-col sm:flex-row items-center sm:items-center gap-6 p-6 md:p-8 bg-white border-2 border-slate-100 rounded-2xl hover:border-[#55BCC9] hover:shadow-lg transition-all duration-300 text-left w-full focus:outline-none focus:border-[#55BCC9] focus:ring-4 focus:ring-[#55BCC9]/10">
                 
                 <div class="shrink-0 w-40 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">

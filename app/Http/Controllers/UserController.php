@@ -9,6 +9,11 @@ use App\Models\Process;
 use App\Models\Testimonial;
 use App\Models\Language;
 use App\Models\LearningPath;
+use App\Models\DailyGoal;
+use App\Models\UserProgress;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -58,11 +63,32 @@ class UserController extends Controller
         } else {
             return redirect()->route('choose-daily-goal');
         }
+        
+    }
+    public function ChooseGoal()
+    {
+        if (!session()->has('type')) {
+            return redirect()->route('choose-path');
+        }
+
+        $learning_path = session('type'); 
+        
+        $goals = DailyGoal::where('type', $learning_path)
+                        ->orderBy('target_time', 'asc')
+                        ->get();
+                        
+        return view('user.onboarding.choose-daily-goal', compact('goals'));
     }
 
-    public function ChooseGoal (Request $request)
+    public function PostChooseGoal (Request $request)
     {
-        return view('user.onboarding.choose-daily-goal');
+        $request->validate([
+            'daily_goal' => 'required|integer'
+        ]);
+
+        session(['daily_goal' => $request->daily_goal]);
+
+        return redirect()->route('user.sign-up');
     }
 
     public function ChooseTest ()    
@@ -87,10 +113,57 @@ class UserController extends Controller
     {
         return view('user.auth.signup');
     }
+    public function SignUpSubmit (Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:8',
+            'password_confirmation' => 'required|min:8|same:password'
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password)
+        ]);
+
+        $learning_path = session('type'); 
+        $language = session('onboarding_language_id');
+        $pathId = session('learning_path_id'); 
+        $dailyGoal = session('daily_goal');
+
+        UserProgress::create([
+            'user_id' => $user->id,
+            'language_id' => $language,
+            'learning_type' => $learning_path,
+            'learning_path_id' => $pathId, 
+            'daily_goal' => $dailyGoal,
+        ]);
+
+        session()->forget(['onboarding_language_id', 'type', 'learning_path_id', 'daily_goal']);
+
+        Auth::login($user);
+
+        if ($learning_path === 'test_prep') {
+            return redirect()->route('user.test-prep.dashboard');
+        } else {
+            return redirect()->route('user.general.dashboard');
+        }
+    }
     public function Login (Request $request)
     {
         return view('user.auth.login');
     }
+
+    public function Logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
+    }
+
     public function ForgotPassword (Request $request)
     {
         return view('user.auth.forgot-password');
@@ -127,9 +200,13 @@ class UserController extends Controller
     }
 
     // Test Prep
-    public function UserTestDashboard (Request $request)
+    public function UserTestDashboard()
     {
-        return view('user.test-prep.dashboard');
+        $userId = Auth::id();
+        $progress = UserProgress::where('user_id', $userId)->first();
+        $testData = LearningPath::find($progress->learning_path_id);
+
+        return view('user.test-prep.dashboard', compact('testData'));
     }
     public function UserTestModule (Request $request)
     {

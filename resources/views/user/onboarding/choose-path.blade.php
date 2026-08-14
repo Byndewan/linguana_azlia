@@ -8,7 +8,7 @@
         <div class="flex flex-col gap-6 w-full max-w-3xl">
             <form action="{{ route('post.choose.path') }}" method="POST" class="flex flex-col gap-6 w-full max-w-3xl">
                 @csrf
-                <button class="cursor-pointer group flex flex-col sm:flex-row items-center sm:items-start gap-6 p-6 md:p-8 bg-white border-2 border-slate-100 rounded-2xl hover:border-[#55BCC9] hover:shadow-lg transition-all duration-300 text-left w-full focus:outline-none focus:border-[#55BCC9] focus:ring-4 focus:ring-[#55BCC9]/10">
+                <button type="submit" name="type" value="general" class="cursor-pointer group flex flex-col sm:flex-row items-center sm:items-start gap-6 p-6 md:p-8 bg-white border-2 border-slate-100 rounded-2xl hover:border-[#55BCC9] hover:shadow-lg transition-all duration-300 text-left w-full focus:outline-none focus:border-[#55BCC9] focus:ring-4 focus:ring-[#55BCC9]/10">
                     
                     <!-- Ikon Globe -->
                     <div class="shrink-0 transition-transform duration-300 group-hover:scale-110">

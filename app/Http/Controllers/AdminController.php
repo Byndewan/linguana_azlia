@@ -11,6 +11,7 @@ use App\Models\Process;
 use App\Models\Testimonial;
 use App\Models\Language;
 use App\Models\LearningPath;
+use App\Models\DailyGoal;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\Websitemail;
@@ -88,7 +89,7 @@ class AdminController extends Controller
 
         return redirect()->route('admin.login')->with('success', 'Please check your email and follow the steps there');
     }
-    // 1. Tambahkan 'string' agar garis biru di VS Code hilang
+    
     public function AdminResetPassword(string $token, string $email)
     {
         $admin_data = Admin::where('token', $token)->where('email', $email)->first();
@@ -646,6 +647,70 @@ class AdminController extends Controller
             unlink($image_path);
         }
         
+        $row_data->delete();
+
+        return redirect()->back()->with('success', 'Data is deleted successfully!');
+    }
+
+    public function AdminDailyGoalShow()
+    {
+        $all_data = DailyGoal::orderBy('id', 'asc')->get();
+        return view('admin.daily_goal_show', compact('all_data'));
+    }
+
+    public function AdminDailyGoalAdd()
+    {   
+        return view('admin.daily_goal_add');
+    }
+
+    public function AdminDailyGoalSubmit(Request $request)
+    {
+        $request->validate([
+            'title' => 'required',
+            'target_time' => 'required',
+            'type' => 'required|in:general,test_prep',
+            'short_description' => 'required',
+        ]);
+
+        $obj = new DailyGoal();
+
+        $obj->title = $request->title;
+        $obj->target_time = $request->target_time;
+        $obj->type = $request->type;
+        $obj->short_description = $request->short_description;
+        $obj->save();
+
+        return redirect()->route('admin.daily-goal.show')->with('success', 'Data is inserted successfully!');
+    }
+
+    public function AdminDailyGoalEdit(int $id)
+    {
+        $row_data = DailyGoal::where('id', $id)->first();
+        return view('admin.daily_goal_edit', compact('row_data'));
+    }
+    public function AdminDailyGoalUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'title' => 'required',
+            'target_time' => 'required',
+            'type' => 'required|in:general,test_prep',
+            'short_description' => 'required',
+        ]);
+
+        $obj = DailyGoal::where('id', $id)->first();
+
+        $obj->title = $request->title;
+        $obj->target_time = $request->target_time;
+        $obj->type = $request->type;
+        $obj->short_description = $request->short_description;
+        $obj->update();
+
+        return redirect()->route('admin.daily-goal.show')->with('success', 'Data is updated successfully!');
+    }
+
+    public function AdminDailyGoalDelete(Request $request, $id)
+    {
+        $row_data = DailyGoal::where('id', $id)->first();
         $row_data->delete();
 
         return redirect()->back()->with('success', 'Data is deleted successfully!');

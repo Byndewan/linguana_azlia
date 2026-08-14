@@ -8,7 +8,7 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div>
                 <h1 class="text-3xl font-extrabold text-slate-900">Test Prep Dashboard</h1>
-                <p class="text-slate-500 font-medium mt-1">IELTS Academic • Target: Band 7.0 • Exam in 42 days</p>
+                <p class="text-slate-500 font-medium mt-1">{{ $testData->title }} • Target: Band 7.0 • Exam in 42 days</p>
             </div>
             <div class="flex items-center gap-3">
                 <div class="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl font-bold text-sm text-slate-700 shadow-sm border border-slate-100">
@@ -36,7 +36,7 @@
             <!-- Detail & Skor -->
             <div class="flex-1 text-center md:text-left">
                 <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-1.5">Exam Countdown</h3>
-                <h2 class="text-2xl font-bold text-slate-900 mb-1.5">IELTS Academic — April 22, 2024</h2>
+                <h2 class="text-2xl font-bold text-slate-900 mb-1.5">{{ $testData->title }} — April 22, 2024</h2>
                 <p class="text-slate-500 text-sm font-medium mb-5">Keep up your pace — you're on track for Band 7.0!</p>
                 
                 <div class="flex flex-wrap justify-center md:justify-start gap-3">

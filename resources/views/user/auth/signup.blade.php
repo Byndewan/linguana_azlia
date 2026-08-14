@@ -30,26 +30,26 @@
             <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Create your account</h2>
             <p class="text-slate-500 mb-8 text-sm md:text-base">Start your free 14-day trial — no card required.</p>
 
-            <form action="#" method="POST" class="flex flex-col gap-4">
-                
+            <form action="{{ route('user.sign-up.submit') }}" method="POST" class="flex flex-col gap-4">
+                @csrf
                 <div>
                     <label for="name" class="block text-base font-bold text-slate-900 mb-1.5">Full Name</label>
-                    <input type="text" id="name" placeholder="Alex Morgan" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#55BCC9] focus:ring-2 focus:ring-[#55BCC9]/20 transition-all text-base placeholder:text-slate-400">
+                    <input name="name" type="text" id="name" placeholder="Alex Morgan" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#55BCC9] focus:ring-2 focus:ring-[#55BCC9]/20 transition-all text-base placeholder:text-slate-400">
                 </div>
 
                 <div>
                     <label for="email" class="block text-base font-bold text-slate-900 mb-1.5">Email Address</label>
-                    <input type="email" id="email" placeholder="azlia@gmail.com" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#55BCC9] focus:ring-2 focus:ring-[#55BCC9]/20 transition-all text-base placeholder:text-slate-400">
+                    <input name="email" type="email" id="email" placeholder="azlia@gmail.com" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#55BCC9] focus:ring-2 focus:ring-[#55BCC9]/20 transition-all text-base placeholder:text-slate-400">
                 </div>
 
                 <div>
                     <label for="password" class="block text-base font-bold text-slate-900 mb-1.5">Password</label>
-                    <input type="password" id="password" placeholder="Min. 8 characters" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#55BCC9] focus:ring-2 focus:ring-[#55BCC9]/20 transition-all text-base placeholder:text-slate-400">
+                    <input name="password" type="password" id="password" placeholder="Min. 8 characters" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#55BCC9] focus:ring-2 focus:ring-[#55BCC9]/20 transition-all text-base placeholder:text-slate-400">
                 </div>
 
                 <div>
                     <label for="password_confirmation" class="block text-base font-bold text-slate-900 mb-1.5">Confirm Password</label>
-                    <input type="password" id="password_confirmation" placeholder="Repeat password" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#55BCC9] focus:ring-2 focus:ring-[#55BCC9]/20 transition-all text-base placeholder:text-slate-400">
+                    <input name="password_confirmation" type="password" id="password_confirmation" placeholder="Repeat password" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#55BCC9] focus:ring-2 focus:ring-[#55BCC9]/20 transition-all text-base placeholder:text-slate-400">
                 </div>
 
                 <button type="submit" class="w-full mt-2 bg-[#55BCC9] hover:bg-[#45a4b1] cursor-pointer text-white font-bold py-3.5 rounded-xl transition-colors duration-200 shadow-sm text-base">

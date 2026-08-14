@@ -4,11 +4,19 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Middleware\Admin;
+use App\Http\Middleware\User;
 use App\Http\Middleware\CheckOnBoarding;
 
 Route::get('/', [UserController::class, 'index'])->name('home');
 
 // ===== Start User ========
+
+// Route::get('/reset-session', function () {
+//     session()->flush(); 
+//     return redirect()->route('choose-language');
+// });
+
+// Onboarding 
 Route::get('/choose-language', [UserController::class, 'ChooseLanguage'])->name('choose-language');
 Route::post('/choose-language', [UserController::class, 'PostChooseLanguage'])->name('post.choose.language');
 
@@ -17,7 +25,10 @@ Route::middleware(['onboarding.guard:2'])->group(function () {
     Route::post('/choose-path', [UserController::class, 'PostChoosePath'])->name('post.choose.path');
 });
 
-Route::get('/choose-daily-goal', [UserController::class, 'ChooseGoal'])->name('choose-daily-goal');
+Route::middleware(['onboarding.guard:3'])->group(function () {
+    Route::get('/choose-daily-goal', [UserController::class, 'ChooseGoal'])->name('choose-daily-goal');
+    Route::post('/choose-daily-goal', [UserController::class, 'PostChooseGoal'])->name('post.choose.daily.goal');
+});
 
 Route::middleware(['onboarding.guard:test'])->group(function () { 
     Route::get('/choose-test', [UserController::class, 'ChooseTest'])->name('choose-test');
@@ -25,24 +36,29 @@ Route::middleware(['onboarding.guard:test'])->group(function () {
 });
 
 Route::get('/sign-up', [UserController::class, 'SignUp'])->name('user.sign-up');
+Route::post('/sign-up-submit', [UserController::class, 'SignUpSubmit'])->name('user.sign-up.submit');
+
 Route::get('/login', [UserController::class, 'Login'])->name('user.login');
 Route::get('/forgot-password', [UserController::class, 'ForgotPassword'])->name('user.forgot-password');
 Route::get('/reset-password', [UserController::class, 'ResetPassword'])->name('user.reset-password');
 
-// General Test
-Route::get('/general/dashboard', [UserController::class, 'UserGeneralDashboard'])->name('user.general.dashboard');
-Route::get('/general/module', [UserController::class, 'UserGeneralModule'])->name('user.general.module');
-Route::get('/general/flashcard', [UserController::class, 'UserGeneralFlashcard'])->name('user.general.flashcard');
-Route::get('/general/final-quiz', [UserController::class, 'UserFinalQuiz'])->name('user.general.final-quiz');
-Route::get('/general/final-quiz/quiz-result', [UserController::class, 'UserQuizResult'])->name('user.general.quiz-result');
-Route::get('/general/profile', [UserController::class, 'UserProfile'])->name('user.profile');
+Route::middleware(['auth'])->group(function () { 
+    // General Test
+    Route::post('/logout', [UserController::class, 'Logout'])->name('user.logout');
+    Route::get('/general/dashboard', [UserController::class, 'UserGeneralDashboard'])->name('user.general.dashboard');
+    Route::get('/general/module', [UserController::class, 'UserGeneralModule'])->name('user.general.module');
+    Route::get('/general/flashcard', [UserController::class, 'UserGeneralFlashcard'])->name('user.general.flashcard');
+    Route::get('/general/final-quiz', [UserController::class, 'UserFinalQuiz'])->name('user.general.final-quiz');
+    Route::get('/general/final-quiz/quiz-result', [UserController::class, 'UserQuizResult'])->name('user.general.quiz-result');
+    Route::get('/general/profile', [UserController::class, 'UserProfile'])->name('user.profile');
 
-// Test Prep
-Route::get('/test-prep/dashboard', [UserController::class, 'UserTestDashboard'])->name('user.test-prep.dashboard');
-Route::get('/test-prep/module', [UserController::class, 'UserTestModule'])->name('user.test-prep.module');
-Route::get('/test-prep/video-lesson', [UserController::class, 'UserVideoLesson'])->name('user.test-prep.video-lesson');
-Route::get('/test-prep/full-mock-test', [UserController::class, 'UserFullMockTest'])->name('user.test-prep.full-mock-test');
-Route::get('/test-prep/full-mock-test/result', [UserController::class, 'UserFullMockTestResult'])->name('user.test-prep.full-mock-test-result');
+    // Test Prep
+    Route::get('/test-prep/dashboard', [UserController::class, 'UserTestDashboard'])->name('user.test-prep.dashboard');
+    Route::get('/test-prep/module', [UserController::class, 'UserTestModule'])->name('user.test-prep.module');
+    Route::get('/test-prep/video-lesson', [UserController::class, 'UserVideoLesson'])->name('user.test-prep.video-lesson');
+    Route::get('/test-prep/full-mock-test', [UserController::class, 'UserFullMockTest'])->name('user.test-prep.full-mock-test');
+    Route::get('/test-prep/full-mock-test/result', [UserController::class, 'UserFullMockTestResult'])->name('user.test-prep.full-mock-test-result');
+});
 // ===== End User ========
 
 // ===== Start Admin ========
@@ -103,6 +119,14 @@ Route::middleware([Admin::class])->group(function () {
     Route::get('/admin/learning-path/edit/{id}', [AdminController::class, 'AdminLearningPathEdit'])->name('admin.learning-path.edit');
     Route::post('/admin/learning-path/update/{id}', [AdminController::class, 'AdminLearningPathUpdate'])->name('admin.learning-path.update');
     Route::post('/admin/learning-path/delete/{id}', [AdminController::class, 'AdminLearningPathDelete'])->name('admin.learning-path.delete');
+
+    // Daily Goal
+    Route::get('/admin/daily-goal/show', [AdminController::class, 'AdminDailyGoalShow'])->name('admin.daily-goal.show');
+    Route::get('/admin/daily-goal/add', [AdminController::class, 'AdminDailyGoalAdd'])->name('admin.daily-goal.add');
+    Route::post('/admin/daily-goal/submit', [AdminController::class, 'AdminDailyGoalSubmit'])->name('admin.daily-goal.submit');
+    Route::get('/admin/daily-goal/edit/{id}', [AdminController::class, 'AdminDailyGoalEdit'])->name('admin.daily-goal.edit');
+    Route::post('/admin/daily-goal/update/{id}', [AdminController::class, 'AdminDailyGoalUpdate'])->name('admin.daily-goal.update');
+    Route::post('/admin/daily-goal/delete/{id}', [AdminController::class, 'AdminDailyGoalDelete'])->name('admin.daily-goal.delete');
 });
 
 Route::get('/admin/forgot-password', [AdminController::class, 'AdminForgotPassword'])->name('admin.forgot-password');

@@ -67,14 +67,18 @@
                     </div> 
                     <span class="sidebar-text ml-3 whitespace-nowrap transition-opacity duration-200">Profile</span>
                 </a>
-                <a href="#" class="flex items-center px-2 py-2.5 rounded-lg text-slate-800 hover:bg-slate-50 font-medium overflow-hidden">
-                    <div class="rounded shrink-0 mx-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-                        </svg>
-                    </div> 
-                    <span class="sidebar-text ml-3 whitespace-nowrap transition-opacity duration-200">Logout</span>
-                </a>
+                <form action="{{ route('user.logout') }}" method="POST" class="w-full">
+                    @csrf
+                    <!-- Desain dipindah ke button, ditambah w-full dan text-left -->
+                    <button type="submit" class="w-full text-left cursor-pointer flex items-center px-2 py-2.5 rounded-lg text-slate-800 hover:bg-slate-50 font-medium overflow-hidden">
+                        <div class="rounded shrink-0 mx-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                            </svg>
+                        </div> 
+                        <span class="sidebar-text ml-3 whitespace-nowrap transition-opacity duration-200">Logout</span>
+                    </button>
+                </form>
             </nav>
         </div>
 

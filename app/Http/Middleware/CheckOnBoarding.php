@@ -15,15 +15,15 @@ class CheckOnBoarding
      */
     public function handle(Request $request, Closure $next, $step): Response
     {
-        if ($step >= 2 && !session()->has('onboarding_language_id')) {
-            return redirect()->route('choose-language')->with('error', 'Choose language first!');
+        if (in_array($step, ['2', '3', 'test']) && !session()->has('onboarding_language_id')) {
+            return redirect()->route('choose-language');
         }
 
-        if ($step >= 3 && !session()->has('type')) {
-            return redirect()->route('choose-path')->with('error', 'Choose your learning path!');
+        if (in_array($step, ['3', 'test']) && !session()->has('type')) {
+            return redirect()->route('choose-path');
         }
 
-        if ($step == 'test' && session('type') !== 'test_prep') {
+        if ($step === 'test' && session('type') !== 'test_prep') {
             return redirect()->route('choose-daily-goal');
         }
 
