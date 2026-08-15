@@ -16,27 +16,30 @@ Route::get('/', [UserController::class, 'index'])->name('home');
 //     return redirect()->route('choose-language');
 // });
 
-// Onboarding 
-Route::get('/choose-language', [UserController::class, 'ChooseLanguage'])->name('choose-language');
-Route::post('/choose-language', [UserController::class, 'PostChooseLanguage'])->name('post.choose.language');
+// Onboarding
+Route::middleware(['onboard.token'])->group(function () {
+    Route::get('/choose-language', [UserController::class, 'ChooseLanguage'])->name('choose-language');
+    Route::post('/choose-language', [UserController::class, 'PostChooseLanguage'])->name('post.choose.language');
+    Route::post('/onboarding/cancel', [UserController::class, 'CancelOnboarding'])->name('onboarding.cancel');
 
-Route::middleware(['onboarding.guard:2'])->group(function () {
-    Route::get('/choose-path', [UserController::class, 'ChoosePath'])->name('choose-path');
-    Route::post('/choose-path', [UserController::class, 'PostChoosePath'])->name('post.choose.path');
+    Route::middleware(['onboarding.guard:2'])->group(function () {
+        Route::get('/choose-path', [UserController::class, 'ChoosePath'])->name('choose-path');
+        Route::post('/choose-path', [UserController::class, 'PostChoosePath'])->name('post.choose.path');
+    });
+
+    Route::middleware(['onboarding.guard:3'])->group(function () {
+        Route::get('/choose-daily-goal', [UserController::class, 'ChooseGoal'])->name('choose-daily-goal');
+        Route::post('/choose-daily-goal', [UserController::class, 'PostChooseGoal'])->name('post.choose.daily.goal');
+    });
+
+    Route::middleware(['onboarding.guard:test'])->group(function () {
+        Route::get('/choose-test', [UserController::class, 'ChooseTest'])->name('choose-test');
+        Route::post('/choose-test', [UserController::class, 'PostChooseTest'])->name('post.choose.test');
+    });
+
+    Route::get('/sign-up', [UserController::class, 'SignUp'])->name('user.sign-up');
+    Route::post('/sign-up-submit', [UserController::class, 'SignUpSubmit'])->name('user.sign-up.submit');
 });
-
-Route::middleware(['onboarding.guard:3'])->group(function () {
-    Route::get('/choose-daily-goal', [UserController::class, 'ChooseGoal'])->name('choose-daily-goal');
-    Route::post('/choose-daily-goal', [UserController::class, 'PostChooseGoal'])->name('post.choose.daily.goal');
-});
-
-Route::middleware(['onboarding.guard:test'])->group(function () { 
-    Route::get('/choose-test', [UserController::class, 'ChooseTest'])->name('choose-test');
-    Route::post('/choose-test', [UserController::class, 'PostChooseTest'])->name('post.choose.test');
-});
-
-Route::get('/sign-up', [UserController::class, 'SignUp'])->name('user.sign-up');
-Route::post('/sign-up-submit', [UserController::class, 'SignUpSubmit'])->name('user.sign-up.submit');
 
 Route::get('/login', [UserController::class, 'Login'])->name('user.login');
 Route::get('/forgot-password', [UserController::class, 'ForgotPassword'])->name('user.forgot-password');
