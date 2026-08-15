@@ -12,6 +12,8 @@ use App\Models\LearningPath;
 use App\Models\DailyGoal;
 use App\Models\UserProgress;
 use App\Models\User;
+use App\Models\OnboardTempData;
+use App\Http\Middleware\EnsureOnboardToken;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -28,6 +30,23 @@ class UserController extends Controller
     }
 
     // onboarding
+    private function onboardToken(Request $request): string
+    {
+        return $request->attributes->get(EnsureOnboardToken::COOKIE_NAME);
+    }
+
+    private function onboardTempData(Request $request): ?OnboardTempData
+    {
+        return OnboardTempData::where('token', $this->onboardToken($request))->first();
+    }
+
+    public function CancelOnboarding(Request $request)
+    {
+        $this->onboardTempData($request)?->delete();
+
+        return redirect()->route('home');
+    }
+
     public function ChooseLanguage ()
     {
         $languages = Language::orderBy('id', 'asc')->get();
@@ -35,12 +54,15 @@ class UserController extends Controller
     }
 
     public function PostChooseLanguage(Request $request)
-    {   
+    {
         $request->validate([
             'language_id' => 'required|exists:languages,id'
         ]);
 
-        session(['onboarding_language_id' => $request->language_id]);
+        OnboardTempData::updateOrCreate(
+            ['token' => $this->onboardToken($request)],
+            ['onboarding_language_id' => $request->language_id]
+        );
 
         return redirect()->route('choose-path');
     }
@@ -56,7 +78,10 @@ class UserController extends Controller
             'type' => 'required|in:general,test_prep'
         ]);
 
-        session(['type' => $request->type]);
+        OnboardTempData::updateOrCreate(
+            ['token' => $this->onboardToken($request)],
+            ['type' => $request->type]
+        );
 
         if ($request->type == 'test_prep') {
             return redirect()->route('choose-test');
@@ -65,18 +90,18 @@ class UserController extends Controller
         }
         
     }
-    public function ChooseGoal()
+    public function ChooseGoal(Request $request)
     {
-        if (!session()->has('type')) {
+        $onboarding = $this->onboardTempData($request);
+
+        if (!$onboarding?->type) {
             return redirect()->route('choose-path');
         }
 
-        $learning_path = session('type'); 
-        
-        $goals = DailyGoal::where('type', $learning_path)
+        $goals = DailyGoal::where('type', $onboarding->type)
                         ->orderBy('target_time', 'asc')
                         ->get();
-                        
+
         return view('user.onboarding.choose-daily-goal', compact('goals'));
     }
 
@@ -86,14 +111,19 @@ class UserController extends Controller
             'daily_goal' => 'required|integer'
         ]);
 
-        session(['daily_goal' => $request->daily_goal]);
+        OnboardTempData::updateOrCreate(
+            ['token' => $this->onboardToken($request)],
+            ['daily_goal' => $request->daily_goal]
+        );
 
         return redirect()->route('user.sign-up');
     }
 
-    public function ChooseTest ()    
+    public function ChooseTest (Request $request)
     {
-        $tests = LearningPath::where('language_id', session('onboarding_language_id'))->where('type', 'test_prep')->get();
+        $onboarding = $this->onboardTempData($request);
+
+        $tests = LearningPath::where('language_id', $onboarding?->onboarding_language_id)->where('type', 'test_prep')->get();
         return view('user.onboarding.choose-test', compact('tests'));
     }
 
@@ -103,7 +133,10 @@ class UserController extends Controller
             'learning_path_id' => 'required|exists:learning_paths,id'
         ]);
 
-        session(['learning_path_id' => $request->learning_path_id]);
+        OnboardTempData::updateOrCreate(
+            ['token' => $this->onboardToken($request)],
+            ['learning_path_id' => $request->learning_path_id]
+        );
 
         return redirect()->route('choose-daily-goal');
     }
@@ -128,20 +161,22 @@ class UserController extends Controller
             'password' => Hash::make($request->password)
         ]);
 
-        $learning_path = session('type'); 
-        $language = session('onboarding_language_id');
-        $pathId = session('learning_path_id'); 
-        $dailyGoal = session('daily_goal');
+        $onboarding = $this->onboardTempData($request);
+
+        $learning_path = $onboarding?->type;
+        $language = $onboarding?->onboarding_language_id;
+        $pathId = $onboarding?->learning_path_id;
+        $dailyGoal = $onboarding?->daily_goal;
 
         UserProgress::create([
             'user_id' => $user->id,
             'language_id' => $language,
             'learning_type' => $learning_path,
-            'learning_path_id' => $pathId, 
+            'learning_path_id' => $pathId,
             'daily_goal' => $dailyGoal,
         ]);
 
-        session()->forget(['onboarding_language_id', 'type', 'learning_path_id', 'daily_goal']);
+        $onboarding?->delete();
 
         Auth::login($user);
 
