@@ -66,7 +66,7 @@
 
         <!-- Auth Buttons -->
         <div class="hidden md:flex items-center gap-4">
-            <a href="#" class="text-md font-medium text-slate-600 hover:text-slate-900">Login</a>
+            <a href="{{ route('user.login') }}" class="text-md font-medium text-slate-600 hover:text-slate-900">Login</a>
             <a href="#" class="bg-[#55BCC9] text-white px-5 py-2 rounded-xl text-md font-medium hover:bg-[#45a4b1] transition-colors shadow-sm">Sign Up Free</a>
         </div>
 

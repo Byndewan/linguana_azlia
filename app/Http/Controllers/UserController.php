@@ -91,7 +91,7 @@ class UserController extends Controller
         return redirect()->route('user.sign-up');
     }
 
-    public function ChooseTest ()    
+    public function ChooseTest()    
     {
         $tests = LearningPath::where('language_id', session('onboarding_language_id'))->where('type', 'test_prep')->get();
         return view('user.onboarding.choose-test', compact('tests'));
@@ -151,7 +151,11 @@ class UserController extends Controller
             return redirect()->route('user.general.dashboard');
         }
     }
-    public function Login (Request $request)
+    public function Login()
+    {
+        return view('user.auth.login');
+    }
+    public function LoginSubmit(Request $request)
     {
         return view('user.auth.login');
     }
