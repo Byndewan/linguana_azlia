@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'onboarding.guard' => \App\Http\Middleware\CheckOnboarding::class,
+            'onboard.token' => \App\Http\Middleware\EnsureOnboardToken::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -13,6 +13,18 @@
 </head>
 <body class="bg-white min-h-screen flex flex-col font-sans relative">
 
+    <div class="absolute top-0 left-0 p-6 md:p-10 z-20">
+        <form action="{{ route('onboarding.cancel') }}" method="POST">
+            @csrf
+            <button type="submit" class="cursor-pointer flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                </svg>
+                Kembali
+            </button>
+        </form>
+    </div>
+
     <div class="absolute top-0 right-0 p-6 md:p-10 opacity-80 pointer-events-none">
         <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M96 24C96 24 93.5 36.5 81 39C93.5 41.5 96 54 96 54C96 54 98.5 41.5 111 39C98.5 36.5 96 24 96 24Z" fill="#FDE6B1"/>
