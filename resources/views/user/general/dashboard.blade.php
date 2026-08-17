@@ -6,7 +6,7 @@
         <!-- Header Top (Sticky) -->
         <header class="sticky top-0 z-10 flex items-center justify-between px-8 py-6 bg-[#FBFBFB]/90 backdrop-blur-sm">
             <div>
-                <h1 class="text-2xl font-extrabold text-slate-900">Welcome, Azlia</h1>
+                <h1 class="text-2xl font-extrabold text-slate-900">Welcome, {{ $user->name }}</h1>
                 <p class="text-sm text-slate-500 mt-1">Focus on becoming a little better every day!</p>
             </div>
             <div class="flex items-center gap-4">

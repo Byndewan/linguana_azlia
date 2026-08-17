@@ -1,31 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - Linguana</title>
-    @vite('resources/css/app.css') 
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    </style>
-</head>
-<body class="bg-white h-screen flex font-sans overflow-hidden">
+@extends('user.auth.layouts.auth_user')
 
-    <!-- BAGIAN KIRI -->
-    <div class="hidden md:flex md:w-1/2 bg-[#d7f7e9] relative flex-col justify-center items-center p-8">
-        
-        <div class="absolute top-8 left-8">
-            <img src="{{ asset('assets/linguana.png') }}" alt="Illustration" class="w-35">
-        </div>
+@section('title', 'Sign Up')
 
-        <img src="{{ asset('assets/Image.png') }}" alt="Student Learning" class="w-full max-w-lg object-contain mt-8">
-        
-    </div>
-
-    <div class="w-full md:w-1/2 px-8 py-12 md:px-16 md:py-15 bg-white overflow-y-auto">
-        
-        <div class="w-full max-w-md mx-auto">
+@section('content')
+<div class="w-full max-w-md mx-auto">
             
             <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Create your account</h2>
             <p class="text-slate-500 mb-8 text-sm md:text-base">Start your free 14-day trial — no card required.</p>
@@ -39,17 +17,29 @@
 
                 <div>
                     <label for="email" class="block text-base font-bold text-slate-900 mb-1.5">Email Address</label>
-                    <input name="email" type="email" id="email" placeholder="azlia@gmail.com" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#55BCC9] focus:ring-2 focus:ring-[#55BCC9]/20 transition-all text-base placeholder:text-slate-400">
+                    <input name="email" type="email" id="email" value="{{ old('email') }}" placeholder="azlia@gmail.com" class="@error('email') border-red-500 focus:border-red-500 focus:ring-red-500/20 @else border-gray-300 focus:border-brand-300 focus:ring-brand-500/10 @enderror w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#55BCC9] focus:ring-2 focus:ring-[#55BCC9]/20 transition-all text-base placeholder:text-slate-400">
+                      @error('email')
+                          <p class="mt-1.5 text-sm text-red-500">{{ $message }}</p>
+                      @enderror
+                      @if(session('error'))
+                          <p class="mt-1.5 text-sm text-red-500">{{ session('error') }}</p>
+                      @endif
                 </div>
 
                 <div>
                     <label for="password" class="block text-base font-bold text-slate-900 mb-1.5">Password</label>
-                    <input name="password" type="password" id="password" placeholder="Min. 8 characters" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#55BCC9] focus:ring-2 focus:ring-[#55BCC9]/20 transition-all text-base placeholder:text-slate-400">
+                    <input name="password" type="password" id="password" placeholder="Min. 8 characters" class="@error('password') border-red-500 focus:border-red-500 focus:ring-red-500/20 @else border-gray-300 focus:border-brand-300 focus:ring-brand-500/10 @enderror w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#55BCC9] focus:ring-2 focus:ring-[#55BCC9]/20 transition-all text-base placeholder:text-slate-400">
+                    @error('password')
+                        <p class="mt-1.5 text-sm text-red-500">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div>
                     <label for="password_confirmation" class="block text-base font-bold text-slate-900 mb-1.5">Confirm Password</label>
-                    <input name="password_confirmation" type="password" id="password_confirmation" placeholder="Repeat password" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#55BCC9] focus:ring-2 focus:ring-[#55BCC9]/20 transition-all text-base placeholder:text-slate-400">
+                    <input name="password_confirmation" type="password" id="password_confirmation" placeholder="Repeat password" class="@error('password_confirmation') border-red-500 focus:border-red-500 focus:ring-red-500/20 @else border-gray-300 focus:border-brand-300 focus:ring-brand-500/10 @enderror w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#55BCC9] focus:ring-2 focus:ring-[#55BCC9]/20 transition-all text-base placeholder:text-slate-400">
+                    {{-- @error('password')
+                        <p class="mt-1.5 text-sm text-red-500">{{ $message }}</p>
+                    @enderror --}}
                 </div>
 
                 <button type="submit" class="w-full mt-2 bg-[#55BCC9] hover:bg-[#45a4b1] cursor-pointer text-white font-bold py-3.5 rounded-xl transition-colors duration-200 shadow-sm text-base">
@@ -79,7 +69,4 @@
             </p>
 
         </div>
-    </div>
-
-</body>
-</html>
+@endsection

@@ -42,8 +42,11 @@ Route::middleware(['onboard.token'])->group(function () {
 });
 
 Route::get('/login', [UserController::class, 'Login'])->name('user.login');
+Route::post('/login-submit', [UserController::class, 'LoginSubmit'])->name('user.login.submit');
 Route::get('/forgot-password', [UserController::class, 'ForgotPassword'])->name('user.forgot-password');
-Route::get('/reset-password', [UserController::class, 'ResetPassword'])->name('user.reset-password');
+Route::post('/forgot-password-submit', [UserController::class, 'ForgotPasswordSubmit'])->name('user.forgot-password-submit');
+Route::get('/reset-password/{token}/{email}', [UserController::class, 'ResetPassword'])->name('user.reset-password');
+Route::post('/reset-password-submit', [UserController::class, 'ResetPasswordSubmit'])->name('user.reset-password-submit');
 
 Route::middleware(['auth'])->group(function () { 
     // General Test

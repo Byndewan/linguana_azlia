@@ -50,7 +50,7 @@ class AdminController extends Controller
 
         if(Auth::guard('admin')->attempt($credential)) {
             return redirect()->route('admin.dashboard');
-        } else {
+        } else {    
             return redirect()->route('admin.login')->with('error', 'Information is not correct!');
         }
     }
@@ -83,7 +83,7 @@ class AdminController extends Controller
         $reset_link = url('admin/reset-password/' . $token . '/' . $request->email);
         $subject = 'Reset Password';
         $message = 'Please check on the following link : <br>';
-        $message = '<a href="'.$reset_link.'">Click here</a>';
+        $message .= '<a href="'.$reset_link.'">Click here</a>';
 
         Mail::to($request->input('email'))->send(new Websitemail($subject, $message));
 

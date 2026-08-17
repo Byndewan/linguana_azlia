@@ -16,6 +16,9 @@ use App\Models\OnboardTempData;
 use App\Http\Middleware\EnsureOnboardToken;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Mail\Websitemail;
+use Illuminate\Foundation\Auth\User as AuthUser;
+use Illuminate\Support\Facades\Mail;        
 
 class UserController extends Controller
 {
@@ -142,7 +145,7 @@ class UserController extends Controller
     }
 
     // auth
-    public function SignUp (Request $request)
+    public function SignUp()
     {
         return view('user.auth.signup');
     }
@@ -150,8 +153,8 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8|confirmed',
             'password_confirmation' => 'required|min:8|same:password'
         ]);
 
@@ -189,10 +192,27 @@ class UserController extends Controller
     public function Login()
     {
         return view('user.auth.login');
-    }
+}
     public function LoginSubmit(Request $request)
     {
-        return view('user.auth.login');
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        if (Auth::attempt($credentials)) {
+            
+            $request->session()->regenerate();
+            $userProgress = UserProgress::where('user_id', Auth::id())->first();
+
+            if ($userProgress && $userProgress->learning_type === 'test_prep') {
+                return redirect()->route('user.test-prep.dashboard');
+            } 
+            
+            return redirect()->route('user.general.dashboard');
+        }
+
+        return back()->with('error', 'Login failed. The email or password you entered is incorrect.')->withInput($request->only('email'));
     }
 
     public function Logout(Request $request)
@@ -203,19 +223,72 @@ class UserController extends Controller
         return redirect('/');
     }
 
-    public function ForgotPassword (Request $request)
+    public function ForgotPassword()
     {
         return view('user.auth.forgot-password');
     }
-    public function ResetPassword (Request $request)
+    public function ForgotPasswordSubmit(Request $request)
     {
-        return view('user.auth.reset-password');
+        $request->validate([
+            'email' => 'required|email', 
+        ]);
+
+        $data = User::where('email', $request->email)->first();
+        if (!$data) {
+            return redirect()->back()->with('error', 'Email address not found!');
+        }
+
+        $token = hash('sha256', time());
+
+        $data->token = $token;
+        $data->update();
+
+        $reset_link = url('/reset-password/' . $token . '/' . $request->email);
+        $subject = 'Reset Password';
+        $message = 'Please check on the following link : <br>';
+        $message .= '<a href="'.$reset_link.'">Click here</a>';
+
+        Mail::to($request->input('email'))->send(new Websitemail($subject, $message));
+
+        return redirect()->route('user.login')->with('success', 'Please check your email and follow the steps there');
+    }
+    public function ResetPassword(string $token, string $email)
+    {
+        $data = User::where('token', $token)->where('email', $email)->first();
+
+        if (!$data) {
+            return redirect()->route('user.login')->with('error', 'Token or email not valid');
+        }
+
+        return view('user.auth.reset-password', compact('token', 'email'));
+    }
+
+    public function ResetPasswordSubmit(Request $request)
+    {
+        $request->validate([ 
+            'password' => 'required|min:8',
+            'password_confirmation' => 'required|min:8|same:password',
+        ]);
+
+        $data = User::where('token', $request->token)->where('email', $request->email)->first();
+
+        if (!$data) {
+            return redirect()->route('user.login')->with('error', 'Token or email not valid');
+        }
+
+        $data->password = Hash::make($request->password);
+        $data->token = ''; 
+        $data->update();
+
+        return redirect()->route('user.login')->with('success', 'Password is reset successfully');
     }
 
     // general 
-    public function UserGeneralDashboard (Request $request)
-    {
-        return view('user.general.dashboard');
+    public function UserGeneralDashboard()
+    {   
+        $user = Auth::user(); 
+        $progress = UserProgress::where('user_id', $user->id)->first();
+        return view('user.general.dashboard', compact('user','progress'));
     }
     public function UserGeneralModule (Request $request)
     {
