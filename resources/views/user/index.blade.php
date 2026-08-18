@@ -65,10 +65,16 @@
         </div>
 
         <!-- Auth Buttons -->
-        <div class="hidden md:flex items-center gap-4">
-            <a href="{{ route('user.login') }}" class="text-md font-medium text-slate-600 hover:text-slate-900">Login</a>
-            <a href="#" class="bg-[#55BCC9] text-white px-5 py-2 rounded-xl text-md font-medium hover:bg-[#45a4b1] transition-colors shadow-sm">Sign Up Free</a>
-        </div>
+        @auth
+            <div class="hidden md:flex items-center gap-4">
+                <a href="{{ route('user.general.dashboard') }}" class="bg-[#55BCC9] text-white px-5 py-2 rounded-xl text-md font-medium hover:bg-[#45a4b1] transition-colors shadow-sm">Dashboard</a>
+            </div>
+        @endauth
+        @guest
+            <div class="hidden md:flex items-center gap-4">
+                <a href="{{ route('user.login') }}" class="bg-[#55BCC9] text-white px-5 py-2 rounded-xl text-md font-medium hover:bg-[#45a4b1] transition-colors shadow-sm">Login</a>
+            </div>
+        @endguest
 
         <!-- Mobile Menu Icon -->
         <button class="md:hidden text-slate-600">

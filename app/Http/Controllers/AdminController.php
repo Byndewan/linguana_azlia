@@ -12,6 +12,8 @@ use App\Models\Testimonial;
 use App\Models\Language;
 use App\Models\LearningPath;
 use App\Models\DailyGoal;
+use App\Models\User;
+use App\Models\Module;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\Websitemail;
@@ -652,6 +654,7 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Data is deleted successfully!');
     }
 
+    // Daily Goal
     public function AdminDailyGoalShow()
     {
         $all_data = DailyGoal::orderBy('id', 'asc')->get();
@@ -714,5 +717,45 @@ class AdminController extends Controller
         $row_data->delete();
 
         return redirect()->back()->with('success', 'Data is deleted successfully!');
+    }
+
+    // Manage User
+    public function AdminManageUserShow()
+    {
+        $users = User::with('progress')->get();
+        return view('admin.manage_user_show', compact('users'));
+    }
+
+    // Manage Module 
+    public function AdminManageModuleShow()
+    {
+        $all_data = Module::with('rLearningPath')->orderBy('id', 'asc')->get();
+        return view('admin.manage_module_show', compact('all_data'));
+    }
+    public function AdminManageModuleAdd()
+    {
+        $learning_path = LearningPath::get();
+        return view('admin.manage_module_add', compact('learning_path'));
+    }
+    public function AdminManageModuleSubmit(Request $request)
+    {
+        $request->validate([
+            'learning_path_id' => 'required|exists:type,id',
+            'title'       => 'required|string|max:255',
+            'icon' => 'required',
+            'color' => 'required|string|max:7',
+            'background_color' => 'required|string|max:7',
+        ]);
+
+        $obj = new Module();
+
+        $obj->learning_path_id = $request->learning_path_id;
+        $obj->title = $request->title;
+        $obj->icon = $request->icon;
+        $obj->color = $request->color;
+        $obj->background_color = $request->background_color;
+        $obj->save();
+
+        return redirect()->route('admin.manage-module.show')->with('success', 'Data is inserted successfully!');
     }
 }

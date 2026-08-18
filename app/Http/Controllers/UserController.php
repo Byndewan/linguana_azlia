@@ -202,6 +202,10 @@ class UserController extends Controller
 
         if (Auth::attempt($credentials)) {
             
+            $user = Auth::user();
+            $user->is_active = 1;
+            $user->save();
+
             $request->session()->regenerate();
             $userProgress = UserProgress::where('user_id', Auth::id())->first();
 
@@ -217,6 +221,12 @@ class UserController extends Controller
 
     public function Logout(Request $request)
     {
+        if (Auth::check()) {
+            $user = Auth::user();
+            $user->is_active = 0; 
+            $user->save();
+        }
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
@@ -293,6 +303,10 @@ class UserController extends Controller
     public function UserGeneralModule (Request $request)
     {
         return view('user.general.module');
+    }
+    public function UserGeneralSubModule (Request $request)
+    {
+        return view('user.general.sub-module');
     }
     public function UserGeneralFlashcard (Request $request)
     {

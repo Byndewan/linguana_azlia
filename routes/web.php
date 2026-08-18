@@ -53,6 +53,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [UserController::class, 'Logout'])->name('user.logout');
     Route::get('/general/dashboard', [UserController::class, 'UserGeneralDashboard'])->name('user.general.dashboard');
     Route::get('/general/module', [UserController::class, 'UserGeneralModule'])->name('user.general.module');
+    Route::get('/general/sub-module', [UserController::class, 'UserGeneralSubModule'])->name('user.general.sub-module');
     Route::get('/general/flashcard', [UserController::class, 'UserGeneralFlashcard'])->name('user.general.flashcard');
     Route::get('/general/final-quiz', [UserController::class, 'UserFinalQuiz'])->name('user.general.final-quiz');
     Route::get('/general/final-quiz/quiz-result', [UserController::class, 'UserQuizResult'])->name('user.general.quiz-result');
@@ -133,6 +134,17 @@ Route::middleware([Admin::class])->group(function () {
     Route::get('/admin/daily-goal/edit/{id}', [AdminController::class, 'AdminDailyGoalEdit'])->name('admin.daily-goal.edit');
     Route::post('/admin/daily-goal/update/{id}', [AdminController::class, 'AdminDailyGoalUpdate'])->name('admin.daily-goal.update');
     Route::post('/admin/daily-goal/delete/{id}', [AdminController::class, 'AdminDailyGoalDelete'])->name('admin.daily-goal.delete');
+
+    // Manage User
+    Route::get('/admin/manage-user/show', [AdminController::class, 'AdminManageUserShow'])->name('admin.manage-user.show');
+
+    // Manage Module
+    Route::get('/admin/manage-module/show', [AdminController::class, 'AdminManageModuleShow'])->name('admin.manage-module.show');
+    Route::get('/admin/manage-module/add', [AdminController::class, 'AdminManageModuleAdd'])->name('admin.manage-module.add');
+    Route::post('/admin/manage-module/submit', [AdminController::class, 'AdminManageModuleSubmit'])->name('admin.manage-module.submit');
+    Route::get('/admin/manage-module/edit/{id}', [AdminController::class, 'AdminManageModuleEdit'])->name('admin.manage-module.edit');
+    Route::post('/admin/manage-module/update/{id}', [AdminController::class, 'AdminManageModuleUpdate'])->name('admin.manage-module.update');
+    Route::post('/admin/manage-module/delete/{id}', [AdminController::class, 'AdminManageModuleDelete'])->name('admin.manage-module.delete');
 });
 
 Route::get('/admin/forgot-password', [AdminController::class, 'AdminForgotPassword'])->name('admin.forgot-password');
