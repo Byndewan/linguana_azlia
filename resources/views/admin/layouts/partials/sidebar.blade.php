@@ -77,7 +77,7 @@
             <a
               href="#"
               @click.prevent="selected = (selected === 'MasterData' ? '' : 'MasterData')"
-              class="menu-item group {{ request()->routeIs('admin.language*', 'admin.learning-path*', 'admin.daily-goal*', 'admin.manage-user*', 'admin.manage-module*') ? 'menu-item-active' : 'menu-item-inactive' }}"
+              class="menu-item group {{ request()->routeIs('admin.language*', 'admin.learning-path*', 'admin.daily-goal*', 'admin.manage-user*', 'admin.manage-module*', 'admin.sub-module*') ? 'menu-item-active' : 'menu-item-inactive' }}"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
@@ -88,7 +88,7 @@
               </span>
 
               <svg
-                class="menu-item-arrow absolute right-2.5 top-1/2 -translate-y-1/2 stroke-current transition-transform duration-300 {{ request()->routeIs('admin.language*','admin.learning-path*', 'admin.daily-goal*', 'admin.manage-user*', 'admin.manage-module*') ? 'menu-item-arrow-active' : 'menu-item-arrow-inactive' }}"
+                class="menu-item-arrow absolute right-2.5 top-1/2 -translate-y-1/2 stroke-current transition-transform duration-300 {{ request()->routeIs('admin.language*','admin.learning-path*', 'admin.daily-goal*', 'admin.manage-user*', 'admin.manage-module*', 'admin.sub-module*') ? 'menu-item-arrow-active' : 'menu-item-arrow-inactive' }}"
                 :class="{ 'lg:hidden': sidebarToggle, 'rotate-180': selected === 'MasterData' }"
                 width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
               >
@@ -100,7 +100,7 @@
             <div
               class="overflow-hidden transform translate"
               :class="(selected === 'MasterData') ? 'block' :'hidden'"
-              x-init="{{ request()->routeIs('admin.language*', 'admin.learning-path*', 'admin.daily-goal*', 'admin.manage-user*', 'admin.manage-module*') ? 'selected = \'MasterData\'' : '' }}"
+              x-init="{{ request()->routeIs('admin.language*', 'admin.learning-path*', 'admin.daily-goal*', 'admin.manage-user*', 'admin.manage-module*', 'admin.sub-module*') ? 'selected = \'MasterData\'' : '' }}"
             >
               <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'" class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
                 <li>
@@ -141,6 +141,13 @@
                     class="menu-dropdown-item group {{ request()->routeIs('admin.manage-module*') ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive' }}"
                   >
                     Manage Module
+                  </a>
+                <li>
+                  <a
+                    href="{{ route('admin.sub-module.show') }}"
+                    class="menu-dropdown-item group {{ request()->routeIs('admin.sub-module*') ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive' }}"
+                  >
+                    Manage Sub Module
                   </a>
                 </li>
               </ul>

@@ -7,12 +7,14 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div class="flex items-center gap-4">
             <!-- Back Button -->
-            <button class="w-10 h-10 shrink-0 flex items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 transition-colors shadow-sm">
+            <a href="{{ route('user.general.module') }}">
+                <button class="cursor-pointer w-10 h-10 shrink-0 flex items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 transition-colors shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                 </svg>
             </button>
-            
+            </a>
+    
             <!-- Title & Meta -->
             <div>
                 <h1 class="text-2xl lg:text-3xl font-bold text-slate-800">Everyday Conversations</h1>

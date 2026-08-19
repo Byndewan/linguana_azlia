@@ -145,6 +145,14 @@ Route::middleware([Admin::class])->group(function () {
     Route::get('/admin/manage-module/edit/{id}', [AdminController::class, 'AdminManageModuleEdit'])->name('admin.manage-module.edit');
     Route::post('/admin/manage-module/update/{id}', [AdminController::class, 'AdminManageModuleUpdate'])->name('admin.manage-module.update');
     Route::post('/admin/manage-module/delete/{id}', [AdminController::class, 'AdminManageModuleDelete'])->name('admin.manage-module.delete');
+
+    // Sub Module
+    Route::get('/admin/sub-module/show', [AdminController::class, 'AdminSubModuleShow'])->name('admin.sub-module.show');
+    Route::get('/admin/sub-module/add', [AdminController::class, 'AdminSubModuleAdd'])->name('admin.sub-module.add');
+    Route::post('/admin/sub-module/submit', [AdminController::class, 'AdminSubModuleSubmit'])->name('admin.sub-module.submit');
+    Route::get('/admin/sub-module/edit/{id}', [AdminController::class, 'AdminSubModuleEdit'])->name('admin.sub-module.edit');
+    Route::post('/admin/sub-module/update/{id}', [AdminController::class, 'AdminSubModuleUpdate'])->name('admin.sub-module.update');
+    Route::post('/admin/sub-module/delete/{id}', [AdminController::class, 'AdminSubModuleDelete'])->name('admin.sub-module.delete');
 });
 
 Route::get('/admin/forgot-password', [AdminController::class, 'AdminForgotPassword'])->name('admin.forgot-password');

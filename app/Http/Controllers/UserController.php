@@ -13,6 +13,7 @@ use App\Models\DailyGoal;
 use App\Models\UserProgress;
 use App\Models\User;
 use App\Models\OnboardTempData;
+use App\Models\Module;
 use App\Http\Middleware\EnsureOnboardToken;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -171,17 +172,31 @@ class UserController extends Controller
         $pathId = $onboarding?->learning_path_id;
         $dailyGoal = $onboarding?->daily_goal;
 
+        if (empty($pathId) && $learning_path === 'general') {
+            
+            $defaultPath = LearningPath::where('language_id', $language)
+                                                ->where('type', 'general')
+                                                ->first();
+            
+            if ($defaultPath) {
+                $pathId = $defaultPath->id;
+            }
+        }
+
         UserProgress::create([
             'user_id' => $user->id,
             'language_id' => $language,
             'learning_type' => $learning_path,
-            'learning_path_id' => $pathId,
+            'learning_path_id' => $pathId, 
             'daily_goal' => $dailyGoal,
         ]);
 
         $onboarding?->delete();
 
         Auth::login($user);
+
+        $user->is_active = 1;
+        $user->save();
 
         if ($learning_path === 'test_prep') {
             return redirect()->route('user.test-prep.dashboard');
@@ -300,9 +315,26 @@ class UserController extends Controller
         $progress = UserProgress::where('user_id', $user->id)->first();
         return view('user.general.dashboard', compact('user','progress'));
     }
-    public function UserGeneralModule (Request $request)
+    public function UserGeneralModule()
     {
-        return view('user.general.module');
+        $user = Auth::user();
+        $progress = UserProgress::where('user_id', $user->id)->first();
+
+        if (!$progress) {
+            return view('user.dashboard.general', [
+                'modules' => [], 
+                'pathTitle' => 'No Path Selected'
+            ]);
+        }
+
+        $pathId = $progress->learning_path_id;
+
+        $path = LearningPath::find($pathId);
+        $pathTitle = $path ? $path->title : 'Your Modules';
+
+        $modules = Module::where('learning_path_id', $pathId)->get();
+
+        return view('user.general.module', compact('modules'));
     }
     public function UserGeneralSubModule (Request $request)
     {

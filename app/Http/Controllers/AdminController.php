@@ -737,10 +737,11 @@ class AdminController extends Controller
         $learning_path = LearningPath::get();
         return view('admin.manage_module_add', compact('learning_path'));
     }
+
     public function AdminManageModuleSubmit(Request $request)
     {
         $request->validate([
-            'learning_path_id' => 'required|exists:type,id',
+            'learning_path_id' => 'required|exists:learning_paths,id',
             'title'       => 'required|string|max:255',
             'icon' => 'required',
             'color' => 'required|string|max:7',
@@ -757,5 +758,46 @@ class AdminController extends Controller
         $obj->save();
 
         return redirect()->route('admin.manage-module.show')->with('success', 'Data is inserted successfully!');
+    }
+
+    public function AdminManageModuleEdit(int $id)
+    {
+        $learning_path = LearningPath::get();
+        $row_data = Module::where('id', $id)->first();
+        return view('admin.manage_module_edit', compact('row_data', 'learning_path'));
+    }
+    public function AdminManageModuleUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'learning_path_id' => 'required|exists:learning_paths,id',
+            'title'       => 'required|string|max:255',
+            'icon' => 'required',
+            'color' => 'required|string|max:7',
+            'background_color' => 'required|string|max:7',
+        ]);
+
+        $obj = Module::where('id', $id)->first();
+
+        $obj->learning_path_id = $request->learning_path_id;
+        $obj->title = $request->title;
+        $obj->icon = $request->icon;
+        $obj->color = $request->color;
+        $obj->background_color = $request->background_color;
+        $obj->update();
+
+        return redirect()->route('admin.manage-module.show')->with('success', 'Data is updated successfully!');
+    }
+
+    public function AdminManageModuleDelete(Request $request, $id)
+    {
+        $row_data = Module::findOrFail($id);
+        $row_data->delete();
+
+        return redirect()->back()->with('success', 'Data is deleted successfully!');
+    }
+
+    public function AdminSubModuleShow()
+    {
+        return view('admin.sub_module_show');
     }
 }

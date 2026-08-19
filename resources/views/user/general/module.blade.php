@@ -16,7 +16,7 @@
         <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-5 self-start">
             
             <!-- MODULE 1: Everyday Conversations (In Progress) -->
-            <div class="bg-white border-2 border-[#55BCC9]/20 rounded-2xl p-5 shadow-[0_4px_15px_rgba(85,188,201,0.1)] flex flex-col transition-transform hover:-translate-y-1 relative overflow-hidden group">
+            {{-- <div class="bg-white border-2 border-[#55BCC9]/20 rounded-2xl p-5 shadow-[0_4px_15px_rgba(85,188,201,0.1)] flex flex-col transition-transform hover:-translate-y-1 relative overflow-hidden group">
                 <!-- Icon & Title -->
                 <div class="flex items-start gap-4 mb-4">
                     <div class="w-12 h-12 shrink-0 rounded-2xl bg-[#55BCC9] flex items-center justify-center text-white shadow-md">
@@ -42,16 +42,17 @@
                 <a href="{{ route('user.general.sub-module') }}" class="mt-5 text-center w-full bg-[#55BCC9] hover:bg-[#48a9b5] text-white py-2.5 rounded-xl font-semibold transition-colors text-sm">
                     Continue Learning
                 </a>
-            </div>
+            </div> --}}
 
             <!-- MODULE 2: Travel & Navigation (Not Started) -->
-            <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-[0_2px_10px_rgba(0,0,0,0.03)] flex flex-col transition-transform hover:-translate-y-1 group">
+            @foreach ($modules as $item)
+                <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-[0_2px_10px_rgba(0,0,0,0.03)] flex flex-col transition-transform hover:-translate-y-1 group">
                 <div class="flex items-start gap-4 mb-4">
-                    <div class="w-12 h-12 shrink-0 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-500 shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" /></svg>
+                    <div class="w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center shadow-sm" style="color: {{ $item->color }}; background-color: {{ $item->background_color }};">
+                        {!! $item->icon !!}
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-slate-800 leading-tight transition-colors">Travel & Navigation</h3>
+                        <h3 class="text-lg font-bold text-slate-800 leading-tight transition-colors">{{ $item->title }}</h3>
                         <p class="text-xs text-slate-400 font-medium mt-1">8 lessons • 1.5 hours</p>
                     </div>
                 </div>
@@ -66,38 +67,12 @@
                     </div>
                 </div>
                 
-                <a href="#" class="mt-5 text-center w-full bg-slate-50 hover:bg-slate-100 text-slate-700 py-2.5 rounded-xl font-semibold transition-colors text-sm border border-slate-200">
+                <a href="{{ route('user.general.sub-module') }}" class="mt-5 text-center w-full bg-slate-50 hover:bg-slate-100 text-slate-700 py-2.5 rounded-xl font-semibold transition-colors text-sm border border-slate-200">
                     Start Module
                 </a>
             </div>
-
-            <!-- MODULE 3: Food & Dining (Not Started) -->
-            <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-[0_2px_10px_rgba(0,0,0,0.03)] flex flex-col transition-transform hover:-translate-y-1 group">
-                <div class="flex items-start gap-4 mb-4">
-                    <div class="w-12 h-12 shrink-0 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-500 shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72L4.318 3.44A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72m-13.5 8.65h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .415.336.75.75.75Z" /></svg>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-800 leading-tight transition-colors">Food & Dining</h3>
-                        <p class="text-xs text-slate-400 font-medium mt-1">10 lessons • 2.0 hours</p>
-                    </div>
-                </div>
-                
-                <div class="mt-auto">
-                    <div class="flex justify-between items-end mb-1.5 text-sm font-bold">
-                        <span class="text-slate-300">0%</span>
-                        <span class="text-slate-400 text-xs">0/10 done</span>
-                    </div>
-                    <div class="w-full bg-slate-100 rounded-full h-2">
-                        <div class="bg-slate-300 h-2 rounded-full" style="width: 0%"></div>
-                    </div>
-                </div>
-                
-                <a href="#" class="mt-5 text-center w-full bg-slate-50 hover:bg-slate-100 text-slate-700 py-2.5 rounded-xl font-semibold transition-colors text-sm border border-slate-200">
-                    Start Module
-                </a>
-            </div>
-
+            @endforeach
+            
             <!-- MODULE 4: Locked -->
             <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col opacity-60 grayscale-[40%] select-none">
                 <div class="flex items-start gap-4 mb-4">
