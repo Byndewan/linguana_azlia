@@ -10,4 +10,9 @@ class Module extends Model
     {
         return $this->belongsTo(LearningPath::class, 'learning_path_id');
     }
+
+    public function subModules()
+    {
+        return $this->hasMany(SubModule::class, 'module_id', 'id');
+    }
 }

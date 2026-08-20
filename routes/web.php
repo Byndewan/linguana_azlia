@@ -53,7 +53,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [UserController::class, 'Logout'])->name('user.logout');
     Route::get('/general/dashboard', [UserController::class, 'UserGeneralDashboard'])->name('user.general.dashboard');
     Route::get('/general/module', [UserController::class, 'UserGeneralModule'])->name('user.general.module');
-    Route::get('/general/sub-module', [UserController::class, 'UserGeneralSubModule'])->name('user.general.sub-module');
+    Route::get('/general/sub-module/{id}', [UserController::class, 'UserGeneralSubModule'])->name('user.general.sub-module');
     Route::get('/general/flashcard', [UserController::class, 'UserGeneralFlashcard'])->name('user.general.flashcard');
     Route::get('/general/final-quiz', [UserController::class, 'UserFinalQuiz'])->name('user.general.final-quiz');
     Route::get('/general/final-quiz/quiz-result', [UserController::class, 'UserQuizResult'])->name('user.general.quiz-result');

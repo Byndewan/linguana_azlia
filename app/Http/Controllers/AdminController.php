@@ -14,6 +14,7 @@ use App\Models\LearningPath;
 use App\Models\DailyGoal;
 use App\Models\User;
 use App\Models\Module;
+use App\Models\SubModule;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\Websitemail;
@@ -796,8 +797,109 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Data is deleted successfully!');
     }
 
+    // Sub Module
     public function AdminSubModuleShow()
     {
-        return view('admin.sub_module_show');
+        $all_data = SubModule::with('rModule')->orderBy('id', 'asc')->get();
+        return view('admin.sub_module_show', compact('all_data'));
     }
+
+    public function AdminSubModuleAdd()
+    {
+        $modules = Module::get();
+        return view('admin.sub_module_add', compact('modules'));
+    }
+
+    public function AdminSubModuleSubmit(Request $request)
+    {
+        $request->validate([
+            'module_id' => 'required|exists:modules,id',
+            'title'       => 'required|string|max:255',
+            'time'       => 'required|integer|min:1',
+            'point'       => 'required|integer|min:0',
+        ]);
+
+        $lastOrder = SubModule::where('module_id', $request->module_id)->max('order_number');
+        $newOrder = $lastOrder ? $lastOrder + 1 : 1;
+
+        $obj = new SubModule();
+
+        $obj->module_id = $request->module_id;
+        $obj->video_url = $request->video_url;
+        $obj->title = $request->title;
+        $obj->time = $request->time;
+        $obj->point = $request->point;
+        $obj->order_number = $newOrder;
+        $obj->save();
+
+        return redirect()->route('admin.sub-module.show')->with('success', 'Data is inserted successfully!');
+    }
+
+    public function AdminSubModuleEdit(int $id)
+    {
+        $modules = Module::get();
+        $row_data = SubModule::where('id', $id)->first();
+        return view('admin.sub_module_edit', compact('row_data', 'modules'));
+    }
+
+    public function AdminSubModuleUpdate(Request $request, $id)
+    {
+        $obj = SubModule::findOrFail($id);
+
+        $totalSubModules = SubModule::where('module_id', $obj->module_id)->count();
+
+        $request->validate([
+            'module_id'    => 'required|exists:modules,id',
+            'title'        => 'required|string|max:255',
+            'time'         => 'required|integer|min:1',
+            'point'        => 'required|integer|min:0',
+            'video_url'    => 'nullable|url',
+            'order_number' => 'required|integer|min:1|max:' . $totalSubModules,
+        ]);
+
+        $oldOrder = $obj->order_number;
+        $newOrder = $request->order_number;
+
+        if ($oldOrder != $newOrder) {
+            if ($newOrder < $oldOrder) {
+                SubModule::where('module_id', $obj->module_id)
+                    ->whereBetween('order_number', [$newOrder, $oldOrder - 1])
+                    ->increment('order_number');
+            } 
+            else {
+                SubModule::where('module_id', $obj->module_id)
+                    ->whereBetween('order_number', [$oldOrder + 1, $newOrder])
+                    ->decrement('order_number');
+            }
+        }
+
+        $obj->module_id = $request->module_id;
+        $obj->video_url = $request->video_url;
+        $obj->title = $request->title;
+        $obj->time = $request->time;
+        $obj->point = $request->point;
+        $obj->order_number = $newOrder;
+        
+        $obj->update(); 
+
+        return redirect()->route('admin.sub-module.show')->with('success', 'Data is updated successfully!');
+    }
+
+    public function AdminSubModuleDelete(Request $request, $id)
+    {
+        $row_data = SubModule::findOrFail($id);
+
+        $deletedOrder = $row_data->order_number;
+        $moduleId = $row_data->module_id;
+
+        $row_data->delete();
+
+        SubModule::where('module_id', $moduleId)
+                ->where('order_number', '>', $deletedOrder)
+                ->decrement('order_number');
+
+        return redirect()->back()->with('success', 'Data is deleted successfully!');
+    }
+
+
 }

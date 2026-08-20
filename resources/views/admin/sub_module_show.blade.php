@@ -60,41 +60,30 @@
 
                 <!-- Table Body Start -->
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                  {{-- @foreach($all_data as $item)
+                  @foreach($all_data as $item)
                     <tr>
                         <td class="px-5 py-4 sm:px-6">
                             <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $loop->iteration }}</p>
                         </td>
                         <td class="px-5 py-4 sm:px-6">
+                            <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $item->rModule->title }}</p>
+                        </td>
+                        <td class="px-5 py-4 sm:px-6">
                             <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $item->title }}</p>
                         </td>
                         <td class="px-5 py-4 sm:px-6">
-                            <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $item->rLearningPath->title }}</p>
-                        </td>
-                        <td class="px-5 py-4 sm:px-6">
-                            <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $item->rLearningPath->rLanguage->language }}</p>
-                        </td>
-                        <td class="px-5 py-4 sm:px-6">
-                            @if($item->rLearningPath->type === 'general')
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-green-100 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                    General Learning
-                                </span>
-                            @elseif($item->rLearningPath->type === 'test_prep')
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-purple-100 text-xs font-medium text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
-                                    Test Prep
-                                </span>
-                            @endif
+                            <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $item->time }}</p>
                         </td>
                         <td class="px-5 py-4 sm:px-6">
                         <div class="flex items-center justify-end gap-3">
-                                <a href="{{ route('admin.manage-module.edit', $item->id) }}">
+                                <a href="{{ route('admin.sub-module.edit', $item->id) }}">
                                     <button class="text-blue-500 hover:text-blue-700 transition-colors" title="Edit">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                         </svg>
                                     </button>
                                 </a>
-                                <form action="{{ route('admin.manage-module.delete', $item->id) }}" method="POST" class="m-0 inline-block">
+                                <form action="{{ route('admin.sub-module.delete', $item->id) }}" method="POST" class="m-0 inline-block">
                                 @csrf
                                     <button class="btn-delete text-red-500 transition-colors hover:text-red-700" title="Delete">
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,7 +94,7 @@
                         </div>
                         </td>
                   </tr>
-                  @endforeach --}}
+                  @endforeach
                 </tbody>
                 <!-- Table Body End -->
                 

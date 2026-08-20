@@ -53,7 +53,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-slate-800 leading-tight transition-colors">{{ $item->title }}</h3>
-                        <p class="text-xs text-slate-400 font-medium mt-1">8 lessons • 1.5 hours</p>
+                        <p class="text-xs text-slate-400 font-medium mt-1">{{ $item->sub_modules_count }} lessons • {{ $item->sub_modules_sum_time ?? 0 }} minutes total</p>
                     </div>
                 </div>
                 
@@ -67,7 +67,7 @@
                     </div>
                 </div>
                 
-                <a href="{{ route('user.general.sub-module') }}" class="mt-5 text-center w-full bg-slate-50 hover:bg-slate-100 text-slate-700 py-2.5 rounded-xl font-semibold transition-colors text-sm border border-slate-200">
+                <a href="{{ route('user.general.sub-module', $item->id) }}" class="mt-5 text-center w-full bg-slate-50 hover:bg-slate-100 text-slate-700 py-2.5 rounded-xl font-semibold transition-colors text-sm border border-slate-200">
                     Start Module
                 </a>
             </div>

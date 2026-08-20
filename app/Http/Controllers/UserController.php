@@ -14,6 +14,7 @@ use App\Models\UserProgress;
 use App\Models\User;
 use App\Models\OnboardTempData;
 use App\Models\Module;
+use App\Models\SubModule;
 use App\Http\Middleware\EnsureOnboardToken;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -332,13 +333,24 @@ class UserController extends Controller
         $path = LearningPath::find($pathId);
         $pathTitle = $path ? $path->title : 'Your Modules';
 
-        $modules = Module::where('learning_path_id', $pathId)->get();
+        $modules = Module::where('learning_path_id', $pathId)
+            ->withCount('subModules')        
+            ->withSum('subModules', 'time')  
+            ->get();
 
         return view('user.general.module', compact('modules'));
     }
-    public function UserGeneralSubModule (Request $request)
+    public function UserGeneralSubModule ($id)
     {
-        return view('user.general.sub-module');
+        $module = Module::withCount('subModules')             
+        ->withSum('subModules', 'point')                 
+        ->withSum('subModules', 'time')                   
+        ->with(['subModules' => function ($query) {
+            $query->orderBy('order_number', 'asc'); 
+        }])
+        ->findOrFail($id);
+
+        return view('user.general.sub-module', compact('module'));
     }
     public function UserGeneralFlashcard (Request $request)
     {

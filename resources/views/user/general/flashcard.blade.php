@@ -9,6 +9,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
     </style>
 </head>
 <body class="bg-[#d6f8fc] h-screen flex flex-col font-sans overflow-hidden text-slate-800">
@@ -70,15 +75,28 @@
             <p class="text-slate-500 text-sm md:text-base">Tap the card to reveal the translation</p>
         </div>
 
-        <!-- Flash Card Utama -->
-        <!-- cursor-pointer agar kursor menjadi tangan, select-none agar teks tidak terblok saat diklik -->
-        <div class="bg-white w-full max-w-3xl aspect-[16/9] md:aspect-[2/1] rounded-[2rem] shadow-sm flex flex-col items-center justify-center p-8 cursor-pointer select-none transition-transform duration-200 hover:scale-[1.02] border border-slate-100">
-            <h2 class="text-4xl md:text-6xl font-extrabold text-slate-900 mb-4 text-center">Buenos días</h2>
-            <p class="text-slate-400 font-medium text-sm md:text-base">Tap to reveal</p>
+        <div class="w-full max-w-3xl aspect-[16/9] md:aspect-[2/1] perspective-1000 cursor-pointer select-none mx-auto" onclick="toggleFlip()">
+            
+            <!-- Inner Card (Yang akan berputar) -->
+            <div id="flashcard" class="relative w-full h-full transition-transform duration-500 transform-style-3d">
+                
+                <!-- Sisi Depan (Front) -->
+                <div class="absolute inset-0 bg-white rounded-[2rem] shadow-sm flex flex-col items-center justify-center p-8 border border-slate-100 backface-hidden">
+                    <h2 class="text-4xl md:text-6xl font-extrabold text-slate-900 mb-4 text-center">Buenos días</h2>
+                    <p class="text-slate-400 font-medium text-sm md:text-base">Tap to reveal</p>
+                </div>
+
+                <!-- Sisi Belakang (Back) -->
+                <div class="absolute inset-0 bg-[#f8ffff] rounded-[2rem] shadow-md flex flex-col items-center justify-center p-8 border-2 border-[#55BCC9] backface-hidden rotate-y-180">
+                    <h2 class="text-4xl md:text-6xl font-extrabold text-[#2caebf] mb-4 text-center">Good morning</h2>
+                    <p class="text-slate-500 font-medium text-sm md:text-base">Translation</p>
+                </div>
+                
+            </div>
         </div>
 
-        <!-- Tombol Aksi (Muncul setelah kartu dibalik nantinya) -->
-        <div class="flex items-center justify-center gap-4 w-full max-w-2xl mt-8 flex-col sm:flex-row">
+        <!-- Tombol Aksi -->
+        <div id="action-buttons" class="flex items-center justify-center gap-4 w-full max-w-2xl mt-8 flex-col sm:flex-row opacity-0 pointer-events-none transition-opacity duration-500">
             
             <!-- Tombol "Again" -->
             <button class="w-full sm:flex-1 py-4 border-2 border-[#60ccda] bg-transparent text-slate-700 font-bold rounded-2xl flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors">
@@ -95,10 +113,20 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
                 </svg>
             </button>
-
         </div>
 
     </main>
+
+    <script>
+    function toggleFlip() {
+        const card = document.getElementById('flashcard');
+        card.classList.toggle('rotate-y-180');
+        
+        const actionButtons = document.getElementById('action-buttons');
+        actionButtons.classList.remove('opacity-0', 'pointer-events-none');
+        actionButtons.classList.add('opacity-100');
+    }
+</script>
 
 </body>
 </html>
