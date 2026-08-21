@@ -10,4 +10,9 @@ class SubModule extends Model
     {
         return $this->belongsTo(Module::class, 'module_id');
     }
+
+    public function vocabularies()
+    {
+        return $this->hasMany(Vocabulary::class, 'sub_module_id', 'id');
+    }
 }

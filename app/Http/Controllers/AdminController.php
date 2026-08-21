@@ -15,6 +15,7 @@ use App\Models\DailyGoal;
 use App\Models\User;
 use App\Models\Module;
 use App\Models\SubModule;
+use App\Models\Vocabulary;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\Websitemail;
@@ -901,5 +902,40 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Data is deleted successfully!');
     }
 
+    // Vocabulary
 
+    public function AdminVocabularyShow()
+    {
+        $all_data = Vocabulary::with(['subModule','rLanguage'])->orderBy('id', 'asc')->get();
+        return view('admin.vocabulary_show', compact('all_data'));
+    }
+
+    public function AdminVocabularyAdd()
+    {
+        $sub_module = SubModule::get();
+        return view('admin.vocabulary_add', compact('sub_module'));
+    }
+
+    public function AdminVocabularySubmit(Request $request)
+    {
+        $request->validate([
+            'sub_module_id' => 'required|exists:sub_modules,id',
+            'language_code' => 'required',
+            'word'       => 'required|string',
+            'meaning'       => 'required|string',
+        ]);
+
+        $subModule = SubModule::with('rModule.rLearningPath')->find($request->sub_module_id);
+
+        $obj = new Vocabulary();
+
+        $obj->sub_module_id = $request->sub_module_id;
+        $obj->language_id = $subModule->rModule->rLearningPath->language_id;
+        $obj->language_code = $request->language_code;
+        $obj->word = $request->word;
+        $obj->meaning = $request->meaning;
+        $obj->save();
+
+        return redirect()->route('admin.vocabulary.show')->with('success', 'Data is inserted successfully!');
+    }
 }

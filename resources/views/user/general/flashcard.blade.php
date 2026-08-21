@@ -82,12 +82,28 @@
                 
                 <!-- Sisi Depan (Front) -->
                 <div class="absolute inset-0 bg-white rounded-[2rem] shadow-sm flex flex-col items-center justify-center p-8 border border-slate-100 backface-hidden">
+                    
+                    <!-- Tombol Sound (Front) -->
+                    <button onclick="event.stopPropagation(); playAudio('Buenos días', 'es-ES');" class="cursor-pointer absolute top-6 right-6 p-3 rounded-full bg-slate-50 text-slate-400 hover:text-[#55BCC9] hover:bg-[#e4fbfe] transition-colors focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z"></path>
+                        </svg>
+                    </button>
+
                     <h2 class="text-4xl md:text-6xl font-extrabold text-slate-900 mb-4 text-center">Buenos días</h2>
                     <p class="text-slate-400 font-medium text-sm md:text-base">Tap to reveal</p>
                 </div>
 
                 <!-- Sisi Belakang (Back) -->
                 <div class="absolute inset-0 bg-[#f8ffff] rounded-[2rem] shadow-md flex flex-col items-center justify-center p-8 border-2 border-[#55BCC9] backface-hidden rotate-y-180">
+                    
+                    <!-- Tombol Sound (Back) -->
+                    <button onclick="event.stopPropagation(); playAudio('Good morning', 'en-US');" class="cursor-pointer absolute top-6 right-6 p-3 rounded-full bg-white text-[#55BCC9] hover:bg-[#d6f8fc] transition-colors shadow-sm focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z"></path>
+                        </svg>
+                    </button>
+
                     <h2 class="text-4xl md:text-6xl font-extrabold text-[#2caebf] mb-4 text-center">Good morning</h2>
                     <p class="text-slate-500 font-medium text-sm md:text-base">Translation</p>
                 </div>
@@ -125,6 +141,14 @@
         const actionButtons = document.getElementById('action-buttons');
         actionButtons.classList.remove('opacity-0', 'pointer-events-none');
         actionButtons.classList.add('opacity-100');
+    }
+
+    function playAudio(text, langCode) {
+        window.speechSynthesis.cancel();
+        const speech = new SpeechSynthesisUtterance(text);
+        speech.lang = langCode; 
+        speech.rate = 0.9; 
+        window.speechSynthesis.speak(speech);
     }
 </script>
 

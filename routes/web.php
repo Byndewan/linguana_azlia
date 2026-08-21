@@ -55,6 +55,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/general/module', [UserController::class, 'UserGeneralModule'])->name('user.general.module');
     Route::get('/general/sub-module/{id}', [UserController::class, 'UserGeneralSubModule'])->name('user.general.sub-module');
     Route::get('/general/flashcard', [UserController::class, 'UserGeneralFlashcard'])->name('user.general.flashcard');
+    Route::get('/general/listen-and-select', [UserController::class, 'UserGeneralListenAndSelect'])->name('user.general.listen.and.select');
     Route::get('/general/final-quiz', [UserController::class, 'UserFinalQuiz'])->name('user.general.final-quiz');
     Route::get('/general/final-quiz/quiz-result', [UserController::class, 'UserQuizResult'])->name('user.general.quiz-result');
     Route::get('/general/profile', [UserController::class, 'UserProfile'])->name('user.profile');
@@ -153,6 +154,14 @@ Route::middleware([Admin::class])->group(function () {
     Route::get('/admin/sub-module/edit/{id}', [AdminController::class, 'AdminSubModuleEdit'])->name('admin.sub-module.edit');
     Route::post('/admin/sub-module/update/{id}', [AdminController::class, 'AdminSubModuleUpdate'])->name('admin.sub-module.update');
     Route::post('/admin/sub-module/delete/{id}', [AdminController::class, 'AdminSubModuleDelete'])->name('admin.sub-module.delete');
+
+    // Vocabulary
+    Route::get('/admin/vocabulary/show', [AdminController::class, 'AdminVocabularyShow'])->name('admin.vocabulary.show');
+    Route::get('/admin/vocabulary/add', [AdminController::class, 'AdminVocabularyAdd'])->name('admin.vocabulary.add');
+    Route::post('/admin/vocabulary/submit', [AdminController::class, 'AdminVocabularySubmit'])->name('admin.vocabulary.submit');
+    Route::get('/admin/vocabulary/edit/{id}', [AdminController::class, 'AdminVocabularyEdit'])->name('admin.vocabulary.edit');
+    Route::post('/admin/vocabulary/update/{id}', [AdminController::class, 'AdminVocabularyUpdate'])->name('admin.vocabulary.update');
+    Route::post('/admin/vocabulary/delete/{id}', [AdminController::class, 'AdminVocabularyDelete'])->name('admin.vocabulary.delete');
 });
 
 Route::get('/admin/forgot-password', [AdminController::class, 'AdminForgotPassword'])->name('admin.forgot-password');

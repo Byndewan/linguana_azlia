@@ -352,9 +352,15 @@ class UserController extends Controller
 
         return view('user.general.sub-module', compact('module'));
     }
+    
     public function UserGeneralFlashcard (Request $request)
     {
         return view('user.general.flashcard');
+    }
+
+    public function UserGeneralListenAndSelect (Request $request)
+    {
+        return view('user.general.listen_and_select');
     }
     public function UserFinalQuiz (Request $request)
     {
