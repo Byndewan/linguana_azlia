@@ -903,7 +903,6 @@ class AdminController extends Controller
     }
 
     // Vocabulary
-
     public function AdminVocabularyShow()
     {
         $all_data = Vocabulary::with(['subModule','rLanguage'])->orderBy('id', 'asc')->get();
@@ -938,4 +937,34 @@ class AdminController extends Controller
 
         return redirect()->route('admin.vocabulary.show')->with('success', 'Data is inserted successfully!');
     }
+
+    public function AdminVocabularyEdit(int $id)
+    {
+        $sub_module = SubModule::get();
+        $row_data = Vocabulary::where('id', $id)->first();
+        return view('admin.vocabulary_edit', compact('row_data', 'sub_module'));
+    }
+    public function AdminVocabularyUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'sub_module_id' => 'required|exists:sub_modules,id',
+            'language_code' => 'required',
+            'word'       => 'required|string',
+            'meaning'       => 'required|string',
+        ]);
+
+        $subModule = SubModule::with('rModule.rLearningPath')->find($request->sub_module_id);
+
+        $obj = Vocabulary::where('id', $id)->first();
+
+        $obj->sub_module_id = $request->sub_module_id;
+        $obj->language_id = $subModule->rModule->rLearningPath->language_id;
+        $obj->language_code = $request->language_code;
+        $obj->word = $request->word;
+        $obj->meaning = $request->meaning;
+        $obj->update();
+
+        return redirect()->route('admin.vocabulary.show')->with('success', 'Data is updated successfully!');
+    }
+
 }
