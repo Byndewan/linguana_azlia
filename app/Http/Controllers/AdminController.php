@@ -967,4 +967,9 @@ class AdminController extends Controller
         return redirect()->route('admin.vocabulary.show')->with('success', 'Data is updated successfully!');
     }
 
+    public function AdminManage()
+    {
+        return view('admin.manage');
+    }
+
 }
