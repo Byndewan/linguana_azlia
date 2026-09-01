@@ -147,23 +147,23 @@ Route::middleware([Admin::class])->group(function () {
     Route::post('/admin/manage-module/update/{id}', [AdminController::class, 'AdminManageModuleUpdate'])->name('admin.manage-module.update');
     Route::post('/admin/manage-module/delete/{id}', [AdminController::class, 'AdminManageModuleDelete'])->name('admin.manage-module.delete');
 
+    Route::get('/admin/manage-module/{id}/manage', [AdminController::class, 'AdminManageModuleManage'])->name('admin.manage-module.manage');
+
     // Sub Module
     Route::get('/admin/sub-module/show', [AdminController::class, 'AdminSubModuleShow'])->name('admin.sub-module.show');
-    Route::get('/admin/sub-module/add', [AdminController::class, 'AdminSubModuleAdd'])->name('admin.sub-module.add');
-    Route::post('/admin/sub-module/submit', [AdminController::class, 'AdminSubModuleSubmit'])->name('admin.sub-module.submit');
+    Route::get('/admin/sub-module/add/{id}', [AdminController::class, 'AdminSubModuleAdd'])->name('admin.sub-module.add');
+    Route::post('/admin/sub-module/submit/{id}', [AdminController::class, 'AdminSubModuleSubmit'])->name('admin.sub-module.submit');
     Route::get('/admin/sub-module/edit/{id}', [AdminController::class, 'AdminSubModuleEdit'])->name('admin.sub-module.edit');
     Route::post('/admin/sub-module/update/{id}', [AdminController::class, 'AdminSubModuleUpdate'])->name('admin.sub-module.update');
     Route::post('/admin/sub-module/delete/{id}', [AdminController::class, 'AdminSubModuleDelete'])->name('admin.sub-module.delete');
 
     // Vocabulary
-    Route::get('/admin/vocabulary/show', [AdminController::class, 'AdminVocabularyShow'])->name('admin.vocabulary.show');
-    Route::get('/admin/vocabulary/add', [AdminController::class, 'AdminVocabularyAdd'])->name('admin.vocabulary.add');
-    Route::post('/admin/vocabulary/submit', [AdminController::class, 'AdminVocabularySubmit'])->name('admin.vocabulary.submit');
+    Route::get('/admin/vocabulary/show/{id}', [AdminController::class, 'AdminVocabularyShow'])->name('admin.vocabulary.show');
+    Route::get('/admin/vocabulary/add/{id}', [AdminController::class, 'AdminVocabularyAdd'])->name('admin.vocabulary.add');
+    Route::post('/admin/vocabulary/submit/{id}', [AdminController::class, 'AdminVocabularySubmit'])->name('admin.vocabulary.submit');
     Route::get('/admin/vocabulary/edit/{id}', [AdminController::class, 'AdminVocabularyEdit'])->name('admin.vocabulary.edit');
     Route::post('/admin/vocabulary/update/{id}', [AdminController::class, 'AdminVocabularyUpdate'])->name('admin.vocabulary.update');
     Route::post('/admin/vocabulary/delete/{id}', [AdminController::class, 'AdminVocabularyDelete'])->name('admin.vocabulary.delete');
-
-    Route::get('/admin/manage', [AdminController::class, 'AdminManage'])->name('admin.manage');
 });
 
 Route::get('/admin/forgot-password', [AdminController::class, 'AdminForgotPassword'])->name('admin.forgot-password');

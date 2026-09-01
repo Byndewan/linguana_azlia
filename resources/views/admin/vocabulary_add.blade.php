@@ -9,7 +9,7 @@
   <!-- Breadcrumb End -->
 
   <!-- ====== Form Elements Section Start ====== -->
-  <form action="{{ route('admin.vocabulary.submit') }}" method="POST" enctype="multipart/form-data" class="w-full">
+  <form action="{{ route('admin.vocabulary.submit', $sub_module->id) }}" method="POST" enctype="multipart/form-data" class="w-full">
   @csrf
       <div class="lg:col-span-8 space-y-6">
         <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
@@ -20,7 +20,7 @@
               Vocabulary Details
             </h3>
 
-            <a href="{{ route('admin.vocabulary.show') }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-theme-xs transition-colors hover:bg-blue-700">
+            <a href="{{ route('admin.vocabulary.show', $sub_module->id) }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-theme-xs transition-colors hover:bg-blue-700">
                 View Vocabularies
             </a>
           </div>
@@ -28,19 +28,7 @@
           <!-- Form Inputs -->
           <div class="space-y-6 p-5 sm:p-6">
 
-            <div>
-              <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                Select Sub Module
-              </label>
-              <select 
-                name="sub_module_id"
-                class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:outline-hidden focus:ring-3 placeholder:text-gray-400 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" 
-              >
-                @foreach($sub_module as $item)
-                    <option value="{{ $item->id }}">{{ $item->title }}</option>
-                @endforeach
-              </select>
-            </div>
+            <input type="hidden" name="sub_module_id" value="{{ $sub_module->id }}">
 
             <div>
               <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">

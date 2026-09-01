@@ -150,14 +150,14 @@
                     Manage Sub Module
                   </a>
                 </li> --}}
-                <li>
+                {{-- <li>
                   <a
                     href="{{ route('admin.vocabulary.show') }}"
                     class="menu-dropdown-item group {{ request()->routeIs('admin.vocabulary*') ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive' }}"
                   >
                     Manage Vocabulary
                   </a>
-                </li>
+                </li> --}}
               </ul>
             </div>
             <!-- Dropdown Menu End -->

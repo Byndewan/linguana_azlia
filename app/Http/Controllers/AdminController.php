@@ -734,6 +734,14 @@ class AdminController extends Controller
         $all_data = Module::with('rLearningPath')->orderBy('id', 'asc')->get();
         return view('admin.manage_module_show', compact('all_data'));
     }
+
+    public function AdminManageModuleManage($id)
+    {
+        $module = Module::findOrFail($id);
+        $all_data = SubModule::with('rModule')->where('module_id', $id)->orderBy('id', 'asc')->get();
+        return view('admin.manage', compact('module', 'all_data'));
+    }
+
     public function AdminManageModuleAdd()
     {
         $learning_path = LearningPath::get();
@@ -805,13 +813,13 @@ class AdminController extends Controller
         return view('admin.sub_module_show', compact('all_data'));
     }
 
-    public function AdminSubModuleAdd()
+    public function AdminSubModuleAdd($id)
     {
-        $modules = Module::get();
+        $modules = Module::findOrFail($id);
         return view('admin.sub_module_add', compact('modules'));
     }
 
-    public function AdminSubModuleSubmit(Request $request)
+    public function AdminSubModuleSubmit(Request $request, $id)
     {
         $request->validate([
             'module_id' => 'required|exists:modules,id',
@@ -833,14 +841,13 @@ class AdminController extends Controller
         $obj->order_number = $newOrder;
         $obj->save();
 
-        return redirect()->route('admin.sub-module.show')->with('success', 'Data is inserted successfully!');
+        return redirect()->route('admin.manage-module.manage', $request->module_id)->with('success', 'Data is inserted successfully!');
     }
 
     public function AdminSubModuleEdit(int $id)
     {
-        $modules = Module::get();
         $row_data = SubModule::where('id', $id)->first();
-        return view('admin.sub_module_edit', compact('row_data', 'modules'));
+        return view('admin.sub_module_edit', compact('row_data'));
     }
 
     public function AdminSubModuleUpdate(Request $request, $id)
@@ -850,7 +857,6 @@ class AdminController extends Controller
         $totalSubModules = SubModule::where('module_id', $obj->module_id)->count();
 
         $request->validate([
-            'module_id'    => 'required|exists:modules,id',
             'title'        => 'required|string|max:255',
             'time'         => 'required|integer|min:1',
             'point'        => 'required|integer|min:0',
@@ -874,7 +880,6 @@ class AdminController extends Controller
             }
         }
 
-        $obj->module_id = $request->module_id;
         $obj->video_url = $request->video_url;
         $obj->title = $request->title;
         $obj->time = $request->time;
@@ -883,7 +888,7 @@ class AdminController extends Controller
         
         $obj->update(); 
 
-        return redirect()->route('admin.sub-module.show')->with('success', 'Data is updated successfully!');
+        return redirect()->route('admin.manage-module.manage', $obj->module_id)->with('success', 'Data is updated successfully!');
     }
 
     public function AdminSubModuleDelete(Request $request, $id)
@@ -903,19 +908,22 @@ class AdminController extends Controller
     }
 
     // Vocabulary
-    public function AdminVocabularyShow()
+    public function AdminVocabularyShow($id)
     {
-        $all_data = Vocabulary::with(['subModule','rLanguage'])->orderBy('id', 'asc')->get();
-        return view('admin.vocabulary_show', compact('all_data'));
+        $subModule = SubModule::with('rModule')->findOrFail($id);
+
+        $all_data = Vocabulary::where('sub_module_id', $id) ->orderBy('id', 'asc')->get();
+                
+        return view('admin.vocabulary_show', compact('all_data', 'subModule'));
     }
 
-    public function AdminVocabularyAdd()
+    public function AdminVocabularyAdd($id)
     {
-        $sub_module = SubModule::get();
+        $sub_module = SubModule::findOrFail($id);
         return view('admin.vocabulary_add', compact('sub_module'));
     }
 
-    public function AdminVocabularySubmit(Request $request)
+    public function AdminVocabularySubmit(Request $request, $id)
     {
         $request->validate([
             'sub_module_id' => 'required|exists:sub_modules,id',
@@ -935,7 +943,7 @@ class AdminController extends Controller
         $obj->meaning = $request->meaning;
         $obj->save();
 
-        return redirect()->route('admin.vocabulary.show')->with('success', 'Data is inserted successfully!');
+        return redirect()->route('admin.vocabulary.show', $request->sub_module_id)->with('success', 'Data is inserted successfully!');
     }
 
     public function AdminVocabularyEdit(int $id)

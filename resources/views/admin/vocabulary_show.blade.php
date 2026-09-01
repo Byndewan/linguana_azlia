@@ -4,13 +4,30 @@
 <main>
   <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
     <div class="space-y-5 sm:space-y-6">
+
+    <!-- ====== Page Header & Breadcrumb ====== -->
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white/90">
+            Vocabulary: {{ $subModule->title }}
+        </h2>
+        <nav>
+            <ol class="flex items-center gap-2 text-sm">
+                <li><a class="font-medium text-gray-500 hover:text-blue-600 transition-colors" href="{{ route('admin.manage-module.show') }}">Modules</a></li>
+                <li class="font-medium text-gray-500">/</li>
+                <li><a class="font-medium text-gray-500 hover:text-blue-600 transition-colors" href="{{ route('admin.manage-module.manage', $subModule->rModule->id) }}">{{ $subModule->rModule->title }}</a></li>
+                <li class="font-medium text-gray-500">/</li>
+                <li class="font-medium text-blue-600">Vocabulary</li>
+            </ol>
+        </nav>
+      </div>
+
       <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         
         <div class="flex items-center justify-between px-5 py-4 sm:px-6 sm:py-5">
           <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
             Vocabulary List
           </h3>
-          <a href="{{ route('admin.vocabulary.add') }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-theme-xs transition-colors hover:bg-blue-700">
+          <a href="{{ route('admin.vocabulary.add', $subModule->id) }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-theme-xs transition-colors hover:bg-blue-700">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
@@ -36,22 +53,12 @@
                     </th>
                     <th class="px-5 py-3 sm:px-6 text-left">
                       <p class="font-medium text-gray-500 text-theme-md dark:text-gray-400">
-                        Sub Module
-                      </p>
-                    </th>
-                    <th class="px-5 py-3 sm:px-6 text-left">
-                      <p class="font-medium text-gray-500 text-theme-md dark:text-gray-400">
                         Word
                       </p>
                     </th>
                     <th class="px-5 py-3 sm:px-6 text-left">
                       <p class="font-medium text-gray-500 text-theme-md dark:text-gray-400">
                         Meaning
-                      </p>
-                    </th>
-                    <th class="px-5 py-3 sm:px-6 text-left">
-                      <p class="font-medium text-gray-500 text-theme-md dark:text-gray-400">
-                        Language
                       </p>
                     </th>
                     <th class="px-5 py-3 sm:px-6 text-right">
@@ -71,16 +78,10 @@
                             <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $loop->iteration }}</p>
                         </td>
                         <td class="px-5 py-4 sm:px-6">
-                            <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $item->subModule->title }}</p>
-                        </td>
-                        <td class="px-5 py-4 sm:px-6">
                             <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $item->word }}</p>
                         </td>
                         <td class="px-5 py-4 sm:px-6">
                             <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $item->meaning }}</p>
-                        </td>
-                        <td class="px-5 py-4 sm:px-6">
-                            <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $item->rLanguage->language }}</p>
                         </td>
                         <td class="px-5 py-4 sm:px-6">
                         <div class="flex items-center justify-end gap-3">
