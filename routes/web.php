@@ -164,6 +164,14 @@ Route::middleware([Admin::class])->group(function () {
     Route::get('/admin/vocabulary/edit/{id}', [AdminController::class, 'AdminVocabularyEdit'])->name('admin.vocabulary.edit');
     Route::post('/admin/vocabulary/update/{id}', [AdminController::class, 'AdminVocabularyUpdate'])->name('admin.vocabulary.update');
     Route::post('/admin/vocabulary/delete/{id}', [AdminController::class, 'AdminVocabularyDelete'])->name('admin.vocabulary.delete');
+
+    // Practice Quiz
+    Route::get('/admin/practice-quiz/show/{id}', [AdminController::class, 'AdminPracticeQuizShow'])->name('admin.practice-quiz.show');
+    Route::get('/admin/practice-quiz/add/{id}', [AdminController::class, 'AdminPracticeQuizAdd'])->name('admin.practice-quiz.add');
+    Route::post('/admin/practice-quiz/submit/{id}', [AdminController::class, 'AdminPracticeQuizSubmit'])->name('admin.practice-quiz.submit');
+    Route::get('/admin/practice-quiz/edit/{id}', [AdminController::class, 'AdminPracticeQuizEdit'])->name('admin.practice-quiz.edit');
+    Route::post('/admin/practice-quiz/update/{id}', [AdminController::class, 'AdminPracticeQuizUpdate'])->name('admin.practice-quiz.update');
+    Route::post('/admin/practice-quiz/delete/{id}', [AdminController::class, 'AdminPracticeQuizDelete'])->name('admin.practice-quiz.delete');
 });
 
 Route::get('/admin/forgot-password', [AdminController::class, 'AdminForgotPassword'])->name('admin.forgot-password');

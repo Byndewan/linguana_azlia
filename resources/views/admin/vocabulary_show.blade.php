@@ -92,7 +92,7 @@
                                         </svg>
                                     </button>
                                 </a>
-                                <form action="{{ route('admin.sub-module.delete', $item->id) }}" method="POST" class="m-0 inline-block">
+                                <form action="{{ route('admin.vocabulary.delete', $item->id) }}" method="POST" class="m-0 inline-block">
                                 @csrf
                                     <button class="btn-delete text-red-500 transition-colors hover:text-red-700" title="Delete">
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

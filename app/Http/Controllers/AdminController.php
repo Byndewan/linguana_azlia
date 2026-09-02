@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\Module;
 use App\Models\SubModule;
 use App\Models\Vocabulary;
+use App\Models\PracticeQuiz;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\Websitemail;
@@ -911,7 +912,6 @@ class AdminController extends Controller
     public function AdminVocabularyShow($id)
     {
         $subModule = SubModule::with('rModule')->findOrFail($id);
-
         $all_data = Vocabulary::where('sub_module_id', $id) ->orderBy('id', 'asc')->get();
                 
         return view('admin.vocabulary_show', compact('all_data', 'subModule'));
@@ -948,36 +948,42 @@ class AdminController extends Controller
 
     public function AdminVocabularyEdit(int $id)
     {
-        $sub_module = SubModule::get();
-        $row_data = Vocabulary::where('id', $id)->first();
+        $row_data = Vocabulary::findOrFail($id);
+        $sub_module = SubModule::findOrFail($row_data->sub_module_id);
         return view('admin.vocabulary_edit', compact('row_data', 'sub_module'));
     }
     public function AdminVocabularyUpdate(Request $request, $id)
     {
         $request->validate([
-            'sub_module_id' => 'required|exists:sub_modules,id',
             'language_code' => 'required',
             'word'       => 'required|string',
             'meaning'       => 'required|string',
         ]);
 
-        $subModule = SubModule::with('rModule.rLearningPath')->find($request->sub_module_id);
+        $obj = Vocabulary::findOrFail($id);
 
-        $obj = Vocabulary::where('id', $id)->first();
-
-        $obj->sub_module_id = $request->sub_module_id;
-        $obj->language_id = $subModule->rModule->rLearningPath->language_id;
         $obj->language_code = $request->language_code;
         $obj->word = $request->word;
         $obj->meaning = $request->meaning;
         $obj->update();
 
-        return redirect()->route('admin.vocabulary.show')->with('success', 'Data is updated successfully!');
+        return redirect()->route('admin.vocabulary.show', $obj->sub_module_id)->with('success', 'Data is updated successfully!');
     }
 
-    public function AdminManage()
+    public function AdminVocabularyDelete($id) 
     {
-        return view('admin.manage');
+        $row_data = Vocabulary::findOrFail($id);
+        $row_data->delete();
+
+        return redirect()->back()->with('success', 'Data is deleted successfully!');
+    }
+
+    // Practice quiz
+    public function AdminPracticeQuizShow($id)
+    {
+        $subModule = SubModule::with('rModule')->findOrFail($id);
+        $all_data = PracticeQuiz::where('sub_module_id', $id) ->orderBy('id', 'asc')->get();
+        return view('admin.practice_quiz_show', compact('subModule', 'all_data'));
     }
 
 }
