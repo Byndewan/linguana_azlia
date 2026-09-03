@@ -44,7 +44,7 @@
                     <div class="py-2 px-1 flex flex-col gap-1">
                         <!-- Opsi 1: Listen & Select -->
                         <!-- Nanti href-nya diarahkan ke route form listen, misal: route('admin.practice.add-listen', $subModule->id) -->
-                        <a href="#" class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-colors">
+                        <a href="{{ route('admin.listen-and-select.add', $subModule->id) }}" class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
                         </svg> Listen & Select
@@ -120,14 +120,23 @@
                                 </span>
                             @endif
                         <td class="px-5 py-4 sm:px-6">
-                            <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $item->question }}</p>
+                            <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $item->question_text }}</p>
                         </td>
                         <td class="px-5 py-4 sm:px-6">
-                            <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $item->correct_answer }}</p>
+                            <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                                @if($item->type == 'listen_select')
+                                    @php 
+                                        $opsi = json_decode($item->options, true); 
+                                    @endphp
+                                    {{ $opsi[$item->correct_answer] ?? $item->correct_answer }}
+                                @else
+                                    {{ $item->correct_answer }}
+                                @endif
+                            </p>
                         </td>
                         <td class="px-5 py-4 sm:px-6">
                         <div class="flex items-center justify-end gap-3">
-                                <a href="{{ route('admin.vocabulary.edit', $item->id) }}">
+                                <a href="{{ $item->type == 'listen_select' ? route('admin.listen-and-select.edit', $item->id) : route('admin.practice.edit-fill', $item->id) }}">
                                     <button class="text-blue-500 hover:text-blue-700 transition-colors" title="Edit">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>

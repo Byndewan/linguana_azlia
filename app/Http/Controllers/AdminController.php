@@ -986,4 +986,67 @@ class AdminController extends Controller
         return view('admin.practice_quiz_show', compact('subModule', 'all_data'));
     }
 
+    public function AdminListenAndSelectAdd($id)
+    {
+        $sub_module = SubModule::findOrFail($id);
+        return view('admin.practice_add_listen', compact('sub_module'));
+    }
+
+    public function AdminListenAndSelectSubmit(Request $request)
+    {
+        $request->validate([
+            'sub_module_id' => 'required|exists:sub_modules,id',
+            'question_text' => 'required|string',
+            'audio_text' => 'required|string',
+            'language_code' => 'required',
+            'options'        => 'required|array|min:4',
+            'correct_answer' => 'required|string'
+        ]);
+
+        $obj = new PracticeQuiz();
+
+        $obj->sub_module_id  = $request->sub_module_id;
+        $obj->type           = 'listen_select'; 
+        $obj->question_text  = $request->question_text;
+        $obj->audio_text       = $request->audio_text;
+        $obj->language_code  = $request->language_code;
+        $obj->options = json_encode($request->options); 
+        $obj->correct_answer = $request->correct_answer;
+        $obj->save();
+
+        return redirect()->route('admin.practice-quiz.show', $request->sub_module_id)->with('success', 'Data is inserted successfully!');
+    }
+
+    public function AdminListenAndSelectEdit($id)
+    {
+        $row_data = PracticeQuiz::findOrFail($id);
+        $sub_module = SubModule::findOrFail($row_data->sub_module_id);
+        return view('admin.practice_edit_listen', compact('row_data','sub_module'));
+    }
+
+    public function AdminListenAndSelectUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'sub_module_id' => 'required|exists:sub_modules,id',
+            'question_text' => 'required|string',
+            'audio_text' => 'required|string',
+            'language_code' => 'required',
+            'options'        => 'required|array|min:4',
+            'correct_answer' => 'required|string'
+        ]);
+
+        $obj = PracticeQuiz::findOrFail($id);
+
+        $obj->sub_module_id  = $request->sub_module_id;
+        $obj->type           = 'listen_select'; 
+        $obj->question_text  = $request->question_text;
+        $obj->audio_text       = $request->audio_text;
+        $obj->language_code  = $request->language_code;
+        $obj->options = json_encode($request->options); 
+        $obj->correct_answer = $request->correct_answer;
+        $obj->update();
+
+        return redirect()->route('admin.practice-quiz.show', $obj->sub_module_id)->with('success', 'Data is updated successfully!');
+    }
+
 }

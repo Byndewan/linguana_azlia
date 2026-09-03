@@ -172,6 +172,12 @@ Route::middleware([Admin::class])->group(function () {
     Route::get('/admin/practice-quiz/edit/{id}', [AdminController::class, 'AdminPracticeQuizEdit'])->name('admin.practice-quiz.edit');
     Route::post('/admin/practice-quiz/update/{id}', [AdminController::class, 'AdminPracticeQuizUpdate'])->name('admin.practice-quiz.update');
     Route::post('/admin/practice-quiz/delete/{id}', [AdminController::class, 'AdminPracticeQuizDelete'])->name('admin.practice-quiz.delete');
+
+    // Listen and Select 
+    Route::get('/admin/listen-and-select/add/{id}', [AdminController::class, 'AdminListenAndSelectAdd'])->name('admin.listen-and-select.add');
+    Route::post('/admin/listen-and-select/submit/{id}', [AdminController::class, 'AdminListenAndSelectSubmit'])->name('admin.listen-and-select.submit');
+    Route::get('/admin/listen-and-select/edit/{id}', [AdminController::class, 'AdminListenAndSelectEdit'])->name('admin.listen-and-select.edit');
+    Route::post('/admin/listen-and-select/update/{id}', [AdminController::class, 'AdminListenAndSelectUpdate'])->name('admin.listen-and-select.update');
 });
 
 Route::get('/admin/forgot-password', [AdminController::class, 'AdminForgotPassword'])->name('admin.forgot-password');

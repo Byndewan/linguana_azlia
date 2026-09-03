@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('sub_module_id')->constrained('sub_modules')->onDelete('cascade');
             $table->enum('type', ['listen_select', 'fill_blank']);
             $table->text('question_text');
-            $table->string('audio_path')->nullable(); 
+            $table->string('audio_text')->nullable(); 
+            $table->text('language_code')->nullable();
             $table->json('options')->nullable(); 
             $table->string('correct_answer'); 
             $table->integer('order_number')->default(1);
