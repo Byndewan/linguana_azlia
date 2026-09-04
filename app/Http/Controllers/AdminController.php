@@ -986,6 +986,7 @@ class AdminController extends Controller
         return view('admin.practice_quiz_show', compact('subModule', 'all_data'));
     }
 
+    // Listen & Select
     public function AdminListenAndSelectAdd($id)
     {
         $sub_module = SubModule::findOrFail($id);
@@ -997,21 +998,22 @@ class AdminController extends Controller
         $request->validate([
             'sub_module_id' => 'required|exists:sub_modules,id',
             'question_text' => 'required|string',
-            'audio_text' => 'required|string',
             'language_code' => 'required',
             'options'        => 'required|array|min:4',
-            'correct_answer' => 'required|string'
+            'correct_answer' => 'required|string',
         ]);
 
-        $obj = new PracticeQuiz();
+        $lastOrder = PracticeQuiz::where('sub_module_id', $request->sub_module_id)->max('order_number');
+        $newOrder = $lastOrder ? $lastOrder + 1 : 1;
 
+        $obj = new PracticeQuiz();
         $obj->sub_module_id  = $request->sub_module_id;
         $obj->type           = 'listen_select'; 
         $obj->question_text  = $request->question_text;
-        $obj->audio_text       = $request->audio_text;
         $obj->language_code  = $request->language_code;
-        $obj->options = json_encode($request->options); 
+        $obj->options        = json_encode($request->options); 
         $obj->correct_answer = $request->correct_answer;
+        $obj->order_number   = $newOrder; 
         $obj->save();
 
         return redirect()->route('admin.practice-quiz.show', $request->sub_module_id)->with('success', 'Data is inserted successfully!');
@@ -1026,27 +1028,151 @@ class AdminController extends Controller
 
     public function AdminListenAndSelectUpdate(Request $request, $id)
     {
-        $request->validate([
-            'sub_module_id' => 'required|exists:sub_modules,id',
-            'question_text' => 'required|string',
-            'audio_text' => 'required|string',
-            'language_code' => 'required',
-            'options'        => 'required|array|min:4',
-            'correct_answer' => 'required|string'
-        ]);
-
         $obj = PracticeQuiz::findOrFail($id);
 
-        $obj->sub_module_id  = $request->sub_module_id;
+        $totalQuiz = PracticeQuiz::where('sub_module_id', $obj->sub_module_id)->count();
+        
+        $request->validate([
+            'question_text' => 'required|string',
+            'language_code' => 'required',
+            'options'        => 'required|array|min:4',
+            'correct_answer' => 'required|string',
+            'order_number' => 'required|integer|min:1|max:' . $totalQuiz,
+        ]);
+
+        $oldOrder = $obj->order_number;
+        $newOrder = $request->order_number;
+
+        if ($oldOrder != $newOrder) {
+            if ($newOrder < $oldOrder) {
+                PracticeQuiz::where('sub_module_id', $obj->sub_module_id)
+                    ->whereBetween('order_number', [$newOrder, $oldOrder - 1])
+                    ->increment('order_number');
+            } 
+            else {
+                PracticeQuiz::where('sub_module_id', $obj->sub_module_id)
+                    ->whereBetween('order_number', [$oldOrder + 1, $newOrder])
+                    ->decrement('order_number');
+            }
+        }
+
         $obj->type           = 'listen_select'; 
         $obj->question_text  = $request->question_text;
-        $obj->audio_text       = $request->audio_text;
         $obj->language_code  = $request->language_code;
         $obj->options = json_encode($request->options); 
         $obj->correct_answer = $request->correct_answer;
-        $obj->update();
+        $obj->order_number = $newOrder;
+        $obj->save();
 
         return redirect()->route('admin.practice-quiz.show', $obj->sub_module_id)->with('success', 'Data is updated successfully!');
     }
 
+    public function AdminListenAndSelectDelete($id) 
+    {
+        $row_data = PracticeQuiz::findOrFail($id);
+
+        $deletedOrder = $row_data->order_number;
+        $sub_module_id = $row_data->sub_module_id;
+
+        $row_data->delete();
+
+        PracticeQuiz::where('sub_module_id', $sub_module_id)
+                ->where('order_number', '>', $deletedOrder)
+                ->decrement('order_number');
+
+        return redirect()->back()->with('success', 'Data is deleted successfully!');
+    }
+
+    // Fill in the blank multiple choice 
+    public function AdminFillBlankMCAdd($id)
+    {
+        $sub_module = SubModule::findOrFail($id);
+        return view('admin.practice_add_fill_mc', compact('sub_module'));
+    }
+
+    public function AdminFillBlankMCSubmit(Request $request)
+    {
+        $request->validate([
+            'sub_module_id' => 'required|exists:sub_modules,id',
+            'question_text' => 'required|string',
+            'options'        => 'required|array|min:4',
+            'correct_answer' => 'required|string',
+        ]);
+
+        $lastOrder = PracticeQuiz::where('sub_module_id', $request->sub_module_id)->max('order_number');
+        $newOrder = $lastOrder ? $lastOrder + 1 : 1;
+
+        $obj = new PracticeQuiz();
+        $obj->sub_module_id  = $request->sub_module_id;
+        $obj->type           = 'fill_blank_mc'; 
+        $obj->question_text  = $request->question_text;
+        $obj->options        = json_encode($request->options); 
+        $obj->correct_answer = $request->correct_answer;
+        $obj->order_number   = $newOrder; 
+        $obj->save();
+
+        return redirect()->route('admin.practice-quiz.show', $request->sub_module_id)->with('success', 'Data is inserted successfully!');
+    }
+
+    public function AdminFillBlankMCEdit($id)
+    {
+        $row_data = PracticeQuiz::findOrFail($id);
+        $sub_module = SubModule::findOrFail($row_data->sub_module_id);
+        return view('admin.practice_edit_fill_mc', compact('row_data','sub_module'));
+    }
+
+    public function AdminFillBlankMCUpdate(Request $request, $id)
+    {
+        $obj = PracticeQuiz::findOrFail($id);
+
+        $totalQuiz = PracticeQuiz::where('sub_module_id', $obj->sub_module_id)->count();
+        
+        $request->validate([
+            'question_text' => 'required|string',
+            'options'        => 'required|array|min:4',
+            'correct_answer' => 'required|string',
+            'order_number' => 'required|integer|min:1|max:' . $totalQuiz,
+        ]);
+
+        $oldOrder = $obj->order_number;
+        $newOrder = $request->order_number;
+
+        if ($oldOrder != $newOrder) {
+            if ($newOrder < $oldOrder) {
+                PracticeQuiz::where('sub_module_id', $obj->sub_module_id)
+                    ->whereBetween('order_number', [$newOrder, $oldOrder - 1])
+                    ->increment('order_number');
+            } 
+            else {
+                PracticeQuiz::where('sub_module_id', $obj->sub_module_id)
+                    ->whereBetween('order_number', [$oldOrder + 1, $newOrder])
+                    ->decrement('order_number');
+            }
+        }
+
+        $obj->type           = 'fill_blank_mc'; 
+        $obj->question_text  = $request->question_text;
+        $obj->options = json_encode($request->options); 
+        $obj->correct_answer = $request->correct_answer;
+        $obj->order_number = $newOrder;
+        $obj->save();
+
+        return redirect()->route('admin.practice-quiz.show', $obj->sub_module_id)->with('success', 'Data is updated successfully!');
+    }
+
+    public function AdminFillBlankMCDelete($id) 
+    {
+        $row_data = PracticeQuiz::findOrFail($id);
+
+        $deletedOrder = $row_data->order_number;
+        $sub_module_id = $row_data->sub_module_id;
+
+        $row_data->delete();
+
+        PracticeQuiz::where('sub_module_id', $sub_module_id)
+                ->where('order_number', '>', $deletedOrder)
+                ->decrement('order_number');
+
+        return redirect()->back()->with('success', 'Data is deleted successfully!');
+    }
 }

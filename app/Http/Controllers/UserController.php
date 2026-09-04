@@ -362,6 +362,14 @@ class UserController extends Controller
     {
         return view('user.general.listen_and_select');
     }
+    public function UserGeneralFillBlankMC (Request $request)
+    {
+        return view('user.general.fill_blank_mc');
+    }
+    public function UserGeneralFillBlankInput (Request $request)
+    {
+        return view('user.general.fill_blank_input');
+    }
     public function UserFinalQuiz (Request $request)
     {
         return view('user.general.final-quiz');

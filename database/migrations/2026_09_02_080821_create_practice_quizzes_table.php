@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('practice_quizzes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('sub_module_id')->constrained('sub_modules')->onDelete('cascade');
-            $table->enum('type', ['listen_select', 'fill_blank']);
+            $table->enum('type', ['listen_select', 'fill_blank_mc','fill_blank_input']);
             $table->text('question_text');
             $table->string('audio_text')->nullable(); 
             $table->text('language_code')->nullable();

@@ -42,20 +42,28 @@
                 <!-- Menu Dropdown -->
                 <div id="quizDropdown" class="hidden absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-xl border border-gray-100 bg-white shadow-lg dark:border-gray-800 dark:bg-gray-900 transition-all">
                     <div class="py-2 px-1 flex flex-col gap-1">
-                        <!-- Opsi 1: Listen & Select -->
-                        <!-- Nanti href-nya diarahkan ke route form listen, misal: route('admin.practice.add-listen', $subModule->id) -->
                         <a href="{{ route('admin.listen-and-select.add', $subModule->id) }}" class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
                         </svg> Listen & Select
                         </a>
+
+                        <a href="{{ route('admin.listen-and-select.add', $subModule->id) }}" class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-colors">
+                        <svg class="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                        </svg> Listen & Type
+                        </a>
+
+                        <a href="{{ route('admin.fill-blank-mc.add', $subModule->id) }}" class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-colors">
+                            <svg class="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                            </svg> Fill in the Blank Multiple Choice
+                        </a>
                         
-                        <!-- Opsi 2: Fill in the Blank -->
-                        <!-- Nanti href-nya diarahkan ke route form fill blank, misal: route('admin.practice.add-fill', $subModule->id) -->
                         <a href="#" class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                            </svg> Fill in the Blank
+                            </svg> Fill in the Blank Input
                         </a>
                     </div>
                 </div>
@@ -114,9 +122,13 @@
                                 <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-green-100 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
                                     Listen & Select
                                 </span>
-                            @elseif($item->type === 'fill_blank')
+                            @elseif($item->type === 'fill_blank_mc')
                                 <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-purple-100 text-xs font-medium text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
-                                    Fill in the blank
+                                    Fill in the blank (Multiple Choice)
+                                </span>
+                            @elseif($item->type === 'fill_blank_input')
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-blue-100 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                                    Fill in the blank (Input)
                                 </span>
                             @endif
                         <td class="px-5 py-4 sm:px-6">
@@ -124,7 +136,7 @@
                         </td>
                         <td class="px-5 py-4 sm:px-6">
                             <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                @if($item->type == 'listen_select')
+                                @if($item->type == 'listen_select' || $item->type == 'fill_blank_mc')
                                     @php 
                                         $opsi = json_decode($item->options, true); 
                                     @endphp
@@ -136,14 +148,37 @@
                         </td>
                         <td class="px-5 py-4 sm:px-6">
                         <div class="flex items-center justify-end gap-3">
-                                <a href="{{ $item->type == 'listen_select' ? route('admin.listen-and-select.edit', $item->id) : route('admin.practice.edit-fill', $item->id) }}">
+                        @php
+                            $editRoute = '#'; 
+
+                            if ($item->type == 'listen_select') {
+                                $editRoute = route('admin.listen-and-select.edit', $item->id);
+                            } elseif ($item->type == 'fill_blank_mc') {
+                                $editRoute = route('admin.fill-blank-mc.edit', $item->id); 
+                            } elseif ($item->type == 'fill_blank_input') {
+                                $editRoute = route('admin.fill-blank-input.edit', $item->id); 
+                            }
+                        @endphp
+                                <a href="{{ $editRoute }}">
                                     <button class="text-blue-500 hover:text-blue-700 transition-colors" title="Edit">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                         </svg>
                                     </button>
                                 </a>
-                                <form action="{{ route('admin.vocabulary.delete', $item->id) }}" method="POST" class="m-0 inline-block">
+                                @php
+                                  $deleteRoute = '#'; 
+
+                                  if ($item->type == 'listen_select') {
+                                      $deleteRoute = route('admin.listen-and-select.delete', $item->id);
+                                  } elseif ($item->type == 'fill_blank_mc') {
+                                      $deleteRoute = route('admin.fill-blank-mc.delete', $item->id); 
+                                  } elseif ($item->type == 'fill_blank_input') {
+                                      $deleteRoute = route('admin.fill-blank-input.delete', $item->id); 
+                                  }
+                              @endphp
+
+                                <form action="{{ $deleteRoute }}" method="POST" class="m-0 inline-block">
                                 @csrf
                                     <button class="btn-delete text-red-500 transition-colors hover:text-red-700" title="Delete">
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
