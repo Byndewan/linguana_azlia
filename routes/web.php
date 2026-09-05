@@ -188,6 +188,13 @@ Route::middleware([Admin::class])->group(function () {
     Route::get('/admin/fill-blank-mc/edit/{id}', [AdminController::class, 'AdminFillBlankMCEdit'])->name('admin.fill-blank-mc.edit');
     Route::post('/admin/fill-blank-mc/update/{id}', [AdminController::class, 'AdminFillBlankMCUpdate'])->name('admin.fill-blank-mc.update');
     Route::post('/admin/fill-blank-mc/delete/{id}', [AdminController::class, 'AdminFillBlankMCDelete'])->name('admin.fill-blank-mc.delete');
+
+    // Fill in the blank (input)
+    Route::get('/admin/fill-blank-input/add/{id}', [AdminController::class, 'AdminFillBlankInputAdd'])->name('admin.fill-blank-input.add');
+    Route::post('/admin/fill-blank-input/submit/{id}', [AdminController::class, 'AdminFillBlankInputSubmit'])->name('admin.fill-blank-input.submit');
+    Route::get('/admin/fill-blank-input/edit/{id}', [AdminController::class, 'AdminFillBlankInputEdit'])->name('admin.fill-blank-input.edit');
+    Route::post('/admin/fill-blank-input/update/{id}', [AdminController::class, 'AdminFillBlankInputUpdate'])->name('admin.fill-blank-input.update');
+    Route::post('/admin/fill-blank-input/delete/{id}', [AdminController::class, 'AdminFillBlankInputDelete'])->name('admin.fill-blank-input.delete');
 });
 
 Route::get('/admin/forgot-password', [AdminController::class, 'AdminForgotPassword'])->name('admin.forgot-password');
