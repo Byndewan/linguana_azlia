@@ -54,8 +54,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/general/dashboard', [UserController::class, 'UserGeneralDashboard'])->name('user.general.dashboard');
     Route::get('/general/module', [UserController::class, 'UserGeneralModule'])->name('user.general.module');
     Route::get('/general/sub-module/{id}', [UserController::class, 'UserGeneralSubModule'])->name('user.general.sub-module');
-    Route::get('/general/flashcard', [UserController::class, 'UserGeneralFlashcard'])->name('user.general.flashcard');
+    Route::get('/general/flashcard/{sub_module_id}', [UserController::class, 'UserGeneralFlashcard'])->name('user.general.flashcard');
+    Route::get('/general/quiz/{sub_module_id}', [UserController::class, 'UserShowQuiz'])->name('user.general.quiz');
     Route::get('/general/listen-and-select', [UserController::class, 'UserGeneralListenAndSelect'])->name('user.general.listen.and.select');
+    Route::get('/general/listen-and-type', [UserController::class, 'UserGeneralListenAndType'])->name('user.general.listen.and.type');
     Route::get('/general/fill-in-the-blank-mc', [UserController::class, 'UserGeneralFillBlankMC'])->name('user.general.fill_blank.mc');
     Route::get('/general/fill-in-the-blank-input', [UserController::class, 'UserGeneralFillBlankInput'])->name('user.general.fill_blank.input');
     Route::get('/general/final-quiz', [UserController::class, 'UserFinalQuiz'])->name('user.general.final-quiz');
@@ -181,6 +183,13 @@ Route::middleware([Admin::class])->group(function () {
     Route::get('/admin/listen-and-select/edit/{id}', [AdminController::class, 'AdminListenAndSelectEdit'])->name('admin.listen-and-select.edit');
     Route::post('/admin/listen-and-select/update/{id}', [AdminController::class, 'AdminListenAndSelectUpdate'])->name('admin.listen-and-select.update');
     Route::post('/admin/listen-and-select/delete/{id}', [AdminController::class, 'AdminListenAndSelectDelete'])->name('admin.listen-and-select.delete');
+
+    // Listen and Type
+    Route::get('/admin/listen-and-type/add/{id}', [AdminController::class, 'AdminListenAndTypeAdd'])->name('admin.listen-and-type.add');
+    Route::post('/admin/listen-and-type/submit/{id}', [AdminController::class, 'AdminListenAndTypeSubmit'])->name('admin.listen-and-type.submit');
+    Route::get('/admin/listen-and-type/edit/{id}', [AdminController::class, 'AdminListenAndTypeEdit'])->name('admin.listen-and-type.edit');
+    Route::post('/admin/listen-and-type/update/{id}', [AdminController::class, 'AdminListenAndTypeUpdate'])->name('admin.listen-and-type.update');
+    Route::post('/admin/listen-and-type/delete/{id}', [AdminController::class, 'AdminListenAndTypeDelete'])->name('admin.listen-and-type.delete');
 
     // Fill in the blank (multiple choice)
     Route::get('/admin/fill-blank-mc/add/{id}', [AdminController::class, 'AdminFillBlankMCAdd'])->name('admin.fill-blank-mc.add');

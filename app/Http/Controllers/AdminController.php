@@ -990,7 +990,7 @@ class AdminController extends Controller
     public function AdminListenAndSelectAdd($id)
     {
         $sub_module = SubModule::findOrFail($id);
-        return view('admin.practice_add_listen', compact('sub_module'));
+        return view('admin.practice_add_listen_select', compact('sub_module'));
     }
 
     public function AdminListenAndSelectSubmit(Request $request)
@@ -1023,7 +1023,7 @@ class AdminController extends Controller
     {
         $row_data = PracticeQuiz::findOrFail($id);
         $sub_module = SubModule::findOrFail($row_data->sub_module_id);
-        return view('admin.practice_edit_listen', compact('row_data','sub_module'));
+        return view('admin.practice_edit_listen_select', compact('row_data','sub_module'));
     }
 
     public function AdminListenAndSelectUpdate(Request $request, $id)
@@ -1068,6 +1068,99 @@ class AdminController extends Controller
     }
 
     public function AdminListenAndSelectDelete($id) 
+    {
+        $row_data = PracticeQuiz::findOrFail($id);
+
+        $deletedOrder = $row_data->order_number;
+        $sub_module_id = $row_data->sub_module_id;
+
+        $row_data->delete();
+
+        PracticeQuiz::where('sub_module_id', $sub_module_id)
+                ->where('order_number', '>', $deletedOrder)
+                ->decrement('order_number');
+
+        return redirect()->back()->with('success', 'Data is deleted successfully!');
+    }
+
+    // Listen & Type
+    public function AdminListenAndTypeAdd($id)
+    {
+        $sub_module = SubModule::findOrFail($id);
+        return view('admin.practice_add_listen_type', compact('sub_module'));
+    }
+
+    public function AdminListenAndTypeSubmit(Request $request)
+    {
+        $request->validate([
+            'sub_module_id' => 'required|exists:sub_modules,id',
+            'question_text' => 'required|string',
+            'language_code' => 'required',
+            'correct_answer' => 'required|string',
+        ]);
+
+        $lastOrder = PracticeQuiz::where('sub_module_id', $request->sub_module_id)->max('order_number');
+        $newOrder = $lastOrder ? $lastOrder + 1 : 1;
+
+        $obj = new PracticeQuiz();
+        $obj->sub_module_id  = $request->sub_module_id;
+        $obj->type           = 'listen_type'; 
+        $obj->question_text  = $request->question_text;
+        $obj->language_code  = $request->language_code;
+        $obj->correct_answer = $request->correct_answer;
+        $obj->order_number   = $newOrder; 
+        $obj->save();
+
+        return redirect()->route('admin.practice-quiz.show', $request->sub_module_id)->with('success', 'Data is inserted successfully!');
+    }
+
+    public function AdminListenAndTypeEdit($id)
+    {
+        $row_data = PracticeQuiz::findOrFail($id);
+        $sub_module = SubModule::findOrFail($row_data->sub_module_id);
+        return view('admin.practice_edit_listen_type', compact('row_data','sub_module'));
+    }
+
+    public function AdminListenAndTypeUpdate(Request $request, $id)
+    {
+        $obj = PracticeQuiz::findOrFail($id);
+
+        $totalQuiz = PracticeQuiz::where('sub_module_id', $obj->sub_module_id)->count();
+        
+        $request->validate([
+            'question_text' => 'required|string',
+            'language_code' => 'required',
+            'correct_answer' => 'required|string',
+            'order_number' => 'required|integer|min:1|max:' . $totalQuiz,
+        ]);
+
+        $oldOrder = $obj->order_number;
+        $newOrder = $request->order_number;
+
+        if ($oldOrder != $newOrder) {
+            if ($newOrder < $oldOrder) {
+                PracticeQuiz::where('sub_module_id', $obj->sub_module_id)
+                    ->whereBetween('order_number', [$newOrder, $oldOrder - 1])
+                    ->increment('order_number');
+            } 
+            else {
+                PracticeQuiz::where('sub_module_id', $obj->sub_module_id)
+                    ->whereBetween('order_number', [$oldOrder + 1, $newOrder])
+                    ->decrement('order_number');
+            }
+        }
+
+        $obj->type           = 'listen_type'; 
+        $obj->question_text  = $request->question_text;
+        $obj->language_code  = $request->language_code;
+        $obj->correct_answer = $request->correct_answer;
+        $obj->order_number = $newOrder;
+        $obj->save();
+
+        return redirect()->route('admin.practice-quiz.show', $obj->sub_module_id)->with('success', 'Data is updated successfully!');
+    }
+
+    public function AdminListenAndTypeDelete($id) 
     {
         $row_data = PracticeQuiz::findOrFail($id);
 

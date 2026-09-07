@@ -48,7 +48,7 @@
                         </svg> Listen & Select
                         </a>
 
-                        <a href="{{ route('admin.listen-and-select.add', $subModule->id) }}" class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-colors">
+                        <a href="{{ route('admin.listen-and-type.add', $subModule->id) }}" class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-colors">
                         <svg class="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
                         </svg> Listen & Type
@@ -122,6 +122,10 @@
                                 <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-green-100 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
                                     Listen & Select
                                 </span>
+                            @elseif($item->type === 'listen_type')
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-orange-100 text-xs font-medium text-orange-800 dark:bg-orange-900/30 dark:text-orange-400">
+                                    Listen & Type
+                                </span>
                             @elseif($item->type === 'fill_blank_mc')
                                 <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-purple-100 text-xs font-medium text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
                                     Fill in the blank (Multiple Choice)
@@ -153,11 +157,13 @@
 
                             if ($item->type == 'listen_select') {
                                 $editRoute = route('admin.listen-and-select.edit', $item->id);
+                            } elseif ($item->type == 'listen_type') {
+                                $editRoute = route('admin.listen-and-type.edit', $item->id); 
                             } elseif ($item->type == 'fill_blank_mc') {
                                 $editRoute = route('admin.fill-blank-mc.edit', $item->id); 
                             } elseif ($item->type == 'fill_blank_input') {
                                 $editRoute = route('admin.fill-blank-input.edit', $item->id); 
-                            }
+                            } 
                         @endphp
                                 <a href="{{ $editRoute }}">
                                     <button class="text-blue-500 hover:text-blue-700 transition-colors" title="Edit">
@@ -171,6 +177,8 @@
 
                                   if ($item->type == 'listen_select') {
                                       $deleteRoute = route('admin.listen-and-select.delete', $item->id);
+                                  } elseif ($item->type == 'listen_type') {
+                                      $deleteRoute = route('admin.listen-and-type.delete', $item->id); 
                                   } elseif ($item->type == 'fill_blank_mc') {
                                       $deleteRoute = route('admin.fill-blank-mc.delete', $item->id); 
                                   } elseif ($item->type == 'fill_blank_input') {

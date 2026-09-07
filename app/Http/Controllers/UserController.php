@@ -15,6 +15,8 @@ use App\Models\User;
 use App\Models\OnboardTempData;
 use App\Models\Module;
 use App\Models\SubModule;
+use App\Models\Vocabulary;
+use App\Models\PracticeQuiz;
 use App\Http\Middleware\EnsureOnboardToken;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -352,16 +354,53 @@ class UserController extends Controller
 
         return view('user.general.sub-module', compact('module'));
     }
-    
-    public function UserGeneralFlashcard (Request $request)
+
+    public function UserShowQuiz($sub_module_id)
     {
-        return view('user.general.flashcard');
+        $vocabularies = Vocabulary::where('sub_module_id', $sub_module_id)->get();
+
+        $flashcards = $vocabularies->map(function ($vocab) {
+            return (object) [
+                'type'          => 'flashcard', 
+                'id'            => 'vocab_' . $vocab->id,
+                'word' => $vocab->word, 
+                'meaning'=> $vocab->meaning, 
+            ];
+        });
+
+        $practiceQuizzes = PracticeQuiz::where('sub_module_id', $sub_module_id)
+                ->orderBy('order_number', 'asc')
+                ->get();
+
+        $quizItems = $flashcards->concat($practiceQuizzes);
+
+        if ($quizItems->isEmpty()) {
+            return redirect()->back()->with('error', "We don't have material yet");
+        }
+
+        return view('user.general.practice_quiz', compact('quizItems'));
+    }
+    
+    public function UserGeneralFlashcard($sub_module_id)
+    {
+        $vocabularies = Vocabulary::where('sub_module_id', $sub_module_id)->get();
+
+        if ($vocabularies->isEmpty()) {
+            return redirect()->back()->with('error', 'Flashcard belum tersedia untuk materi ini.');
+        }
+        return view('user.general.flashcard', compact('vocabularies', 'sub_module_id'));
     }
 
     public function UserGeneralListenAndSelect (Request $request)
     {
         return view('user.general.listen_and_select');
     }
+
+    public function UserGeneralListenAndType (Request $request)
+    {
+        return view('user.general.listen_and_type');
+    }
+
     public function UserGeneralFillBlankMC (Request $request)
     {
         return view('user.general.fill_blank_mc');

@@ -87,18 +87,20 @@
             </div> --}}
 
             @foreach ($module->subModules as $item)
+            <a href="{{ route('user.general.flashcard', $item->id) }}">
                 <div class="bg-white border-2 border-[#55BCC9]/20 rounded-2xl p-4 lg:p-5 flex items-center gap-4 shadow-[0_4px_15px_rgba(85,188,201,0.1)] transition-transform hover:-translate-y-0.5 relative overflow-hidden">
                 <div class="w-12 h-12 shrink-0 rounded-full border-2 border-slate-200 flex items-center justify-center font-bold text-lg text-slate-700 bg-slate-50">
                     {{ $item->order_number }}
                 </div>
-                <div class="flex-1">
-                    <h3 class="text-lg font-bold text-slate-800">Lesson {{ $item->order_number }}: {{ $item->title }}</h3>
-                    <div class="flex items-center gap-3 text-sm text-slate-400 font-medium mt-1">
-                        <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-orange-400"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg> {{ $item->time }} min</span>
-                        <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-amber-400"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg> +{{ $item->point }} XP</span>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold text-slate-800">Lesson {{ $item->order_number }}: {{ $item->title }}</h3>
+                        <div class="flex items-center gap-3 text-sm text-slate-400 font-medium mt-1">
+                            <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-orange-400"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg> {{ $item->time }} min</span>
+                            <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-amber-400"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg> +{{ $item->point }} XP</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
             @endforeach
             
 
