@@ -357,22 +357,10 @@ class UserController extends Controller
 
     public function UserShowQuiz($sub_module_id)
     {
-        $vocabularies = Vocabulary::where('sub_module_id', $sub_module_id)->get();
-
-        $flashcards = $vocabularies->map(function ($vocab) {
-            return (object) [
-                'type'          => 'flashcard', 
-                'id'            => 'vocab_' . $vocab->id,
-                'word' => $vocab->word, 
-                'meaning'=> $vocab->meaning, 
-            ];
-        });
-
-        $practiceQuizzes = PracticeQuiz::where('sub_module_id', $sub_module_id)
+        // Cukup ambil dari PracticeQuiz, tidak perlu concat dengan Vocabulary
+        $quizItems = PracticeQuiz::where('sub_module_id', $sub_module_id)
                 ->orderBy('order_number', 'asc')
                 ->get();
-
-        $quizItems = $flashcards->concat($practiceQuizzes);
 
         if ($quizItems->isEmpty()) {
             return redirect()->back()->with('error', "We don't have material yet");

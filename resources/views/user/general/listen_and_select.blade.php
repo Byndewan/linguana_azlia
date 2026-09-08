@@ -1,50 +1,37 @@
 @php
-    // Bongkar opsi jawaban dari brankas JSON
     $opsi_mentah = json_decode($data->options, true) ?? [];
     $pilihan = $opsi_mentah['choices'] ?? $opsi_mentah; 
     
-    // Array untuk memunculkan abjad A, B, C, D secara otomatis
-    $abjad = ['A', 'B', 'C', 'D', 'E', 'F'];
-    
-    // Teks yang akan disuarakan (sesuaikan dengan nama kolom tempat kamu menyimpan kalimat audionya)
-    $teks_audio = $data->question_text ?? 'Audio kosong';
-    $lang = $data->language_code ?? 'es-ES'; // Default Spanyol jika tidak ada
+    $teks_audio = $data->question_text;
+    $lang = $data->language_code ?? 'es-ES'; 
 @endphp
 
-<!-- Komponen Card Kuis: Listen & Select -->
-<div class="w-full max-w-2xl bg-white rounded-3xl p-8 md:p-8 pb-12 shadow-sm border border-slate-100 mx-auto mt-8">
+<div class="w-full bg-white rounded-3xl p-6 sm:p-10 border border-slate-100">
     
-    <!-- Area Putar Audio -->
-    <div class="flex flex-col items-center justify-center mb-10 mt-4">
-        <button type="button" onclick="playAudio('{{ addslashes($teks_audio) }}', '{{ $lang }}')" class="w-24 h-24 bg-[#55BCC9] text-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#46a8b5] hover:scale-105 transition-all mb-4 focus:outline-none focus:ring-4 focus:ring-[#55bcc9]/30">
-            <svg class="w-10 h-10 ml-2" fill="currentColor" viewBox="0 0 24 24">
+    <div class="flex flex-col items-center justify-center mb-6">
+        <button type="button" onclick="playAudio('{{ addslashes($teks_audio) }}', '{{ $lang }}')" class="cursor-pointer w-20 h-20 bg-[#55BCC9] text-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#46a8b5] hover:scale-105 transition-all mb-3 focus:outline-none focus:ring-4 focus:ring-[#55bcc9]/30">
+            <svg class="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z"></path>
             </svg>
         </button>
-        <h2 class="text-xl font-extrabold text-slate-800">Listen and select the correct meaning</h2>
+        <h2 class="text-xl font-extrabold text-slate-800 text-center">Listen and select the correct meaning</h2>
         <p class="text-sm text-slate-500 mt-1">Click the play button to hear the audio</p>
     </div>
 
-    <!-- Pilihan Ganda -->
-    <div class="flex flex-col gap-3">
+    <div class="flex flex-col gap-2">
         @if(is_array($pilihan) || is_object($pilihan))
-            @foreach($pilihan as $index => $opsi)
+            @foreach($pilihan as $key => $opsi)
                 <label class="cursor-pointer relative w-full group">
                     
-                    <!-- Radio button asli disembunyikan pakai sr-only dan class 'peer' -->
-                    <input type="radio" name="answer_{{ $data->id }}" value="{{ $opsi }}" class="peer sr-only">
+                    <input type="radio" name="answer_{{ $data->id }}" value="{{ $key }}" class="peer sr-only">
                     
-                    <!-- Desain kotak pilihan -->
-                    <div class="w-full text-left p-4 rounded-2xl border-2 border-slate-100 font-bold text-slate-700 
+                    <div class="w-full text-left py-4 px-4 rounded-xl border-2 border-slate-100 font-bold text-slate-700 
                                 hover:border-[#55BCC9] hover:bg-[#f2fcfe] 
                                 peer-checked:border-[#55BCC9] peer-checked:bg-[#f2fcfe] transition-colors flex gap-4 items-center">
                         
-                        <!-- Huruf Abjad Dinamis -->
                         <span class="text-slate-400 group-hover:text-[#55BCC9] peer-checked:text-[#55BCC9]">
-                            {{ $abjad[$index] ?? '-' }}.
+                            {{ $key }}.
                         </span> 
-                        
-                        <!-- Teks Opsi Jawaban -->
                         {{ $opsi }}
                         
                     </div>
@@ -54,5 +41,4 @@
             <p class="text-red-500 text-center text-sm">Opsi pilihan belum diatur dengan benar.</p>
         @endif
     </div>
-    
 </div>
