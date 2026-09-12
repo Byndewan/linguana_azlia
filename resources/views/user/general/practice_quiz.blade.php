@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Practice Quiz - Linguana</title>
     @vite('resources/css/app.css')
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
@@ -85,6 +86,9 @@
         let currentQuiz = 0;
         const totalQuizzes = {{ count($quizItems) }};
 
+        let totalCorrect = 0;
+        let totalXP = 0;
+
         function nextQuiz() {
             if (currentQuiz < totalQuizzes - 1) {
                 document.getElementById('slide-' + currentQuiz).classList.replace('flex', 'hidden');
@@ -92,8 +96,44 @@
                 currentQuiz++;
                 document.getElementById('slide-' + currentQuiz).classList.replace('hidden', 'flex');
             } else {
-                alert('Selamat! Semua soal latihan sudah selesai.');
-                window.location.href = '/user/dashboard'; 
+                const btnNext = document.getElementById('btn-next-' + currentQuiz);
+                btnNext.innerHTML = 'Saving...';
+                btnNext.disabled = true;
+                btnNext.classList.add('opacity-75', 'cursor-not-allowed');
+
+                const subModuleId = "{{ request()->route('sub_module_id') }}"; 
+
+                fetch(`{{ route('user.general.quiz.submit') }}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        sub_module_id: subModuleId,
+                        total_correct: totalCorrect,
+                        total_xp: totalXP,
+                        total_quizzes: totalQuizzes
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        window.location.href = data.redirect_url;
+                    } else {
+                        alert('Oops, terjadi kesalahan saat menyimpan skor.');
+                        btnNext.innerHTML = 'Try Again';
+                        btnNext.disabled = false;
+                        btnNext.classList.remove('opacity-75', 'cursor-not-allowed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Gagal terhubung ke server.');
+                    btnNext.innerHTML = 'Try Again';
+                    btnNext.disabled = false;
+                    btnNext.classList.remove('opacity-75', 'cursor-not-allowed');
+                });
             }
         }
 
@@ -156,6 +196,9 @@
             if (userAnswer === correctAnswer) {
                 const correctSound = new Audio('/sounds/correct.wav');
                 correctSound.play();
+
+                totalCorrect++;
+                totalXP += 10;
 
                 feedbackBox.classList.add('bg-green-500');
                 feedbackText.innerHTML = `

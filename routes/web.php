@@ -56,6 +56,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/general/sub-module/{id}', [UserController::class, 'UserGeneralSubModule'])->name('user.general.sub-module');
     Route::get('/general/flashcard/{sub_module_id}', [UserController::class, 'UserGeneralFlashcard'])->name('user.general.flashcard');
     Route::get('/general/quiz/{sub_module_id}', [UserController::class, 'UserShowQuiz'])->name('user.general.quiz');
+    Route::post('/general/quiz/submit', [UserController::class, 'UserShowQuizSubmit'])->name('user.general.quiz.submit');
+    Route::get('/general/quiz/{sub_module_id}/quiz-result', [UserController::class, 'UserShowQuizResult'])->name('user.general.quiz.result');
     Route::get('/general/listen-and-select', [UserController::class, 'UserGeneralListenAndSelect'])->name('user.general.listen.and.select');
     Route::get('/general/listen-and-type', [UserController::class, 'UserGeneralListenAndType'])->name('user.general.listen.and.type');
     Route::get('/general/fill-in-the-blank-mc', [UserController::class, 'UserGeneralFillBlankMC'])->name('user.general.fill_blank.mc');

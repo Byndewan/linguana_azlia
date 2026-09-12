@@ -54,69 +54,55 @@
                 </div>
             </div>
 
-            <!-- CARD 1: Completed Lesson -->
-            {{-- <div class="bg-white border border-slate-100 rounded-2xl p-4 lg:p-5 flex items-center gap-4 shadow-[0_2px_10px_rgba(0,0,0,0.03)] transition-transform hover:-translate-y-0.5">
-                <div class="w-12 h-12 shrink-0 rounded-full bg-[#55BCC9] flex items-center justify-center text-white shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
-                </div>
-                <div class="flex-1">
-                    <h3 class="text-lg font-bold text-slate-800">Lesson 1: Introduction & Greetings</h3>
-                    <div class="flex items-center gap-3 text-sm text-slate-400 font-medium mt-1">
-                        <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-orange-400"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg> 8 min</span>
-                        <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-amber-400"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg> +30 XP</span>
-                    </div>
-                </div>
-            </div> --}}
-
-            <!-- CARD 2: Active Lesson -->
-            {{-- <div class="bg-white border-2 border-[#55BCC9]/20 rounded-2xl p-4 lg:p-5 flex items-center gap-4 shadow-[0_4px_15px_rgba(85,188,201,0.1)] transition-transform hover:-translate-y-0.5 relative overflow-hidden">
-                <div class="w-12 h-12 shrink-0 rounded-full border-2 border-slate-200 flex items-center justify-center font-bold text-lg text-slate-700 bg-slate-50">
-                    2
-                </div>
-                <div class="flex-1">
-                    <h3 class="text-lg font-bold text-slate-800">Lesson 3: Family & Relationships</h3>
-                    <div class="flex items-center gap-3 text-sm text-slate-400 font-medium mt-1">
-                        <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-orange-400"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg> 8 min</span>
-                        <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-amber-400"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg> +30 XP</span>
-                    </div>
-                </div>
-                <a href="#" class="hidden md:flex items-center gap-2 bg-[#55BCC9] hover:bg-[#48a9b5] text-white px-5 py-2.5 rounded-xl font-semibold transition-colors">
-                    Start
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347c-.75.412-1.667-.13-1.667-.986V5.653Z" /></svg>
-                </a>
-            </div> --}}
-
             @foreach ($module->subModules as $item)
-            <a href="{{ route('user.general.flashcard', $item->id) }}">
-                <div class="bg-white border-2 border-[#55BCC9]/20 rounded-2xl p-4 lg:p-5 flex items-center gap-4 shadow-[0_4px_15px_rgba(85,188,201,0.1)] transition-transform hover:-translate-y-0.5 relative overflow-hidden">
-                <div class="w-12 h-12 shrink-0 rounded-full border-2 border-slate-200 flex items-center justify-center font-bold text-lg text-slate-700 bg-slate-50">
-                    {{ $item->order_number }}
-                </div>
-                    <div class="flex-1">
-                        <h3 class="text-lg font-bold text-slate-800">Lesson {{ $item->order_number }}: {{ $item->title }}</h3>
-                        <div class="flex items-center gap-3 text-sm text-slate-400 font-medium mt-1">
-                            <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-orange-400"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg> {{ $item->time }} min</span>
-                            <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-amber-400"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg> +{{ $item->point }} XP</span>
+                @if($item->status == 'completed')
+                    <a href="{{ route('user.general.flashcard', $item->id) }}">
+                        <div class="bg-white border border-slate-100 rounded-2xl p-4 lg:p-5 flex items-center gap-4 shadow-[0_2px_10px_rgba(0,0,0,0.03)] transition-transform hover:-translate-y-0.5">
+                                <div class="w-12 h-12 shrink-0 rounded-full bg-[#55BCC9] flex items-center justify-center text-white shadow-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                                </div>
+                            <div class="flex-1">
+                                <h3 class="text-lg font-bold text-slate-800">Lesson {{ $item->order_number }}: {{ $item->title }}</h3>
+                                <div class="flex items-center gap-3 text-sm text-slate-400 font-medium mt-1">
+                                    <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-orange-400"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg> {{ $item->time }} min</span>
+                                    <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-amber-400"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg> +{{ $item->point }} XP</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </a>
-            @endforeach
-            
-
-            <!-- CARD 3: Locked Lesson -->
-            <div class="bg-white border border-slate-100 rounded-2xl p-4 lg:p-5 flex items-center gap-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)] opacity-60 grayscale-[30%] select-none">
+                    </a>
+                @elseif($item->status == 'unlocked')
+                        <div class="bg-white border-2 border-[#55BCC9]/20 rounded-2xl p-4 lg:p-5 flex items-center gap-4 shadow-[0_4px_15px_rgba(85,188,201,0.1)] transition-transform hover:-translate-y-0.5 relative overflow-hidden">
+                            <div class="w-12 h-12 shrink-0 rounded-full border-2 border-slate-200 flex items-center justify-center font-bold text-lg text-slate-700 bg-slate-50">
+                                {{ $item->order_number }}
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-lg font-bold text-slate-800">Lesson {{ $item->order_number }}: {{ $item->title }}</h3>
+                                <div class="flex items-center gap-3 text-sm text-slate-400 font-medium mt-1">
+                                    <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-orange-400"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg> {{ $item->time }} min</span>
+                                    <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-amber-400"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg> +{{ $item->point }} XP</span>
+                                </div>
+                            </div>
+                            <a href="{{ route('user.general.flashcard', $item->id) }}" class="hidden md:flex items-center gap-2 bg-[#55BCC9] hover:bg-[#48a9b5] text-white px-5 py-2.5 rounded-xl font-semibold transition-colors">
+                                Start
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347c-.75.412-1.667-.13-1.667-.986V5.653Z" /></svg>
+                            </a>
+                        </div>
+                @else
+                        <div class="bg-white border border-slate-100 rounded-2xl p-4 lg:p-5 flex items-center gap-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)] opacity-60 grayscale-[30%] select-none">
                 <div class="w-12 h-12 shrink-0 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
                 </div>
                 <div class="flex-1">
-                    <h3 class="text-lg font-bold text-slate-500">Lesson 5: Expressing Feelings</h3>
+                    <h3 class="text-lg font-bold text-slate-500">Lesson {{ $item->order_number }}: {{ $item->title }}</h3>
                     <div class="flex items-center gap-3 text-sm text-slate-400 font-medium mt-1">
-                        <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg> 8 min</span>
-                        <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg> +30 XP</span>
+                        <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg> {{ $item->time }} min</span>
+                        <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg> +{{ $item->point }} XP</span>
                     </div>
                 </div>
-            </div>
+            </div>                            
+                @endif
+            @endforeach
+            
 
             <!-- CARD 4: Final Quiz -->
             <div class="bg-white border border-slate-100 rounded-2xl p-5 lg:p-6 flex flex-col md:flex-row md:items-center gap-5 shadow-[0_2px_10px_rgba(0,0,0,0.03)] mt-2">
@@ -151,44 +137,32 @@
                 <h4 class="text-xs font-extrabold text-slate-400 tracking-wider mb-4 uppercase">Mini Dictionary</h4>
                 
                 <div class="relative mb-5">
-                    <input type="text" placeholder="Search vocabulary..." class="w-full bg-slate-50 border border-slate-200 text-sm rounded-xl pl-4 pr-10 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#55BCC9]/50 transition-shadow text-slate-700">
+                    <input type="text" id="searchInput" onkeyup="searchVocab()" placeholder="Search vocabulary..." class="w-full bg-slate-50 border border-slate-200 text-sm rounded-xl pl-4 pr-10 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#55BCC9]/50 transition-shadow text-slate-700">
                 </div>
 
-                <div class="flex flex-col gap-4">
-                    <!-- Word 1 -->
-                    <div class="flex items-center justify-between group cursor-pointer">
-                        <div>
-                            <p class="font-bold text-slate-800 text-sm group-hover:text-[#55BCC9] transition-colors">Hola</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Spanish • Greeting</p>
+                <div class="flex flex-col gap-4 max-h-96 overflow-y-auto pr-2" id="vocabList" id="vocabList">
+                    @forelse($vocabularies as $item)
+                        <div class="vocab-item">
+                            <div class="flex items-center justify-between group cursor-pointer mb-4">
+                                <div>
+                                    <p class="font-bold text-slate-800 text-sm group-hover:text-[#55BCC9] transition-colors vocab-word">{{ $item->word }}</p>
+                                    <p class="text-xs text-slate-400 mt-0.5 vocab-meaning">{{ $item->meaning }}</p>
+                                </div>
+                                <button 
+                                    onclick="speakWord('{{ addslashes($item->word) }}', '{{ $item->language_code ?? 'en-US' }}')"
+                                    class="cursor-pointer w-8 h-8 rounded-full flex items-center justify-center text-[#55BCC9] hover:bg-cyan-50 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <hr class="border-slate-100">
                         </div>
-                        <button class="w-8 h-8 rounded-full flex items-center justify-center text-[#55BCC9] hover:bg-cyan-50 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" /></svg>
-                        </button>
-                    </div>
-                    <hr class="border-slate-100">
-                    
-                    <!-- Word 2 -->
-                    <div class="flex items-center justify-between group cursor-pointer">
-                        <div>
-                            <p class="font-bold text-slate-800 text-sm group-hover:text-[#55BCC9] transition-colors">Buenos días</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Spanish • Greeting</p>
+                    @empty
+                        <div class="col-span-full text-center p-6 text-slate-400 text-sm">
+                            No vocabulary available for this sub-module yet
                         </div>
-                        <button class="w-8 h-8 rounded-full flex items-center justify-center text-[#55BCC9] hover:bg-cyan-50 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" /></svg>
-                        </button>
-                    </div>
-                    <hr class="border-slate-100">
-
-                    <!-- Word 3 -->
-                    <div class="flex items-center justify-between group cursor-pointer">
-                        <div>
-                            <p class="font-bold text-slate-800 text-sm group-hover:text-[#55BCC9] transition-colors">Por favor</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Spanish • Greeting</p>
-                        </div>
-                        <button class="w-8 h-8 rounded-full flex items-center justify-center text-[#55BCC9] hover:bg-cyan-50 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" /></svg>
-                        </button>
-                    </div>
+                    @endforelse
                 </div>
             </div>
 
@@ -233,4 +207,39 @@
         </div>
     </div>
 </main>
+
+<script>
+    function searchVocab() {
+        let input = document.getElementById('searchInput').value.toLowerCase();
+        let vocabItems = document.getElementsByClassName('vocab-item');
+
+        for (let i = 0; i < vocabItems.length; i++) {
+            let word = vocabItems[i].querySelector('.vocab-word').innerText.toLowerCase();
+            let meaning = vocabItems[i].querySelector('.vocab-meaning').innerText.toLowerCase();
+
+            if (word.includes(input) || meaning.includes(input)) {
+                vocabItems[i].style.display = "block";
+            } else {
+                vocabItems[i].style.display = "none";
+            }
+        }
+    }
+
+    function speakWord(text, langCode) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = langCode; 
+            
+            utterance.rate = 0.9;  
+            utterance.pitch = 1.0;
+
+            window.speechSynthesis.speak(utterance);
+        } else {
+            alert("Oops! Browser kamu tidak mendukung fitur Text-to-Speech.");
+        }
+    }
+</script>
+
 @endsection

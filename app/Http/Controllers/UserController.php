@@ -17,6 +17,7 @@ use App\Models\Module;
 use App\Models\SubModule;
 use App\Models\Vocabulary;
 use App\Models\PracticeQuiz;
+use App\Models\UserQuizHistory;
 use App\Http\Middleware\EnsureOnboardToken;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -352,12 +353,43 @@ class UserController extends Controller
         }])
         ->findOrFail($id);
 
-        return view('user.general.sub-module', compact('module'));
+        $subModuleIds = $module->subModules->pluck('id');
+
+        $vocabularies = Vocabulary::whereIn('sub_module_id', $subModuleIds)->get();
+
+        $userId = Auth::id(); 
+
+        $highestScores = UserQuizHistory::where('user_id', $userId)
+            ->whereIn('sub_module_id', $subModuleIds)
+            ->selectRaw('sub_module_id, MAX(score) as max_score')
+            ->groupBy('sub_module_id')
+            ->pluck('max_score', 'sub_module_id');
+
+        $passingGrade = 70; 
+        $isPreviousPassed = true; 
+
+        foreach ($module->subModules as $subModule) {
+            $score = $highestScores[$subModule->id] ?? 0;
+            $subModule->highest_score = $score; 
+
+            if (!$isPreviousPassed) {
+                $subModule->status = 'locked';
+            } else {
+                if ($score >= $passingGrade) {
+                    $subModule->status = 'completed'; 
+                } else {
+                    $subModule->status = 'unlocked';  
+                }
+            }
+
+            $isPreviousPassed = ($score >= $passingGrade);
+        }
+
+        return view('user.general.sub-module', compact('module', 'vocabularies'));
     }
 
     public function UserShowQuiz($sub_module_id)
     {
-        // Cukup ambil dari PracticeQuiz, tidak perlu concat dengan Vocabulary
         $quizItems = PracticeQuiz::where('sub_module_id', $sub_module_id)
                 ->orderBy('order_number', 'asc')
                 ->get();
@@ -369,6 +401,63 @@ class UserController extends Controller
         return view('user.general.practice_quiz', compact('quizItems'));
     }
     
+    public function UserShowQuizResult($sub_module_id)
+    {
+        $resultData = session('quiz_result_data');
+
+        if (!$resultData) {
+            return redirect()->route('user.general.dashboard')->with('error', 'Silakan kerjakan kuis terlebih dahulu.');
+        }
+
+        $subModule = SubModule::findOrFail($sub_module_id);
+
+        return view('user.general.quiz_result_practice', [ 
+            'score'   => $resultData['score'],
+            'correct' => $resultData['correct'],
+            'total'   => $resultData['total'],
+            'xp'      => $resultData['xp'],
+            'sub_module_id' => $sub_module_id,
+            'module_id'     => $subModule->module_id
+        ]);
+    }
+
+    public function UserShowQuizSubmit(Request $request)
+    {
+        $request->validate([
+            'sub_module_id' => 'required',
+            'total_correct' => 'required|numeric',
+            'total_quizzes' => 'required|numeric',
+        ]);
+
+        $score = ($request->total_correct / $request->total_quizzes) * 100;
+
+        $subModule = SubModule::findOrFail($request->sub_module_id);
+        $realPoint = $subModule->point; 
+
+        UserQuizHistory::create([
+            'user_id'         => $request->user()->id, 
+            'sub_module_id'   => $request->sub_module_id,
+            'score'           => $score,
+            'total_correct'   => $request->total_correct,
+            'total_questions' => $request->total_quizzes,
+            'xp_earned'       => $realPoint,
+        ]);
+        
+        session([
+            'quiz_result_data' => [
+                'score'   => round($score),
+                'correct' => $request->total_correct,
+                'total'   => $request->total_quizzes,
+                'xp'      => $realPoint,
+            ]
+        ]);
+
+        return response()->json([
+            'success'      => true,
+            'redirect_url' => route('user.general.quiz.result', ['sub_module_id' => $request->sub_module_id])
+        ]);
+    }
+
     public function UserGeneralFlashcard($sub_module_id)
     {
         $vocabularies = Vocabulary::where('sub_module_id', $sub_module_id)->get();
@@ -403,7 +492,7 @@ class UserController extends Controller
     }
     public function UserQuizResult (Request $request)
     {
-        return view('user.general.quiz-result');
+        return view('user.general.quiz-result-final');
     }
     public function UserProfile (Request $request)
     {
