@@ -206,6 +206,34 @@ Route::middleware([Admin::class])->group(function () {
     Route::get('/admin/fill-blank-input/edit/{id}', [AdminController::class, 'AdminFillBlankInputEdit'])->name('admin.fill-blank-input.edit');
     Route::post('/admin/fill-blank-input/update/{id}', [AdminController::class, 'AdminFillBlankInputUpdate'])->name('admin.fill-blank-input.update');
     Route::post('/admin/fill-blank-input/delete/{id}', [AdminController::class, 'AdminFillBlankInputDelete'])->name('admin.fill-blank-input.delete');
+
+    // Final Quiz - Listen and Select 
+    Route::get('/admin/final-quiz/listen-and-select/add/{id}', [AdminController::class, 'AdminFinalListenAndSelectAdd'])->name('admin.final.listen-and-select.add');
+    Route::post('/admin/final-quiz/listen-and-select/submit/{id}', [AdminController::class, 'AdminFinalListenAndSelectSubmit'])->name('admin.final.listen-and-select.submit');
+    Route::get('/admin/final-quiz/listen-and-select/edit/{id}', [AdminController::class, 'AdminFinalListenAndSelectEdit'])->name('admin.final.listen-and-select.edit');
+    Route::post('/admin/final-quiz/listen-and-select/update/{id}', [AdminController::class, 'AdminFinalListenAndSelectUpdate'])->name('admin.final.listen-and-select.update');
+    Route::post('/admin/final-quiz/listen-and-select/delete/{id}', [AdminController::class, 'AdminFinalListenAndSelectDelete'])->name('admin.final.listen-and-select.delete');
+
+    // Final Quiz - Listen and Type
+    Route::get('/admin/final-quiz/listen-and-type/add/{id}', [AdminController::class, 'AdminFinalListenAndTypeAdd'])->name('admin.final.listen-and-type.add');
+    Route::post('/admin/final-quiz/listen-and-type/submit/{id}', [AdminController::class, 'AdminFinalListenAndTypeSubmit'])->name('admin.final.listen-and-type.submit');
+    Route::get('/admin/final-quiz/listen-and-type/edit/{id}', [AdminController::class, 'AdminFinalListenAndTypeEdit'])->name('admin.final.listen-and-type.edit');
+    Route::post('/admin/final-quiz/listen-and-type/update/{id}', [AdminController::class, 'AdminFinalListenAndTypeUpdate'])->name('admin.final.listen-and-type.update');
+    Route::post('/admin/final-quiz/listen-and-type/delete/{id}', [AdminController::class, 'AdminFinalListenAndTypeDelete'])->name('admin.final.listen-and-type.delete');
+
+    // Fill in the blank (multiple choice)
+    Route::get('/admin/final-quiz/fill-blank-mc/add/{id}', [AdminController::class, 'AdminFinalFillBlankMCAdd'])->name('admin.final.fill-blank-mc.add');
+    Route::post('/admin/final-quiz/fill-blank-mc/submit/{id}', [AdminController::class, 'AdminFinalFillBlankMCSubmit'])->name('admin.final.fill-blank-mc.submit');
+    Route::get('/admin/final-quiz/fill-blank-mc/edit/{id}', [AdminController::class, 'AdminFinalFillBlankMCEdit'])->name('admin.final.fill-blank-mc.edit');
+    Route::post('/admin/final-quiz/fill-blank-mc/update/{id}', [AdminController::class, 'AdminFinalFillBlankMCUpdate'])->name('admin.final.fill-blank-mc.update');
+    Route::post('/admin/final-quiz/fill-blank-mc/delete/{id}', [AdminController::class, 'AdminFinalFillBlankMCDelete'])->name('admin.final.fill-blank-mc.delete');
+
+    // Final Quiz - Fill in the blank (input)
+    Route::get('/admin/final-quiz/fill-blank-input/add/{id}', [AdminController::class, 'AdminFinalFillBlankInputAdd'])->name('admin.final.fill-blank-input.add');
+    Route::post('/admin/final-quiz/fill-blank-input/submit/{id}', [AdminController::class, 'AdminFinalFillBlankInputSubmit'])->name('admin.final.fill-blank-input.submit');
+    Route::get('/admin/final-quiz/fill-blank-input/edit/{id}', [AdminController::class, 'AdminFinalFillBlankInputEdit'])->name('admin.final.fill-blank-input.edit');
+    Route::post('/admin/final-quiz/fill-blank-input/update/{id}', [AdminController::class, 'AdminFinalFillBlankInputUpdate'])->name('admin.final.fill-blank-input.update');
+    Route::post('/admin/final-quiz/fill-blank-input/delete/{id}', [AdminController::class, 'AdminFinalFillBlankInputDelete'])->name('admin.final.fill-blank-input.delete');
 });
 
 Route::get('/admin/forgot-password', [AdminController::class, 'AdminForgotPassword'])->name('admin.forgot-password');
