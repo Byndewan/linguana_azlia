@@ -19,6 +19,8 @@ return new class extends Migration
             $table->text('title');
             $table->text('icon');
             $table->text('color');
+            $table->integer('point')->default(10);
+            $table->integer('time');
             $table->text('background_color');
             $table->timestamps();
         });

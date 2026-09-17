@@ -74,8 +74,6 @@
               <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                 Icon Color
               </label>
-              <div class="flex items-center gap-3">
-                <!-- Input Color Picker -->
                 <input 
                     type="color" 
                     name="color" 
@@ -89,8 +87,6 @@
               <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                 Background Color
               </label>
-              <div class="flex items-center gap-3">
-                <!-- Input Color Picker -->
                 <input 
                     type="color" 
                     name="background_color" 
@@ -98,6 +94,32 @@
                     class="h-10 w-20 cursor-pointer rounded-lg border border-gray-200 bg-white p-1 transition-colors hover:border-blue-500 dark:border-gray-800 dark:bg-black"
                 >
                 <span class="text-sm text-gray-500">Choose icon color</span>
+            </div>
+
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                Time
+              </label>
+              <input 
+                type="number" 
+                name="time"
+                placeholder=""
+                value="" 
+                class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:outline-hidden focus:ring-3 placeholder:text-gray-400 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" 
+              />
+            </div>
+
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                Point
+              </label>
+              <input 
+                type="number" 
+                name="point"
+                placeholder=""
+                value="" 
+                class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:outline-hidden focus:ring-3 placeholder:text-gray-400 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" 
+              />
             </div>
 
             <!-- Tombol Save -->

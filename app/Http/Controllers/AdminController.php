@@ -759,6 +759,8 @@ class AdminController extends Controller
             'icon' => 'required',
             'color' => 'required|string|max:7',
             'background_color' => 'required|string|max:7',
+            'time'       => 'required|integer|min:1',
+            'point'       => 'required|integer|min:0'
         ]);
 
         $obj = new Module();
@@ -768,6 +770,8 @@ class AdminController extends Controller
         $obj->icon = $request->icon;
         $obj->color = $request->color;
         $obj->background_color = $request->background_color;
+        $obj->time = $request->time;
+        $obj->point = $request->point;
         $obj->save();
 
         return redirect()->route('admin.manage-module.show')->with('success', 'Data is inserted successfully!');
@@ -787,6 +791,8 @@ class AdminController extends Controller
             'icon' => 'required',
             'color' => 'required|string|max:7',
             'background_color' => 'required|string|max:7',
+            'time'       => 'required|integer|min:1',
+            'point'       => 'required|integer|min:0'
         ]);
 
         $obj = Module::where('id', $id)->first();
@@ -796,6 +802,8 @@ class AdminController extends Controller
         $obj->icon = $request->icon;
         $obj->color = $request->color;
         $obj->background_color = $request->background_color;
+        $obj->time = $request->time;
+        $obj->point = $request->point;
         $obj->update();
 
         return redirect()->route('admin.manage-module.show')->with('success', 'Data is updated successfully!');
