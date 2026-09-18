@@ -62,7 +62,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/general/listen-and-type', [UserController::class, 'UserGeneralListenAndType'])->name('user.general.listen.and.type');
     Route::get('/general/fill-in-the-blank-mc', [UserController::class, 'UserGeneralFillBlankMC'])->name('user.general.fill_blank.mc');
     Route::get('/general/fill-in-the-blank-input', [UserController::class, 'UserGeneralFillBlankInput'])->name('user.general.fill_blank.input');
-    Route::get('/general/final-quiz', [UserController::class, 'UserFinalQuiz'])->name('user.general.final-quiz');
+    Route::get('/general/final-quiz/{module_id}', [UserController::class, 'UserFinalQuiz'])->name('user.general.final-quiz');
     Route::get('/general/final-quiz/quiz-result', [UserController::class, 'UserQuizResult'])->name('user.general.quiz-result');
     Route::get('/general/profile', [UserController::class, 'UserProfile'])->name('user.profile');
 

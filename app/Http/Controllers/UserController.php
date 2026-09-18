@@ -17,6 +17,7 @@ use App\Models\Module;
 use App\Models\SubModule;
 use App\Models\Vocabulary;
 use App\Models\PracticeQuiz;
+use App\Models\FinalQuiz;
 use App\Models\UserQuizHistory;
 use App\Http\Middleware\EnsureOnboardToken;
 use Illuminate\Support\Facades\Auth;
@@ -486,9 +487,25 @@ class UserController extends Controller
     {
         return view('user.general.fill_blank_input');
     }
-    public function UserFinalQuiz (Request $request)
+    public function UserFinalQuiz($module_id)
     {
-        return view('user.general.final-quiz');
+        $user_id = Auth::id();
+
+        $subModuleIds = SubModule::where('module_id', $module_id)->pluck('id');
+
+        $completedCount = UserQuizHistory::where('user_id', $user_id)
+                            ->whereIn('sub_module_id', $subModuleIds)
+                            ->distinct('sub_module_id')
+                            ->count();
+
+        if ($completedCount < $subModuleIds->count()) {
+            return redirect()->back()->with('error', 'You need to finished all the quiz before move to the Final Quiz');
+        }
+
+        $module = Module::findOrFail($module_id);
+        $finalQuizzes = FinalQuiz::where('module_id', $module_id)->get();
+
+        return view('user.general.final-quiz', compact('module', 'finalQuizzes'));
     }
     public function UserQuizResult (Request $request)
     {

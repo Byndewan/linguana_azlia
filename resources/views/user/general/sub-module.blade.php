@@ -104,6 +104,18 @@
             @endforeach
             
 
+            @php
+                $user_id = auth()->id();
+                $subModuleIds = $module->subModules->pluck('id'); 
+
+                $completedCount = \App\Models\UserQuizHistory::where('user_id', $user_id)
+                                    ->whereIn('sub_module_id', $subModuleIds)
+                                    ->distinct('sub_module_id')
+                                    ->count();
+
+                $isUnlocked = $completedCount >= $subModuleIds->count() && $subModuleIds->count() > 0;
+            @endphp
+
             <!-- CARD 4: Final Quiz -->
             <div class="bg-white border border-slate-100 rounded-2xl p-5 lg:p-6 flex flex-col md:flex-row md:items-center gap-5 shadow-[0_2px_10px_rgba(0,0,0,0.03)] mt-2">
                 <div class="w-14 h-14 shrink-0 rounded-2xl bg-[#55BCC9] flex items-center justify-center text-white shadow-md">
@@ -121,15 +133,23 @@
                         </span>
                     </div>
                 </div>
-                <button disabled class="flex items-center gap-2 bg-slate-100 text-slate-400 px-5 py-2.5 rounded-xl font-semibold cursor-not-allowed">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
-                    Unlock
-                </button>
+                @if($isUnlocked)
+                    <a href="{{ route('user.general.final-quiz', $module->id) }}" class="flex items-center gap-2 bg-[#55BCC9] hover:bg-[#48a9b5] text-white px-5 py-2.5 rounded-xl font-semibold cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                        Unlock
+                    </a>
+                @else
+                    <button disabled class="flex items-center gap-2 bg-slate-100 text-slate-400 px-5 py-2.5 rounded-xl font-semibold cursor-not-allowed">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                        Unlock
+                    </button>
+                @endif
+                
             </div>
 
         </div>
 
-        <!-- RIGHT COLUMN: WIDGETS (Takes up 4 columns on large screen) -->
+        <!-- RIGHT COLUMN: WIDGETS -->
         <div class="lg:col-span-4 flex flex-col gap-6">
             
             <!-- Mini Dictionary Widget -->
