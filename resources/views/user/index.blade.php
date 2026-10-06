@@ -66,10 +66,21 @@
 
         <!-- Auth Buttons -->
         @auth
+            @php
+                $progress = \App\Models\UserProgress::with('learningPath')->where('user_id', Auth::id())->first();
+    
+                $isTestPrep = $progress->learning_type == 'test_prep';
+                
+                $dashboardRoute = $isTestPrep 
+                    ? route('user.test-prep.dashboard') 
+                    : route('user.general.dashboard');
+            @endphp
+
             <div class="hidden md:flex items-center gap-4">
-                <a href="{{ route('user.general.dashboard') }}" class="bg-[#55BCC9] text-white px-5 py-2 rounded-xl text-md font-medium hover:bg-[#45a4b1] transition-colors shadow-sm">Dashboard</a>
+                <a href="{{ $dashboardRoute }}" class="bg-[#55BCC9] text-white px-5 py-2 rounded-xl text-md font-medium hover:bg-[#45a4b1] transition-colors shadow-sm">Dashboard</a>
             </div>
         @endauth
+
         @guest
             <div class="hidden md:flex items-center gap-4">
                 <a href="{{ route('user.login') }}" class="bg-[#55BCC9] text-white px-5 py-2 rounded-xl text-md font-medium hover:bg-[#45a4b1] transition-colors shadow-sm">Login</a>

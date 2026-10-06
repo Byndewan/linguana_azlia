@@ -22,4 +22,9 @@ class UserProgress extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function learningPath()
+    {
+        return $this->belongsTo(LearningPath::class, 'learning_path_id');
+    }
 }

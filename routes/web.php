@@ -63,12 +63,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/general/fill-in-the-blank-mc', [UserController::class, 'UserGeneralFillBlankMC'])->name('user.general.fill_blank.mc');
     Route::get('/general/fill-in-the-blank-input', [UserController::class, 'UserGeneralFillBlankInput'])->name('user.general.fill_blank.input');
     Route::get('/general/final-quiz/{module_id}', [UserController::class, 'UserFinalQuiz'])->name('user.general.final-quiz');
-    Route::get('/general/final-quiz/quiz-result', [UserController::class, 'UserQuizResult'])->name('user.general.quiz-result');
+    Route::post('/general/final-quiz/{module_id}/submit', [UserController::class, 'UserFinalQuizSubmit'])->name('user.general.final-quiz.submit');
+    Route::get('/general/final-quiz/{module_id}/result/{attempt}', [UserController::class, 'UserQuizResult'])->name('user.general.quiz-result');
     Route::get('/general/profile', [UserController::class, 'UserProfile'])->name('user.profile');
 
     // Test Prep
     Route::get('/test-prep/dashboard', [UserController::class, 'UserTestDashboard'])->name('user.test-prep.dashboard');
+    Route::get('/test-prep/profile', [UserController::class, 'UserTestProfile'])->name('user.test-prep.profile');
     Route::get('/test-prep/module', [UserController::class, 'UserTestModule'])->name('user.test-prep.module');
+    Route::get('/test-prep/reading', [UserController::class, 'UserTestReadingModule'])->name('user.test-prep.reading');
+    Route::get('/test-prep/listening', [UserController::class, 'UserTestListeningModule'])->name('user.test-prep.listening');
+    Route::get('/test-prep/speaking', [UserController::class, 'UserTestSpeakingModule'])->name('user.test-prep.speaking');
+    Route::get('/test-prep/writing', [UserController::class, 'UserTestWritingModule'])->name('user.test-prep.writing');
     Route::get('/test-prep/video-lesson', [UserController::class, 'UserVideoLesson'])->name('user.test-prep.video-lesson');
     Route::get('/test-prep/full-mock-test', [UserController::class, 'UserFullMockTest'])->name('user.test-prep.full-mock-test');
     Route::get('/test-prep/full-mock-test/result', [UserController::class, 'UserFullMockTestResult'])->name('user.test-prep.full-mock-test-result');

@@ -123,7 +123,7 @@
                 </div>
                 <div class="flex-1">
                     <h3 class="text-xl font-bold text-slate-800">Final Quiz</h3>
-                    <p class="text-sm text-slate-500 font-medium mt-1">Complete all lessons to unlock — 20 questions</p>
+                    <p class="text-sm text-slate-500 font-medium mt-1">Complete all lessons to unlock — {{ $totalQuestions }} questions</p>
                     <div class="flex items-center gap-2 mt-3">
                         <span class="bg-amber-50 text-amber-600 px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3 h-3"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg> +{{ $module->point }} XP on pass

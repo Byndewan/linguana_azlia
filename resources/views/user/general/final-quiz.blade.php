@@ -256,7 +256,7 @@
         function submitQuiz() {
             Swal.fire({
                 title: "Are you sure?",
-                text: "You are about to finish and submit your final quiz!",
+                text: "You are about to finish and submit your final quiz! Unanswered questions will be marked as zero.",
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#55bcc9", 
@@ -264,16 +264,42 @@
                 confirmButtonText: "Yes, submit it!"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    console.log("Jawaban akhir user:", userAnswers);
-                    
                     Swal.fire({
-                        title: "Submitted!",
-                        text: "Your final quiz has been submitted successfully.",
-                        icon: "success",
-                        timer: 1500,
-                        showConfirmButton: false
-                    }).then(() => {
-                        window.location.href = "{{ route('user.general.quiz-result', $module->id) }}";
+                        title: "Submitting...",
+                        text: "Calculating your score...",
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    fetch("{{ route('user.general.final-quiz.submit', $module->id) }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify({ answers: userAnswers })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: "Submitted!",
+                                text: "Your final quiz has been submitted successfully.",
+                                icon: "success",
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => {
+                                window.location.href = data.redirect_url;
+                            });
+                        } else {
+                            Swal.fire("Error!", "Something went wrong. Please try again.", "error");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        Swal.fire("Error!", "Failed to connect to the server.", "error");
                     });
                 }
             });
@@ -321,7 +347,6 @@
                 for (const [key, val] of Object.entries(options)) {
                     const isSelected = savedAnswer === key;
                     
-                    // Styling dinamis jika dipilih
                     const borderClass = isSelected ? 'border-[#55bcc9] bg-cyan-50/60 shadow-sm' : 'border-slate-200 bg-slate-50 hover:border-[#55bcc9]';
                     const textMarkerClass = isSelected ? 'text-[#55bcc9]' : 'text-slate-400 group-hover:text-[#55bcc9]';
 

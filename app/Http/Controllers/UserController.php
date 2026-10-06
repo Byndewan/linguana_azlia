@@ -18,6 +18,7 @@ use App\Models\SubModule;
 use App\Models\Vocabulary;
 use App\Models\PracticeQuiz;
 use App\Models\FinalQuiz;
+use App\Models\FinalQuizAttempt;
 use App\Models\UserQuizHistory;
 use App\Http\Middleware\EnsureOnboardToken;
 use Illuminate\Support\Facades\Auth;
@@ -354,6 +355,8 @@ class UserController extends Controller
         }])
         ->findOrFail($id);
 
+        $totalQuestions = FinalQuiz::where('module_id', $module->id)->count();
+
         $subModuleIds = $module->subModules->pluck('id');
 
         $vocabularies = Vocabulary::whereIn('sub_module_id', $subModuleIds)->get();
@@ -386,7 +389,7 @@ class UserController extends Controller
             $isPreviousPassed = ($score >= $passingGrade);
         }
 
-        return view('user.general.sub-module', compact('module', 'vocabularies'));
+        return view('user.general.sub-module', compact('module', 'vocabularies','totalQuestions'));
     }
 
     public function UserShowQuiz($sub_module_id)
@@ -507,9 +510,62 @@ class UserController extends Controller
 
         return view('user.general.final-quiz', compact('module', 'finalQuizzes'));
     }
-    public function UserQuizResult (Request $request)
+
+    public function UserFinalQuizSubmit(Request $request, $module_id)
+        {
+            $module = Module::findOrFail($module_id);
+            $questions = FinalQuiz::where('module_id', $module_id)->get();
+            
+            $userAnswers = $request->input('answers', []);
+            $totalQuestions = $questions->count();
+            $correctCount = 0;
+
+            foreach ($questions as $index => $question) {
+                $userAns = $userAnswers[$index] ?? null;
+                
+                if ($userAns !== null && trim(strtolower($userAns)) === trim(strtolower($question->correct_answer))) {
+                    $correctCount++;
+                }
+            }
+
+            $score = $totalQuestions > 0 ? ($correctCount / $totalQuestions) * 100 : 0;
+            $status = $score >= 75 ? 'passed' : 'failed'; 
+
+            $attempt = FinalQuizAttempt::create([
+                'user_id'         => Auth::id(),
+                'module_id'       => $module_id,
+                'score'           => round($score, 2),
+                'total_correct'   => $correctCount,
+                'status'          => $status,
+            ]);
+
+            return response()->json([
+                'success'      => true,
+                'message'      => 'Quiz submitted successfully!',
+                'redirect_url' => route('user.general.quiz-result', ['module_id' => $module_id, 'attempt' => $attempt->id])
+            ]);
+        }
+
+    public function UserQuizResult($module_id, $attempt_id)
     {
-        return view('user.general.quiz-result-final');
+        $module = Module::findOrFail($module_id);
+
+        $totalQuestions = FinalQuiz::where('module_id', $module->id)->count();
+    
+        $attempt = FinalQuizAttempt::where('id', $attempt_id)
+                                    ->where('user_id', Auth::id())
+                                    ->firstOrFail();
+
+        $earnedXp = $attempt->point;
+
+        return view('user.general.quiz-result-final', [ 
+            'score'     => $attempt->score,
+            'correct'   => $attempt->total_correct,
+            'total'     => $totalQuestions,
+            'status'    => $attempt->status,
+            'module'    => $module,
+            'module_xp' => $module->point
+        ]);
     }
     public function UserProfile (Request $request)
     {
@@ -525,9 +581,30 @@ class UserController extends Controller
 
         return view('user.test-prep.dashboard', compact('testData'));
     }
+
+    public function UserTestProfile (Request $request)
+    {
+        return view('user.test-prep.profile');
+    }
     public function UserTestModule (Request $request)
     {
         return view('user.test-prep.module');
+    }
+    public function UserTestReadingModule (Request $request)
+    {
+        return view('user.test-prep.reading');
+    }
+    public function UserTestListeningModule (Request $request)
+    {
+        return view('user.test-prep.listening');
+    }
+    public function UserTestSpeakingModule (Request $request)
+    {
+        return view('user.test-prep.speaking');
+    }
+    public function UserTestWritingModule (Request $request)
+    {
+        return view('user.test-prep.writing');
     }
     public function UserVideoLesson (Request $request)
     {

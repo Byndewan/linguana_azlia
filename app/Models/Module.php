@@ -15,4 +15,9 @@ class Module extends Model
     {
         return $this->hasMany(SubModule::class, 'module_id', 'id');
     }
+
+    public function finalQuizzes()
+    {
+        return $this->hasMany(FinalQuiz::class, 'module_id');
+    }
 }

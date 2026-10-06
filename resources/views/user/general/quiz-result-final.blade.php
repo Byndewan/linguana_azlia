@@ -37,11 +37,11 @@
             <!-- 1. Title & Circular Score -->
             <div class="text-center flex flex-col items-center mt-2 md:mt-6 w-full">
                 <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-2">Excellent Work!</h1>
-                <p class="text-slate-500 font-medium mb-10 text-sm md:text-base">Final Quiz — Everyday Conversations Module</p>
+                <p class="text-slate-500 font-medium mb-10 text-sm md:text-base">Final Quiz — {{ $module->title }}</p>
                 
                 <!-- Lingkaran Skor Utama -->
                 <div class="w-40 h-40 rounded-full border-[10px] border-[#55bcc9] flex flex-col items-center justify-center bg-[#d6f8fc]  shadow-sm">
-                    <span class="text-4xl font-extrabold text-slate-900 mb-1">85%</span>
+                    <span class="text-4xl font-extrabold text-slate-900 mb-1">{{ $score }}%</span>
                     <span class="text-sm font-medium text-slate-400">Score</span>
                 </div>
             </div>
@@ -50,12 +50,12 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
                 <!-- Card 1 -->
                 <div class="bg-white rounded-2xl p-6 flex flex-col items-center justify-center border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                    <span class="text-2xl font-extrabold text-slate-900 mb-1">17 / 20</span>
+                    <span class="text-2xl font-extrabold text-slate-900 mb-1">{{ $correct }} / {{ $total }}</span>
                     <span class="text-xs font-medium text-slate-400">Correct</span>
                 </div>
                 <!-- Card 2 -->
                 <div class="bg-white rounded-2xl p-6 flex flex-col items-center justify-center border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                    <span class="text-2xl font-extrabold text-slate-900 mb-1">+128 XP</span>
+                    <span class="text-2xl font-extrabold text-slate-900 mb-1">+{{ $module_xp }} XP</span>
                     <span class="text-xs font-medium text-slate-400">XP Earned</span>
                 </div>
                 <!-- Card 3 -->
@@ -65,90 +65,54 @@
                 </div>
             </div>
 
-            <!-- 3. Performance Breakdown -->
             <div class="bg-white rounded-3xl p-6 md:p-8 w-full border border-slate-100 shadow-sm flex flex-col gap-6">
-                <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-2">Performance Breakdown</h3>
+                <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-2">Quiz Result Status</h3>
                 
-                <!-- Item: Vocabulary -->
-                <div class="flex flex-col gap-2">
-                    <div class="flex justify-between items-end">
-                        <span class="font-bold text-slate-900 text-sm">Vocabulary</span>
-                        <span class="text-xs font-medium text-slate-400">8/8 correct</span>
+                <div class="flex items-center justify-between p-5 rounded-2xl {{ $status == 'passed' ? 'bg-emerald-50 border border-emerald-100' : 'bg-rose-50 border border-rose-100' }}">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold {{ $status == 'passed' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white' }}">
+                            {!! $status == 'passed' ? '&#10003;' : '&#10005;' !!}
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-base {{ $status == 'passed' ? 'text-emerald-900' : 'text-rose-900' }}">
+                                {{ $status == 'passed' ? 'Congratulations, You Passed!' : 'Keep Trying, Not Passed Yet' }}
+                            </h4>
+                            <p class="text-xs {{ $status == 'passed' ? 'text-emerald-600' : 'text-rose-600' }} mt-0.5">
+                                {{ $status == 'passed' ? 'You have successfully met the passing score criteria.' : 'Your score is below the minimum passing threshold.' }}
+                            </p>
+                        </div>
                     </div>
-                    <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                        <div class="h-full bg-[#55bcc9] w-full rounded-full"></div>
-                    </div>
-                </div>
-
-                <!-- Item: Grammar -->
-                <div class="flex flex-col gap-2">
-                    <div class="flex justify-between items-end">
-                        <span class="font-bold text-slate-900 text-sm">Grammar</span>
-                        <span class="text-xs font-medium text-slate-400">5/6 correct</span>
-                    </div>
-                    <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                        <div class="h-full bg-[#55bcc9] w-[83%] rounded-full"></div>
-                    </div>
-                </div>
-
-                <!-- Item: Listening -->
-                <div class="flex flex-col gap-2">
-                    <div class="flex justify-between items-end">
-                        <span class="font-bold text-slate-900 text-sm">Listening Comprehension</span>
-                        <span class="text-xs font-medium text-slate-400">2/4 correct</span>
-                    </div>
-                    <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                        <div class="h-full bg-[#55bcc9] w-[50%] rounded-full"></div>
-                    </div>
-                </div>
-
-                <!-- Item: Phrase Construction -->
-                <div class="flex flex-col gap-2">
-                    <div class="flex justify-between items-end">
-                        <span class="font-bold text-slate-900 text-sm">Phrase Construction</span>
-                        <span class="text-xs font-medium text-slate-400">2/2 correct</span>
-                    </div>
-                    <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                        <div class="h-full bg-[#55bcc9] w-full rounded-full"></div>
+                    <div class="text-right">
+                        <span class="text-xs font-semibold text-slate-400 block uppercase">Final Score</span>
+                        <span class="text-2xl font-extrabold {{ $status == 'passed' ? 'text-emerald-600' : 'text-rose-600' }}">{{ $score }}%</span>
                     </div>
                 </div>
             </div>
 
-            <!-- 4. Strengths & Needs Practice -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full">
                 
-                <!-- Strengths -->
-                <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm">
-                    <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-5">Strengths</h3>
-                    <ul class="flex flex-col gap-4">
-                        <li class="flex items-center gap-3 text-sm font-medium text-slate-700">
-                            <svg class="w-5 h-5 text-[#55bcc9] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                            Vocabulary recall
-                        </li>
-                        <li class="flex items-center gap-3 text-sm font-medium text-slate-700">
-                            <svg class="w-5 h-5 text-[#55bcc9] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                            Common phrases
-                        </li>
-                        <li class="flex items-center gap-3 text-sm font-medium text-slate-700">
-                            <svg class="w-5 h-5 text-[#55bcc9] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                            Written comprehension
-                        </li>
-                    </ul>
+                <!-- Total Correct Answers -->
+                <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-2">Correct Answers</h3>
+                        <div class="text-2xl font-extrabold text-slate-800">{{ $correct }} <span class="text-sm font-normal text-slate-400">/ {{ $total }} Questions</span></div>
+                        <p class="text-xs text-slate-400 mt-1">Total questions answered correctly.</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-cyan-50 flex items-center justify-center text-[#55bcc9] text-xl font-bold">
+                        ✓
+                    </div>
                 </div>
 
-                <!-- Needs Practice -->
-                <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm">
-                    <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-5">Needs Practice</h3>
-                    <ul class="flex flex-col gap-4">
-                        <li class="flex items-center gap-3 text-sm font-medium text-slate-700">
-                            <div class="w-4 h-4 rounded-full border-2 border-[#b2e8ef] shrink-0 ml-0.5"></div>
-                            Listening comprehension
-                        </li>
-                        <li class="flex items-center gap-3 text-sm font-medium text-slate-700">
-                            <div class="w-4 h-4 rounded-full border-2 border-[#b2e8ef]  shrink-0 ml-0.5"></div>
-                            Spoken phrases
-                        </li>
-                    </ul>
+                <!-- Total Incorrect / Remaining -->
+                <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-2">Incorrect Answers</h3>
+                        <div class="text-2xl font-extrabold text-slate-800">{{ $total - $correct }} <span class="text-sm font-normal text-slate-400">/ {{ $total }} Questions</span></div>
+                        <p class="text-xs text-slate-400 mt-1">Needs review in future sessions.</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center text-rose-400 text-xl font-bold">
+                        ✕
+                    </div>
                 </div>
             </div>
 
