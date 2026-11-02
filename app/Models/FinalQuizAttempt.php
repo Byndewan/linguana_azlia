@@ -15,5 +15,6 @@ class FinalQuizAttempt extends Model
         'score',
         'total_correct',
         'status',
+        'xp_earned'
     ];
 }

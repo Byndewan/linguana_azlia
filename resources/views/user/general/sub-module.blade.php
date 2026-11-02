@@ -29,7 +29,7 @@
                     </span>
                     <span class="flex items-center gap-1.5">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-amber-400"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg>
-                        +{{ $module->sub_modules_sum_point ?? 0 }} XP
+                        +{{ $totalXpEarned ?? 0 }} XP
                     </span>
                 </div>
             </div>
@@ -37,7 +37,7 @@
 
         <!-- Circular Progress Top Right -->
         <div class="relative w-14 h-14 shrink-0 flex items-center justify-center rounded-full bg-white border-[3px] border-[#55BCC9] shadow-sm">
-            <span class="text-sm font-bold text-slate-700">50%</span>
+            <span class="text-sm font-bold text-slate-700">{{ $moduleProgress }}%</span>
         </div>
     </div>
 
@@ -50,7 +50,7 @@
             <!-- Progress Bar -->
             <div class="flex items-center gap-4 mb-2">
                 <div class="w-full bg-slate-200 rounded-full h-2.5">
-                    <div class="bg-[#55BCC9] h-2.5 rounded-full" style="width: 50%"></div>
+                    <div class="bg-[#55BCC9] h-2.5 rounded-full" style="width: {{ $moduleProgress }}%"></div>
                 </div>
             </div>
 
@@ -193,34 +193,38 @@
                 <div class="flex justify-center mb-8">
                     <!-- Fake SVG Circle Progress -->
                     <div class="relative w-28 h-28 flex items-center justify-center">
+                    @php
+                        $circumference = 251.2;
+                        $dashOffset = $circumference - ($circumference * $moduleProgress / 100);
+                    @endphp
                         <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                             <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="8" fill="transparent" class="text-slate-100" />
-                            <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="8" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="125.6" class="text-[#55BCC9]" stroke-linecap="round" />
+                            <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="8" fill="transparent" stroke-dasharray="{{ $circumference }}" stroke-dashoffset="{{ $dashOffset }}" class="text-[#55BCC9]" stroke-linecap="round" />
                         </svg>
-                        <span class="absolute text-2xl font-bold text-slate-800">50%</span>
+                        <span class="absolute text-2xl font-bold text-slate-800">{{ $moduleProgress }}%</span>
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-4 text-sm">
                     <div class="flex justify-between items-center">
                         <span class="text-slate-500 font-medium">Lessons done</span>
-                        <span class="font-bold text-slate-800">3 / 6</span>
+                        <span class="font-bold text-slate-800">{{ $completedLessonsCount }} / {{ $totalLessons }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-slate-500 font-medium">Vocabulary learned</span>
                         <div class="text-right">
-                            <span class="font-bold text-slate-800 block leading-tight">24</span>
+                            <span class="font-bold text-slate-800 block leading-tight">{{ $vocabLearn }}</span>
                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">words</span>
                         </div>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-slate-500 font-medium">Quiz score avg</span>
-                        <span class="font-bold text-slate-800">—</span>
+                        <span class="font-bold text-slate-800">{{ $quizScoreAvg !== null ? $quizScoreAvg . '%' : '—' }}</span>
                     </div>
-                    <div class="flex justify-between items-center">
+                    {{-- <div class="flex justify-between items-center">
                         <span class="text-slate-500 font-medium">Time invested</span>
                         <span class="font-bold text-slate-800">38 min</span>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
 

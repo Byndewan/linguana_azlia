@@ -150,6 +150,7 @@ Route::middleware([Admin::class])->group(function () {
 
     // Manage User
     Route::get('/admin/manage-user/show', [AdminController::class, 'AdminManageUserShow'])->name('admin.manage-user.show');
+    Route::get('/admin/manage-user/info', [AdminController::class, 'AdminManageUserInfo'])->name('admin.manage-user.info');
 
     // Manage Module
     Route::get('/admin/manage-module/show', [AdminController::class, 'AdminManageModuleShow'])->name('admin.manage-module.show');

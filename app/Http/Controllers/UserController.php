@@ -36,7 +36,8 @@ class UserController extends Controller
         $services = Service::orderBy('id', 'asc')->get();
         $processes = Process::orderBy('id', 'asc')->get();
         $testimonials = Testimonial::orderBy('id', 'asc')->get();
-        return view('user.index', compact('page_data', 'clients', 'services', 'processes', 'testimonials'));
+        $languages = Language::orderBy('id', 'asc')->get();
+        return view('user.index', compact('page_data', 'clients', 'services', 'processes', 'testimonials','languages'));
     }
 
     // onboarding
@@ -77,28 +78,61 @@ class UserController extends Controller
         return redirect()->route('choose-path');
     }
 
-    public function ChoosePath ()
+    public function ChoosePath (Request $request)
     {
-        return view('user.onboarding.choose-path');
+        $tempData = $this->onboardTempData($request);
+
+    if (!$tempData || !$tempData->onboarding_language_id) {
+        return redirect()->route('choose-language');
+    }
+
+    $languageId = $tempData->onboarding_language_id;
+
+    $generalPath = LearningPath::where('language_id', $languageId)->first();
+    $testPrepModule = LearningPath::where('language_id', $languageId)
+        ->where('type', 'test_prep')
+        ->first();
+
+    return view('user.onboarding.choose-path', compact('generalPath', 'testPrepModule'));
     }
 
     public function PostChoosePath(Request $request)
     {
+        $tempData = $this->onboardTempData($request);
+
+        if (!$tempData || !$tempData->onboarding_language_id) {
+            return redirect()->route('choose-language');
+        }
+
         $request->validate([
             'type' => 'required|in:general,test_prep'
         ]);
 
-        OnboardTempData::updateOrCreate(
-            ['token' => $this->onboardToken($request)],
-            ['type' => $request->type]
-        );
+        $languageId = $tempData->onboarding_language_id;
+        $selectedLearningPathId = null;
 
-        if ($request->type == 'test_prep') {
-            return redirect()->route('choose-test');
-        } else {
-            return redirect()->route('choose-daily-goal');
+        if ($request->type === 'general') {
+            $learningPath = LearningPath::where('language_id', $languageId)->first();
+            
+            if ($learningPath) {
+                $selectedLearningPathId = $learningPath->id;
+            }
+        } elseif ($request->type === 'test_prep') {
+            $testPrepModule = LearningPath::where('language_id', $languageId)
+                ->where('type', 'test_prep')
+                ->first();
+
+            if ($testPrepModule) {
+                $selectedLearningPathId = $testPrepModule->id; 
+            }
         }
-        
+
+        $tempData->update([
+            'type' => $request->type,
+            'learning_path_id' => $selectedLearningPathId, 
+        ]);
+
+        return redirect()->route('choose-daily-goal');
     }
     public function ChooseGoal(Request $request)
     {
@@ -129,27 +163,27 @@ class UserController extends Controller
         return redirect()->route('user.sign-up');
     }
 
-    public function ChooseTest (Request $request)
-    {
-        $onboarding = $this->onboardTempData($request);
+    // public function ChooseTest (Request $request)
+    // {
+    //     $onboarding = $this->onboardTempData($request);
 
-        $tests = LearningPath::where('language_id', $onboarding?->onboarding_language_id)->where('type', 'test_prep')->get();
-        return view('user.onboarding.choose-test', compact('tests'));
-    }
+    //     $tests = LearningPath::where('language_id', $onboarding?->onboarding_language_id)->where('type', 'test_prep')->get();
+    //     return view('user.onboarding.choose-test', compact('tests'));
+    // }
 
-    public function PostChooseTest(Request $request)
-    {
-        $request->validate([
-            'learning_path_id' => 'required|exists:learning_paths,id'
-        ]);
+    // public function PostChooseTest(Request $request)
+    // {
+    //     $request->validate([
+    //         'learning_path_id' => 'required|exists:learning_paths,id'
+    //     ]);
 
-        OnboardTempData::updateOrCreate(
-            ['token' => $this->onboardToken($request)],
-            ['learning_path_id' => $request->learning_path_id]
-        );
+    //     OnboardTempData::updateOrCreate(
+    //         ['token' => $this->onboardToken($request)],
+    //         ['learning_path_id' => $request->learning_path_id]
+    //     );
 
-        return redirect()->route('choose-daily-goal');
-    }
+    //     return redirect()->route('choose-daily-goal');
+    // }
 
     // auth
     public function SignUp()
@@ -318,18 +352,98 @@ class UserController extends Controller
     public function UserGeneralDashboard()
     {   
         $user = Auth::user(); 
-        $progress = UserProgress::where('user_id', $user->id)->first();
-        return view('user.general.dashboard', compact('user','progress'));
+        $progress = UserProgress::with('module.rLearningPath.rLanguage')->where('user_id', $user->id)->first();
+        $currentLanguage = ($progress && $progress->language_id) ? Language::find($progress->language_id) : null;
+
+        $learningModules = [];
+        $activeModule = null;
+
+        if ($progress && $progress->learning_path_id) {
+            $pathId = $progress->learning_path_id;
+
+            // Ambil modul-modul yang ada di learning path user, lengkap dengan sub-modulnya
+            $modules = Module::where('learning_path_id', $pathId)
+                ->withCount('subModules')           
+                ->withSum('subModules', 'time')  
+                ->with(['subModules' => function($q) {
+                    $q->orderBy('order_number', 'asc');
+                }])
+                ->get();
+
+            $passingGrade = 70;
+
+            foreach ($modules as $module) {
+                $subModuleIds = $module->subModules->pluck('id');
+
+                // Ambil riwayat kuis sub-modul user
+                $highestScores = UserQuizHistory::where('user_id', $user->id)
+                    ->whereIn('sub_module_id', $subModuleIds)
+                    ->selectRaw('sub_module_id, MAX(score) as max_score')
+                    ->groupBy('sub_module_id')
+                    ->pluck('max_score', 'sub_module_id');
+
+                $completedCount = 0;
+                $currentActiveSubModule = null;
+                $isPreviousPassed = true;
+
+                foreach ($module->subModules as $subModule) {
+                    $score = $highestScores[$subModule->id] ?? 0;
+
+                    if ($score >= $passingGrade) {
+                        $completedCount++;
+                    } else {
+                        // Cari sub-modul pertama yang belum lulus sebagai sub-modul aktif saat ini
+                        if (!$currentActiveSubModule && $isPreviousPassed) {
+                            $currentActiveSubModule = $subModule;
+                        }
+                    }
+
+                    $isPreviousPassed = ($score >= $passingGrade);
+                }
+
+                $totalSubModules = $module->sub_modules_count;
+                $percentage = $totalSubModules > 0 ? round(($completedCount / $totalSubModules) * 100) : 0;
+
+                $module->completed_count = $completedCount;
+                $module->progress_percentage = $percentage;
+                $module->current_active_sub = $currentActiveSubModule;
+
+                // Tentukan modul mana yang sedang "aktif" untuk bagian Continue Learning di atas
+                // (Misalnya modul pertama yang belum 100% selesai)
+                if ($percentage < 100 && !$activeModule) {
+                    $activeModule = $module;
+                }
+
+                // Masukkan ke daftar modul untuk bagian Learning Modules di bawah (misal dibatasi 2 modul)
+                if ($percentage < 100) {
+                    $learningModules[] = $module;
+                }
+            }
+
+            // Batasi hanya 2 modul aktif yang tampil di bagian bawah dashboard
+            $learningModules = array_slice($learningModules, 0, 2);
+        }
+
+        return view('user.general.dashboard', compact(
+            'user', 
+            'progress', 
+            'currentLanguage', 
+            'activeModule', 
+            'learningModules'
+        ));
     }
+
     public function UserGeneralModule()
     {
         $user = Auth::user();
         $progress = UserProgress::where('user_id', $user->id)->first();
 
         if (!$progress) {
-            return view('user.dashboard.general', [
+            return view('user.general.module', [
                 'modules' => [], 
-                'pathTitle' => 'No Path Selected'
+                'pathTitle' => 'No Path Selected',
+                'totalXpOverall' => 0,
+                'wordsMasteredOverall' => 0
             ]);
         }
 
@@ -339,21 +453,81 @@ class UserController extends Controller
         $pathTitle = $path ? $path->title : 'Your Modules';
 
         $modules = Module::where('learning_path_id', $pathId)
-            ->withCount('subModules')        
+            ->withCount('subModules')           
             ->withSum('subModules', 'time')  
+            ->with('subModules') 
             ->get();
 
-        return view('user.general.module', compact('modules'));
+        $passingGrade = 70;
+        $totalXpOverall = 0;
+        $completedSubModuleIdsOverall = [];
+
+        foreach ($modules as $module) {
+            $subModuleIds = $module->subModules->pluck('id');
+
+            $highestScores = UserQuizHistory::where('user_id', $user->id)
+                ->whereIn('sub_module_id', $subModuleIds)
+                ->selectRaw('sub_module_id, MAX(score) as max_score, MAX(xp_earned) as max_xp')
+                ->groupBy('sub_module_id')
+                ->get()
+                ->keyBy('sub_module_id');
+
+            $completedCount = 0;
+            $moduleXp = 0;
+
+            foreach ($module->subModules as $subModule) {
+                $history = $highestScores[$subModule->id] ?? null;
+                $score = $history ? $history->max_score : 0;
+
+                if ($score >= $passingGrade) {
+                    $completedCount++;
+                    $moduleXp += $history->max_xp ?? 0;
+                    
+                    $completedSubModuleIdsOverall[] = $subModule->id;
+                }
+            }
+
+            $totalSubModules = $module->sub_modules_count;
+            $percentage = $totalSubModules > 0 ? round(($completedCount / $totalSubModules) * 100) : 0;
+
+            if ($percentage == 100) {
+                $moduleXp += $module->point ?? 0;
+            }
+
+            $finalQuizAttempt = FinalQuizAttempt::where('user_id', $user->id)
+                ->where('module_id', $module->id)
+                ->where('status', 'passed')
+                ->first();
+
+            if ($finalQuizAttempt) {
+                $moduleXp += $finalQuizAttempt->xp_earned ?? 0;
+            }
+
+            $module->completed_count = $completedCount;
+            $module->progress_percentage = $percentage;
+            
+            $totalXpOverall += $moduleXp;
+        }
+
+        $wordsMasteredOverall = Vocabulary::whereIn('sub_module_id', array_unique($completedSubModuleIdsOverall))->count();
+
+        return view('user.general.module', compact(
+            'modules', 
+            'pathTitle', 
+            'totalXpOverall', 
+            'wordsMasteredOverall'
+        ));
     }
-    public function UserGeneralSubModule ($id)
+
+    public function UserGeneralSubModule($id)
     {
-        $module = Module::withCount('subModules')             
-        ->withSum('subModules', 'point')                 
-        ->withSum('subModules', 'time')                   
-        ->with(['subModules' => function ($query) {
-            $query->orderBy('order_number', 'asc'); 
-        }])
-        ->findOrFail($id);
+        $module = Module::withCount('subModules')            
+            ->withSum('subModules', 'point')                
+            ->withSum('subModules', 'time')                 
+            ->with(['subModules' => function ($query) {
+                $query->orderBy('order_number', 'asc'); 
+            }])
+            ->findOrFail($id);
 
         $totalQuestions = FinalQuiz::where('module_id', $module->id)->count();
 
@@ -372,6 +546,11 @@ class UserController extends Controller
         $passingGrade = 70; 
         $isPreviousPassed = true; 
 
+        $completedLessonsCount = 0;
+        $totalScores = 0;
+        $gradedCount = 0;
+        $totalXpEarned = 0; 
+
         foreach ($module->subModules as $subModule) {
             $score = $highestScores[$subModule->id] ?? 0;
             $subModule->highest_score = $score; 
@@ -381,6 +560,12 @@ class UserController extends Controller
             } else {
                 if ($score >= $passingGrade) {
                     $subModule->status = 'completed'; 
+                    $completedLessonsCount++; 
+                    
+                    $totalScores += $score;
+                    $gradedCount++;
+
+                    $totalXpEarned += $subModule->point ?? 0;
                 } else {
                     $subModule->status = 'unlocked';  
                 }
@@ -389,7 +574,34 @@ class UserController extends Controller
             $isPreviousPassed = ($score >= $passingGrade);
         }
 
-        return view('user.general.sub-module', compact('module', 'vocabularies','totalQuestions'));
+        $totalLessons = $module->sub_modules_count;
+        $lessonsDoneText = "{$completedLessonsCount} / {$totalLessons}";
+
+        $moduleProgress = $totalLessons > 0 ? round(($completedLessonsCount / $totalLessons) * 100) : 0;
+
+        if ($moduleProgress == 100) {
+            $totalXpEarned += $module->point ?? 0;
+        }
+
+        $completedSubModuleIds = $module->subModules->filter(function($sub) {
+            return $sub->status === 'completed';
+        })->pluck('id');
+        
+        $vocabLearn = Vocabulary::whereIn('sub_module_id', $completedSubModuleIds)->count();
+
+        $quizScoreAvg = $gradedCount > 0 ? round($totalScores / $gradedCount) : null;
+
+        return view('user.general.sub-module', compact(
+            'module', 
+            'vocabularies', 
+            'totalQuestions', 
+            'completedLessonsCount', 
+            'totalLessons', 
+            'moduleProgress', 
+            'vocabLearn', 
+            'quizScoreAvg',
+            'totalXpEarned' 
+        ));
     }
 
     public function UserShowQuiz($sub_module_id)
@@ -512,39 +724,42 @@ class UserController extends Controller
     }
 
     public function UserFinalQuizSubmit(Request $request, $module_id)
-        {
-            $module = Module::findOrFail($module_id);
-            $questions = FinalQuiz::where('module_id', $module_id)->get();
+    {
+        $module = Module::findOrFail($module_id);
+        $questions = FinalQuiz::where('module_id', $module_id)->get();
+        
+        $userAnswers = $request->input('answers', []);
+        $totalQuestions = $questions->count();
+        $correctCount = 0;
+
+        foreach ($questions as $index => $question) {
+            $userAns = $userAnswers[$index] ?? null;
             
-            $userAnswers = $request->input('answers', []);
-            $totalQuestions = $questions->count();
-            $correctCount = 0;
-
-            foreach ($questions as $index => $question) {
-                $userAns = $userAnswers[$index] ?? null;
-                
-                if ($userAns !== null && trim(strtolower($userAns)) === trim(strtolower($question->correct_answer))) {
-                    $correctCount++;
-                }
+            if ($userAns !== null && trim(strtolower($userAns)) === trim(strtolower($question->correct_answer))) {
+                $correctCount++;
             }
-
-            $score = $totalQuestions > 0 ? ($correctCount / $totalQuestions) * 100 : 0;
-            $status = $score >= 75 ? 'passed' : 'failed'; 
-
-            $attempt = FinalQuizAttempt::create([
-                'user_id'         => Auth::id(),
-                'module_id'       => $module_id,
-                'score'           => round($score, 2),
-                'total_correct'   => $correctCount,
-                'status'          => $status,
-            ]);
-
-            return response()->json([
-                'success'      => true,
-                'message'      => 'Quiz submitted successfully!',
-                'redirect_url' => route('user.general.quiz-result', ['module_id' => $module_id, 'attempt' => $attempt->id])
-            ]);
         }
+
+        $score = $totalQuestions > 0 ? ($correctCount / $totalQuestions) * 100 : 0;
+        $status = $score >= 75 ? 'passed' : 'failed'; 
+
+        $xpEarned = round(($score / 100) * ($module->point ?? 0));
+
+        $attempt = FinalQuizAttempt::create([
+            'user_id'         => Auth::id(),
+            'module_id'       => $module_id,
+            'score'           => round($score, 2),
+            'total_correct'   => $correctCount,
+            'status'          => $status,
+            'xp_earned'       => $xpEarned, 
+        ]);
+
+        return response()->json([
+            'success'      => true,
+            'message'      => 'Quiz submitted successfully!',
+            'redirect_url' => route('user.general.quiz-result', ['module_id' => $module_id, 'attempt' => $attempt->id])
+        ]);
+    }
 
     public function UserQuizResult($module_id, $attempt_id)
     {

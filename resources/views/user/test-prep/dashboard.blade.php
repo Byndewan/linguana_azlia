@@ -8,7 +8,7 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div>
                 <h1 class="text-3xl font-extrabold text-slate-900">Test Prep Dashboard</h1>
-                <p class="text-slate-500 font-medium mt-1">{{ $testData->title }} • Target: Band 7.0 • Exam in 42 days</p>
+                <p class="text-slate-500 font-medium mt-1"> • Target: Band 7.0 • Exam in 42 days</p>
             </div>
             <div class="flex items-center gap-3">
                 <div class="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl font-bold text-sm text-slate-700 shadow-sm border border-slate-100">
@@ -16,7 +16,7 @@
                     1,820 XP
                 </div>
                 <div class="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl font-bold text-sm text-slate-700 shadow-sm border border-slate-100">
-                    <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z"></path></svg>
+                    <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.67 8.21 8.21 0 003 2.48z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z"></path></svg>
                     8d streak
                 </div>
                 <button class="w-10 h-10 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-slate-500 shadow-sm hover:bg-slate-50 transition-colors">
@@ -36,7 +36,7 @@
             <!-- Detail & Skor -->
             <div class="flex-1 text-center md:text-left">
                 <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-1.5">Exam Countdown</h3>
-                <h2 class="text-2xl font-bold text-slate-900 mb-1.5">{{ $testData->title }} — April 22, 2024</h2>
+                <h2 class="text-2xl font-bold text-slate-900 mb-1.5"> — April 22, 2024</h2>
                 <p class="text-slate-500 text-sm font-medium mb-5">Keep up your pace — you're on track for Band 7.0!</p>
                 
                 <div class="flex flex-wrap justify-center md:justify-start gap-3">

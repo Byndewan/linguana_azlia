@@ -18,6 +18,7 @@ use App\Models\SubModule;
 use App\Models\Vocabulary;
 use App\Models\PracticeQuiz;
 use App\Models\FinalQuiz;
+use App\Models\UserProgress;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\Websitemail;
@@ -579,24 +580,12 @@ class AdminController extends Controller
         $request->validate([
             'language_id' => 'required|exists:languages,id',
             'type' => 'required|in:general,test_prep',
-            'title'       => 'required|string|max:255',
-            'short_description' => 'required',
         ]);
 
         $obj = new LearningPath();
 
-        if ($request->hasFile('photo')) {
-            $ext = $request->file('photo')->extension();
-            $final_name = 'logo_' . time() . '.' . $ext;
-            $request->file('photo')->move(public_path('uploads/'), $final_name);
-            
-            $obj->photo = $final_name;
-        }
-
         $obj->language_id = $request->language_id;
         $obj->type = $request->type;
-        $obj->title = $request->title;
-        $obj->short_description = $request->short_description;
         $obj->save();
 
         return redirect()->route('admin.learning-path.show')->with('success', 'Data is inserted successfully!');
@@ -613,31 +602,12 @@ class AdminController extends Controller
         $request->validate([
             'language_id' => 'required|exists:languages,id',
             'type' => 'required|in:general,test_prep',
-            'title' => 'required|string|max:255',
-            'short_description' => 'required',
         ]);
 
         $obj = LearningPath::where('id', $id)->first();
 
-        if($request->hasFile('photo')) {
-            $request->validate([
-                'photo' => 'image|mimes:jpg,jpeg,png'
-            ]);
-
-            unlink(public_path('uploads/' . $obj->photo));
-
-            $ext = $request->file('photo')->extension();
-            $final_name = 'logo_' . time() . '.' . $ext;
-
-            $request->file('photo')->move(public_path('uploads/'), $final_name);
-
-            $obj->photo = $final_name;
-        }
-
         $obj->language_id = $request->language_id;
         $obj->type = $request->type;
-        $obj->title = $request->title;
-        $obj->short_description = $request->short_description;
         $obj->update();
 
         return redirect()->route('admin.learning-path.show')->with('success', 'Data is updated successfully!');
@@ -646,13 +616,6 @@ class AdminController extends Controller
     public function AdminLearningPathDelete(Request $request, $id)
     {
         $row_data = LearningPath::findOrFail($id);
-
-        $image_path = public_path('uploads/'.$row_data->photo);
-    
-        if (!empty($row_data->photo) && file_exists($image_path)) {
-            unlink($image_path);
-        }
-        
         $row_data->delete();
 
         return redirect()->back()->with('success', 'Data is deleted successfully!');
@@ -730,6 +693,15 @@ class AdminController extends Controller
         return view('admin.manage_user_show', compact('users'));
     }
 
+    public function AdminManageUserInfo()
+    {
+        // $user = User::findOrFail($id);
+
+        // $progressList = UserProgress::with('module.learningPath.rLanguage')->where('user_id', $user->id)->get();
+
+        return view('admin.manage_user_info');
+    }
+
     // Manage Module 
     public function AdminManageModuleShow()
     {
@@ -747,31 +719,31 @@ class AdminController extends Controller
 
     public function AdminManageModuleAdd()
     {
-        $learning_path = LearningPath::get();
-        return view('admin.manage_module_add', compact('learning_path'));
+        $languages = Language::has('learningPaths')->get();
+        $learningPaths = LearningPath::with('rLanguage')->get();
+        return view('admin.manage_module_add', compact('languages', 'learningPaths'));
     }
 
     public function AdminManageModuleSubmit(Request $request)
     {
         $request->validate([
             'learning_path_id' => 'required|exists:learning_paths,id',
-            'title'       => 'required|string|max:255',
-            'icon' => 'required',
-            'color' => 'required|string|max:7',
+            'title'            => 'required|string|max:255',
+            'icon'             => 'required',
+            'color'            => 'required|string|max:7',
             'background_color' => 'required|string|max:7',
-            'time'       => 'required|integer|min:1',
-            'point'       => 'required|integer|min:0'
+            'time'             => 'required|integer|min:1',
+            'point'            => 'required|integer|min:0'
         ]);
 
         $obj = new Module();
-
         $obj->learning_path_id = $request->learning_path_id;
-        $obj->title = $request->title;
-        $obj->icon = $request->icon;
-        $obj->color = $request->color;
+        $obj->title            = $request->title;
+        $obj->icon             = $request->icon;
+        $obj->color            = $request->color;
         $obj->background_color = $request->background_color;
-        $obj->time = $request->time;
-        $obj->point = $request->point;
+        $obj->time             = $request->time;
+        $obj->point            = $request->point;
         $obj->save();
 
         return redirect()->route('admin.manage-module.show')->with('success', 'Data is inserted successfully!');
@@ -779,31 +751,34 @@ class AdminController extends Controller
 
     public function AdminManageModuleEdit(int $id)
     {
-        $learning_path = LearningPath::get();
-        $row_data = Module::where('id', $id)->first();
-        return view('admin.manage_module_edit', compact('row_data', 'learning_path'));
+        $row_data = Module::with('rLearningPath.rLanguage')->findOrFail($id);
+        $languages = Language::has('learningPaths')->get();
+        $learningPaths = LearningPath::with('rLanguage')->get();
+
+        return view('admin.manage_module_edit', compact('row_data', 'languages', 'learningPaths'));
     }
+
     public function AdminManageModuleUpdate(Request $request, $id)
     {
         $request->validate([
             'learning_path_id' => 'required|exists:learning_paths,id',
-            'title'       => 'required|string|max:255',
-            'icon' => 'required',
-            'color' => 'required|string|max:7',
+            'title'            => 'required|string|max:255',
+            'icon'             => 'required',
+            'color'            => 'required|string|max:7',
             'background_color' => 'required|string|max:7',
-            'time'       => 'required|integer|min:1',
-            'point'       => 'required|integer|min:0'
+            'time'             => 'required|integer|min:1', 
+            'point'            => 'required|integer|min:0'
         ]);
 
-        $obj = Module::where('id', $id)->first();
+        $obj = Module::findOrFail($id);
 
         $obj->learning_path_id = $request->learning_path_id;
-        $obj->title = $request->title;
-        $obj->icon = $request->icon;
-        $obj->color = $request->color;
+        $obj->title            = $request->title;
+        $obj->icon             = $request->icon;
+        $obj->color            = $request->color;
         $obj->background_color = $request->background_color;
-        $obj->time = $request->time;
-        $obj->point = $request->point;
+        $obj->time             = $request->time;
+        $obj->point            = $request->point;
         $obj->update();
 
         return redirect()->route('admin.manage-module.show')->with('success', 'Data is updated successfully!');

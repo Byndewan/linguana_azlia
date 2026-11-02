@@ -104,25 +104,25 @@
             <!-- RIGHT COLUMN: SIDEBAR WIDGETS (Target Goal & Full Mock Test) -->
             <div class="lg:col-span-4 flex flex-col gap-6">
                 
-                <!-- Target Goal Widget -->
+                <!-- Overall Progress Widget (Pengganti Target Goal) -->
                 <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
-                    <h4 class="text-xs font-extrabold text-slate-400 tracking-wider mb-5 uppercase">Target Goal</h4>
+                    <h4 class="text-xs font-extrabold text-slate-400 tracking-wider mb-5 uppercase">Overall Progress</h4>
                     
                     <div class="flex items-center justify-between bg-slate-50 px-4 py-3 rounded-xl border border-slate-100 mb-4">
-                        <span class="text-sm font-medium text-slate-500">Target Score</span>
-                        <span class="text-base font-bold text-slate-800">550+</span>
+                        <span class="text-sm font-medium text-slate-500">Average Accuracy</span>
+                        <span class="text-base font-bold text-slate-800">85%</span>
                     </div>
                     
                     <div class="flex items-center justify-between bg-slate-50 px-4 py-3 rounded-xl border border-slate-100">
-                        <span class="text-sm font-medium text-slate-500">Simulation Test</span>
-                        <span class="text-xs font-semibold px-2.5 py-1 bg-amber-100 text-amber-700 rounded-lg">Not Taken</span>
+                        <span class="text-sm font-medium text-slate-500">Modules Completed</span>
+                        <span class="text-xs font-semibold px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-lg">3 of 4 Done</span>
                     </div>
                 </div>
 
                 <!-- Full Mock Test Widget -->
                 <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6 shadow-sm">
                     <h4 class="text-xs font-extrabold text-slate-400 tracking-wider mb-2 uppercase">Full Simulation</h4>
-                    <h3 class="text-lg font-bold mb-2">TOEFL iBT Full Mock Test</h3>
+                    <h3 class="text-lg font-bold mb-2">Full Mock Test</h3>
                     <p class="text-xs text-slate-300 mb-5 leading-relaxed">Test your complete skills from the first section to the last with an official exam timer.</p>
                     <a href="#" class="block text-center w-full bg-[#55BCC9] hover:bg-[#03a9bf] text-white py-2.5 rounded-xl font-semibold transition-colors text-sm">
                         Take Full Mock Test

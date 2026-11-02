@@ -14,88 +14,69 @@
         
         <!-- LEFT COLUMN: MODULES GRID (Takes up 8 columns) -->
         <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-5 self-start">
-            
-            <!-- MODULE 1: Everyday Conversations (In Progress) -->
-            {{-- <div class="bg-white border-2 border-[#55BCC9]/20 rounded-2xl p-5 shadow-[0_4px_15px_rgba(85,188,201,0.1)] flex flex-col transition-transform hover:-translate-y-1 relative overflow-hidden group">
-                <!-- Icon & Title -->
-                <div class="flex items-start gap-4 mb-4">
-                    <div class="w-12 h-12 shrink-0 rounded-2xl bg-[#55BCC9] flex items-center justify-center text-white shadow-md">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" /></svg>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-800 leading-tight transition-colors">Everyday Conversations</h3>
-                        <p class="text-xs text-slate-400 font-medium mt-1">12 lessons • 2.5 hours</p>
-                    </div>
-                </div>
-                
-                <!-- Progress Bar -->
-                <div class="mt-auto">
-                    <div class="flex justify-between items-end mb-1.5 text-sm font-bold">
-                        <span class="text-[#55BCC9]">50%</span>
-                        <span class="text-slate-400 text-xs">6/12 done</span>
-                    </div>
-                    <div class="w-full bg-slate-100 rounded-full h-2">
-                        <div class="bg-[#55BCC9] h-2 rounded-full" style="width: 50%"></div>
-                    </div>
-                </div>
-                
-                <a href="{{ route('user.general.sub-module') }}" class="mt-5 text-center w-full bg-[#55BCC9] hover:bg-[#48a9b5] text-white py-2.5 rounded-xl font-semibold transition-colors text-sm">
-                    Continue Learning
-                </a>
-            </div> --}}
 
-            <!-- MODULE 2: Travel & Navigation (Not Started) -->
-            @foreach ($modules as $item)
-                <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-[0_2px_10px_rgba(0,0,0,0.03)] flex flex-col transition-transform hover:-translate-y-1 group">
-                <div class="flex items-start gap-4 mb-4">
-                    <div class="w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center shadow-sm" style="color: {{ $item->color }}; background-color: {{ $item->background_color }};">
-                        {!! $item->icon !!}
+            @foreach ($modules as $index => $item)
+            @php
+                $isLocked = false;
+                if ($index > 0) {
+                    $previousModule = $modules[$index - 1];
+                    if ($previousModule->progress_percentage < 100) {
+                        $isLocked = true;
+                    }
+                }
+            @endphp
+                @if(!$isLocked)
+                    <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-[0_2px_10px_rgba(0,0,0,0.03)] flex flex-col transition-transform hover:-translate-y-1 group">
+                        <div class="flex items-start gap-4 mb-4">
+                            <div class="w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center shadow-sm" style="color: {{ $item->color }}; background-color: {{ $item->background_color }};">
+                                {!! $item->icon !!}
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-800 leading-tight transition-colors">{{ $item->title }}</h3>
+                                <p class="text-xs text-slate-400 font-medium mt-1">{{ $item->sub_modules_count }} lessons • {{ $item->sub_modules_sum_time ?? 0 }} minutes total</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-auto">
+                            <div class="flex justify-between items-end mb-1.5 text-sm font-bold">
+                                <span class="{{ $item->progress_percentage > 0 ? 'text-slate-700' : 'text-slate-300' }}">{{ $item->progress_percentage }}%</span>
+                                
+                                <span class="text-slate-400 text-xs">{{ $item->completed_count }}/{{ $item->sub_modules_count }} done</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                <div class="h-2 rounded-full transition-all duration-500 {{ $item->progress_percentage == 100 ? 'bg-emerald-500' : 'bg-[#55BCC9]' }}" style="width: {{ $item->progress_percentage }}%"></div>
+                            </div>
+                        </div>
+                        
+                        <a href="{{ route('user.general.sub-module', $item->id) }}" class="mt-5 text-center w-full {{ $item->progress_percentage == 100 ? 'bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200' }} py-2.5 rounded-xl font-semibold transition-colors text-sm border">
+                            {{ $item->progress_percentage == 100 ? 'Review Module ✓' : 'Start Module' }}
+                        </a>
                     </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-800 leading-tight transition-colors">{{ $item->title }}</h3>
-                        <p class="text-xs text-slate-400 font-medium mt-1">{{ $item->sub_modules_count }} lessons • {{ $item->sub_modules_sum_time ?? 0 }} minutes total</p>
+                @else
+                <!-- MODULE 4: Locked -->
+                    <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col opacity-60 grayscale-[40%] select-none">
+                        <div class="flex items-start gap-4 mb-4">
+                            <div class="w-12 h-12 shrink-0 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-500 leading-tight">{{ $item->title }}</h3>
+                                <p class="text-xs text-slate-400 font-medium mt-1">Complete previous module to unlock</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-auto pt-8">
+                            <button disabled class="w-full bg-slate-100 text-slate-400 py-2.5 rounded-xl font-semibold cursor-not-allowed text-sm flex items-center justify-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                                Locked
+                            </button>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="mt-auto">
-                    <div class="flex justify-between items-end mb-1.5 text-sm font-bold">
-                        <span class="text-slate-300">0%</span>
-                        <span class="text-slate-400 text-xs">0/8 done</span>
-                    </div>
-                    <div class="w-full bg-slate-100 rounded-full h-2">
-                        <div class="bg-slate-300 h-2 rounded-full" style="width: 0%"></div>
-                    </div>
-                </div>
-                
-                <a href="{{ route('user.general.sub-module', $item->id) }}" class="mt-5 text-center w-full bg-slate-50 hover:bg-slate-100 text-slate-700 py-2.5 rounded-xl font-semibold transition-colors text-sm border border-slate-200">
-                    Start Module
-                </a>
-            </div>
+                @endif
             @endforeach
-            
-            <!-- MODULE 4: Locked -->
-            <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col opacity-60 grayscale-[40%] select-none">
-                <div class="flex items-start gap-4 mb-4">
-                    <div class="w-12 h-12 shrink-0 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-500 leading-tight">Business & Work</h3>
-                        <p class="text-xs text-slate-400 font-medium mt-1">Unlock at Level 5</p>
-                    </div>
-                </div>
-                
-                <div class="mt-auto pt-8">
-                    <button disabled class="w-full bg-slate-100 text-slate-400 py-2.5 rounded-xl font-semibold cursor-not-allowed text-sm flex items-center justify-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
-                        Locked
-                    </button>
-                </div>
-            </div>
-
         </div>
 
-        <!-- RIGHT COLUMN: GLOBAL WIDGETS (Takes up 4 columns) -->
+        <!-- RIGHT COLUMN: GLOBAL WIDGETS-->
         <div class="lg:col-span-4 flex flex-col gap-6">
             
             <!-- Global Profile/Streak Widget -->
@@ -139,14 +120,14 @@
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-amber-400"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg>
                             Total XP
                         </span>
-                        <span class="font-bold text-slate-800">1,240</span>
+                        <span class="font-bold text-slate-800">{{ number_format($totalXpOverall) }}</span>
                     </div>
                     <div class="flex justify-between items-center bg-slate-50 px-4 py-3 rounded-xl border border-slate-100">
                         <span class="text-slate-500 font-medium flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-indigo-500"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" /></svg>
                             Words Mastered
                         </span>
-                        <span class="font-bold text-slate-800">142</span>
+                        <span class="font-bold text-slate-800">{{ number_format($wordsMasteredOverall) }}</span>
                     </div>
                 </div>
             </div>

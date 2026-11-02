@@ -44,11 +44,6 @@
                         Type
                       </p>
                     </th>
-                    <th class="px-5 py-3 sm:px-6 text-left">
-                      <p class="font-medium text-gray-500 text-theme-md dark:text-gray-400">
-                        Title
-                      </p>
-                    </th>
                     <th class="px-5 py-3 sm:px-6 text-right">
                       <p class="font-medium text-gray-500 text-theme-md dark:text-gray-400">
                         Action
@@ -78,9 +73,6 @@
                                     Test Prep
                                 </span>
                             @endif
-                        </td>
-                        <td class="px-5 py-4 sm:px-6">
-                            <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $item->title }}</p>
                         </td>
                         <td class="px-5 py-4 sm:px-6">
                         <div class="flex items-center justify-end gap-3">

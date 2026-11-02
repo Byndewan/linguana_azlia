@@ -121,16 +121,16 @@
                 
                 <!-- Secondary Buttons -->
                 <div class="flex items-center gap-4 w-full sm:w-auto">
-                    <button class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3.5 border-2 border-[#88cfd8] rounded-xl font-bold text-slate-700 hover:bg-slate-50 transition-colors">
+                    <button class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3.5 border-2 border-[#88cfd8] rounded-xl font-bold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                         Retry Quiz
                     </button>
-                    <button class="flex-1 sm:flex-none px-6 py-3.5 bg-[#b2e7ee] rounded-xl font-bold text-slate-700 hover:bg-[#88e1ed] transition-colors text-center">
+                    <button onclick="window.location.href='{{ route('user.general.module') }}'" class="flex-1 sm:flex-none px-6 py-3.5 bg-[#b2e7ee] rounded-xl font-bold text-slate-700 hover:bg-[#88e1ed] transition-colors text-center cursor-pointer">
                         Back to Dashboard
                     </button>
                 </div>
 
-                <button class="w-full sm:flex-1 px-6 py-3.5 bg-[#55bcc9] text-white rounded-xl flex items-center justify-center gap-2 font-bold hover:bg-[#55bcc9] transition-colors shadow-md">
+                <button class="w-full sm:flex-1 px-6 py-3.5 bg-[#55bcc9] text-white rounded-xl flex items-center justify-center gap-2 font-bold hover:bg-[#55bcc9] transition-colors shadow-md cursor-pointer">
                     Continue Learning
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
                 </button>

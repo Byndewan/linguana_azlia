@@ -41,11 +41,6 @@
                     </th>
                     <th class="px-5 py-3 sm:px-6 text-left">
                       <p class="font-medium text-gray-500 text-theme-md dark:text-gray-400">
-                        Learning Path Title
-                      </p>
-                    </th>
-                    <th class="px-5 py-3 sm:px-6 text-left">
-                      <p class="font-medium text-gray-500 text-theme-md dark:text-gray-400">
                         Language
                       </p>
                     </th>
@@ -72,9 +67,6 @@
                         </td>
                         <td class="px-5 py-4 sm:px-6">
                             <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $item->title }}</p>
-                        </td>
-                        <td class="px-5 py-4 sm:px-6">
-                            <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $item->rLearningPath->title }}</p>
                         </td>
                         <td class="px-5 py-4 sm:px-6">
                             <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $item->rLearningPath->rLanguage->language }}</p>

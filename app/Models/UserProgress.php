@@ -27,4 +27,8 @@ class UserProgress extends Model
     {
         return $this->belongsTo(LearningPath::class, 'learning_path_id');
     }
+
+    public function module() {
+        return $this->belongsTo(Module::class, 'module_id');
+    }
 }

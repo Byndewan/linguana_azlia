@@ -10,15 +10,14 @@
                 <p class="text-sm text-slate-500 mt-1">Focus on becoming a little better every day!</p>
             </div>
             <div class="flex items-center gap-4">
-                <!-- Stats Badges -->
-                {{-- <div class="flex items-center gap-2 px-4 py-2 bg-slate-200/50 rounded-full text-sm font-bold">
-                    <div class="w-4 h-4 bg-slate-400 rounded-full"></div> 2,340 XP
+                <!-- Active Language Badge/Button -->
+                <div class="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-slate-200 shadow-sm text-sm font-semibold text-slate-700">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#55BCC9]"></span>
+                    <span>{{ $currentLanguage->language }}</span>
                 </div>
-                <div class="flex items-center gap-2 px-4 py-2 bg-slate-200/50 rounded-full text-sm font-bold">
-                    <div class="w-4 h-4 bg-slate-400 rounded-full"></div> 12d streak
-                </div> --}}
+
                 <!-- Bell Icon -->
-                <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm">
+                <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm transition-colors hover:bg-slate-50">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-[#55BCC9]">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
                     </svg>
@@ -31,44 +30,70 @@
             
             <!-- 1. Hero Section: Continue Learning -->
             <section class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm relative overflow-hidden">
-                <div class="text-xs font-bold text-slate-500 tracking-wider mb-2">CONTINUE LEARNING</div>
-                <div class="flex justify-between items-start mb-6">
-                    <div>
-                        <h2 class="text-2xl font-bold text-slate-900">Everyday Conversations — Lesson 9</h2>
-                        <p class="text-slate-500 mt-1">Expressing opinions and disagreements</p>
-                    </div>
-                    <button class="px-6 py-3 bg-[#55BCC9] text-white font-bold rounded-xl flex items-center gap-2">
-                        Resume 
-                        <div>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
-                            </svg>
-                        </div>
-                    </button>
+    <div class="text-xs font-bold text-slate-500 tracking-wider mb-2">CONTINUE LEARNING</div>
+    
+    @if($activeModule && $activeModule->current_active_sub)
+        <div class="flex justify-between items-start mb-6">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-900">
+                    {{ $activeModule->title }} — Lesson {{ $activeModule->current_active_sub->order_number }}
+                </h2>
+                <p class="text-slate-500 mt-1">
+                    {{ $activeModule->current_active_sub->title ?? 'Mulai sesi pembelajaranmu' }}
+                </p>
+            </div>
+            
+            <!-- Tombol Resume dengan Route & Cursor Pointer -->
+            <button onclick="window.location.href='{{ route('user.general.sub-module', ['id' => $activeModule->id]) }}'" 
+                    class="px-6 py-3 bg-[#55BCC9] text-white font-bold rounded-xl flex items-center gap-2 hover:bg-[#45a3af] transition-colors cursor-pointer shadow-md">
+                Resume 
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
+                    </svg>
                 </div>
-                <!-- Progress Bar -->
-                <div class="flex items-center gap-4 mb-4">
-                    <div class="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
-                        <div class="h-full bg-[#55BCC9] w-[72%] rounded-full"></div>
-                    </div>
-                    <span class="text-sm font-bold text-slate-500">72%</span>
-                </div>
-                <!-- Meta info -->
-                <div class="flex items-center gap-6 text-sm text-slate-700">
-                    <span class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-indigo-500">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
-                    </svg> 9 / 12 lessons</span>
-                    <span class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-orange-500">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                    </svg>~18 min left</span>
-                    <span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-amber-500">
-  <path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
-</svg>
-+45 XP on completion</span>
-                </div>
-            </section>
+            </button>
+        </div>
+
+        <!-- Progress Bar Dinamis -->
+        <div class="flex items-center gap-4 mb-4">
+            <div class="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
+                <div class="h-full bg-[#55BCC9] rounded-full transition-all duration-500" style="width: {{ $activeModule->progress_percentage }}%;"></div>
+            </div>
+            <span class="text-sm font-bold text-slate-500">{{ $activeModule->progress_percentage }}%</span>
+        </div>
+
+        <!-- Meta info Dinamis -->
+        <div class="flex flex-wrap items-center gap-6 text-sm text-slate-700">
+            <!-- Lessons Completed -->
+            <span class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-indigo-500">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                </svg> 
+                {{ $activeModule->completed_count }} / {{ $activeModule->sub_modules_count }} lessons
+            </span>
+
+            <span class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-orange-500">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                ~{{ $activeModule->sub_modules_sum_time ?? 15 }} min left
+            </span>
+
+            <span class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-amber-500">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
+                </svg>
+                +{{ $activeModule->point ?? 50 }} XP on completion
+            </span>
+        </div>
+    @else
+        <div class="py-6 text-center">
+            <h3 class="text-lg font-bold text-slate-800">🎉 Awesome Job!</h3>
+            <p class="text-slate-500 text-sm mt-1">You have completed all modules in this learning path.</p>
+        </div>
+    @endif
+</section>
 
             <!-- Bottom Layout: CSS Grid (2 Columns Left, 1 Column Right) -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
