@@ -11,7 +11,7 @@
                 <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
                     <!-- Foto Profil Placeholder -->
                     <div class="relative">
-                        <div class="w-24 h-24 flex items-center justify-center text-3xl font-bold text-slate-500"><img src="{{ asset("assets/profile-dashboard.jpeg") }}" class="rounded-full" alt=""></div>
+                        <div class="w-24 h-24 flex items-center justify-center text-3xl font-bold text-slate-500"><img src="{{ !empty(Auth::user()->photo) ? asset('uploads/' . Auth::user()->photo) : asset('assets/profile-dashboard.jpeg') }}" class="rounded-full" alt=""></div>
                         <button class="absolute -bottom-2 -right-2 w-8 h-8 bg-[#1E1F2E] text-white rounded-full flex items-center justify-center shadow-md border-2 border-white hover:bg-slate-700 transition-colors">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         </button>
@@ -19,22 +19,22 @@
                     
                     <!-- Teks Profil -->
                     <div class="flex flex-col">
-                        <h1 class="text-3xl font-extrabold text-slate-900">Azlia Nisrina</h1>
-                        <p class="text-slate-400 font-medium mt-1 mb-4">azlia@gmail.com</p>
+                        <h1 class="text-3xl font-extrabold text-slate-900">{{ old('name', Auth::user()->name) }}</h1>
+                        <p class="text-slate-400 font-medium mt-1 mb-4">{{ old('email', Auth::user()->email) }}</p>
                         
                         <!-- Badges/Tags Profil -->
                         <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                            <span class="px-3 py-1.5 bg-[#abe3e9] text-slate-600 font-bold text-xs rounded-full">Member since Jan 2024</span>
+                            <span class="px-3 py-1.5 bg-[#abe3e9] text-slate-600 font-bold text-xs rounded-full">Member since {{ Auth::user()->created_at->format('M Y') }}</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Tombol Aksi Kanan -->
                 <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto mt-4 md:mt-0">
-                    <button class="px-6 py-3 bg-[#55BCC9] text-white font-bold rounded-xl shadow-md hover:bg-[#27aabb] transition-colors w-full sm:w-auto text-sm">
+                    <button onclick="window.location.href='{{ route('user.edit.profile') }}'" class="px-6 py-3 bg-[#55BCC9] text-white font-bold rounded-xl shadow-md hover:bg-[#27aabb] transition-colors w-full sm:w-auto text-sm cursor-pointer">
                         Edit Profile
                     </button>
-                    <button class="px-6 py-3 border border-[#89dbe6] text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-colors w-full sm:w-auto text-sm">
+                    <button onclick="window.location.href='{{ route('user.change.password') }}'" class="px-6 py-3 border border-[#89dbe6] text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-colors w-full sm:w-auto text-sm cursor-pointer">
                         Change Password
                     </button>
                 </div>
@@ -51,7 +51,7 @@
                             </svg>
                         </div>
                     </div>
-                    <span class="text-2xl font-extrabold text-slate-900 mb-0.5">2,340</span>
+                    <span class="text-2xl font-extrabold text-slate-900 mb-0.5">{{ number_format($totalXp) }}</span>
                     <span class="text-xs font-medium text-slate-400">Total XP</span>
                 </div>
                 <!-- Card 2 -->
@@ -63,7 +63,7 @@
                             </svg>
                         </div>
                     </div>
-                    <span class="text-2xl font-extrabold text-slate-900 mb-0.5">18</span>
+                    <span class="text-2xl font-extrabold text-slate-900 mb-0.5">{{ $quizPassed }}</span>
                     <span class="text-xs font-medium text-slate-400">Quiz Passed</span>
                 </div>
                 <!-- Card 3 -->
@@ -75,7 +75,7 @@
                             </svg>
                         </div>
                     </div>
-                    <span class="text-2xl font-extrabold text-slate-900 mb-0.5">7</span>
+                    <span class="text-2xl font-extrabold text-slate-900 mb-0.5">{{ $modulesDone }}</span>
                     <span class="text-xs font-medium text-slate-400">Modules Done</span>
                 </div>
                 <!-- Card 4 -->
@@ -87,7 +87,7 @@
                             </svg>
                         </div>
                     </div>
-                    <span class="text-2xl font-extrabold text-slate-900 mb-0.5">12</span>
+                    <span class="text-2xl font-extrabold text-slate-900 mb-0.5">{{ $wordsLearned }}</span>
                     <span class="text-xs font-medium text-slate-400">Words Learned</span>
                 </div>
             </div>
@@ -102,13 +102,13 @@
                     <div class="flex flex-col">
                         <div class="flex justify-between items-center py-4 border-b border-slate-100">
                             <span class="text-sm font-medium text-slate-400">Learning Language</span>
-                            <span class="text-sm font-bold text-slate-900">Spanish (Español)</span>
+                            <span class="text-sm font-bold text-slate-900">{{ $progress->language->language}}</span>
                         </div>
                         <div class="flex justify-between items-center py-4 border-b border-slate-100">
                             <span class="text-sm font-medium text-slate-400">Learning Path</span>
-                            <span class="text-sm font-bold text-slate-900">General Learning</span>
+                            <span class="text-sm font-bold text-slate-900">{{ $progress->learningPath->type == 'general' ? 'General Learning' : ($progress?->learningPath?->type == 'test_prep' ? 'Test Preparation' : 'Not Set') }}</span>
                         </div>
-                        <div class="flex justify-between items-center py-4 border-b border-slate-100">
+                        {{-- <div class="flex justify-between items-center py-4 border-b border-slate-100">
                             <span class="text-sm font-medium text-slate-400">Daily XP Goal</span>
                             <span class="text-sm font-bold text-slate-900">100 XP / day</span>
                         </div>
@@ -119,12 +119,12 @@
                         <div class="flex justify-between items-center pt-4">
                             <span class="text-sm font-medium text-slate-400">Reminder Time</span>
                             <span class="text-sm font-bold text-slate-900">7:00 AM daily</span>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
 
                 <!-- Kanan: Overall Progress -->
-                <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm flex flex-col gap-6">
+                {{-- <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm flex flex-col gap-6">
                     <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase">Overall Progress</h3>
                     
                     <!-- Circular Chart & Label -->
@@ -178,7 +178,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
             </div>
 

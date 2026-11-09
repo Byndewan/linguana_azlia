@@ -27,7 +27,6 @@
             <!-- Logo Area -->
             <div class="h-20 flex items-center justify-between px-6 border-b border-slate-100 overflow-hidden">
                 <img src="{{ asset('assets/linguana.png') }}" alt="Illustration" class="w-30">
-                <!-- Tombol Close khusus Mobile di dalam sidebar -->
                 <button id="mobileCloseBtn" class="md:hidden text-slate-400 hover:text-slate-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
@@ -59,7 +58,7 @@
                     </div> 
                     <span class="sidebar-text ml-3 whitespace-nowrap transition-opacity duration-200">My Courses</span>
                 </a>
-                <a href="{{ route('user.profile') }}" class="flex items-center px-2 py-2.5 rounded-lg font-medium overflow-hidden transition-colors {{ request()->routeIs('user.profile') ? 'bg-[#55BCC9] text-white shadow-sm' : 'text-slate-800 hover:bg-slate-50' }}">
+                <a href="{{ route('user.profile') }}" class="flex items-center px-2 py-2.5 rounded-lg font-medium overflow-hidden transition-colors {{ request()->routeIs('user.profile', 'user.edit.profile', 'user.change.password') ? 'bg-[#55BCC9] text-white shadow-sm' : 'text-slate-800 hover:bg-slate-50' }}">
                     <div class="rounded shrink-0 mx-1">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />

@@ -18,10 +18,12 @@ use App\Models\SubModule;
 use App\Models\Vocabulary;
 use App\Models\PracticeQuiz;
 use App\Models\FinalQuiz;
+use App\Models\FinalQuizAttempt;
 use App\Models\UserProgress;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\Websitemail;
+use App\Models\UserQuizHistory;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Process as FacadesProcess;
 
@@ -29,7 +31,25 @@ class AdminController extends Controller
 {
     public function AdminDashboard (Request $request)
     {
-        return view('admin.dashboard');
+        $users = User::all();
+        $modules = Module::all();
+        $learning_path = LearningPath::all();
+        $vocabularies = Vocabulary::all();
+        $quizzes = UserQuizHistory::all();
+
+        $quizXp = UserQuizHistory::sum('xp_earned');
+        $finalQuizXp = FinalQuizAttempt::sum('xp_earned');
+        $totalXpEarned = $quizXp + $finalQuizXp;
+
+        $recentActivities = UserQuizHistory::with([
+                        'user.progress.learningPath', 
+                        'subModule'
+                    ])
+                    ->latest()
+                    ->take(5)
+                    ->get();
+
+        return view('admin.dashboard', compact('users', 'modules', 'learning_path', 'vocabularies', 'quizzes', 'totalXpEarned', 'recentActivities'));
     }
 
     // Authentication
@@ -693,13 +713,16 @@ class AdminController extends Controller
         return view('admin.manage_user_show', compact('users'));
     }
 
-    public function AdminManageUserInfo()
+    public function AdminManageUserInfo($id)
     {
-        // $user = User::findOrFail($id);
+        $user = User::with(['progress'])->findOrFail($id);
 
-        // $progressList = UserProgress::with('module.learningPath.rLanguage')->where('user_id', $user->id)->get();
+        $activities = UserQuizHistory::where('user_id', $id)
+                        ->with(['subModule']) 
+                        ->latest()
+                        ->get();
 
-        return view('admin.manage_user_info');
+        return view('admin.manage_user_info', compact('user', 'activities'));
     }
 
     // Manage Module 

@@ -285,7 +285,7 @@ class UserController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
+        return redirect('/login');
     }
 
     public function ForgotPassword()
@@ -361,7 +361,6 @@ class UserController extends Controller
         if ($progress && $progress->learning_path_id) {
             $pathId = $progress->learning_path_id;
 
-            // Ambil modul-modul yang ada di learning path user, lengkap dengan sub-modulnya
             $modules = Module::where('learning_path_id', $pathId)
                 ->withCount('subModules')           
                 ->withSum('subModules', 'time')  
@@ -375,7 +374,6 @@ class UserController extends Controller
             foreach ($modules as $module) {
                 $subModuleIds = $module->subModules->pluck('id');
 
-                // Ambil riwayat kuis sub-modul user
                 $highestScores = UserQuizHistory::where('user_id', $user->id)
                     ->whereIn('sub_module_id', $subModuleIds)
                     ->selectRaw('sub_module_id, MAX(score) as max_score')
@@ -392,7 +390,6 @@ class UserController extends Controller
                     if ($score >= $passingGrade) {
                         $completedCount++;
                     } else {
-                        // Cari sub-modul pertama yang belum lulus sebagai sub-modul aktif saat ini
                         if (!$currentActiveSubModule && $isPreviousPassed) {
                             $currentActiveSubModule = $subModule;
                         }
@@ -408,19 +405,15 @@ class UserController extends Controller
                 $module->progress_percentage = $percentage;
                 $module->current_active_sub = $currentActiveSubModule;
 
-                // Tentukan modul mana yang sedang "aktif" untuk bagian Continue Learning di atas
-                // (Misalnya modul pertama yang belum 100% selesai)
                 if ($percentage < 100 && !$activeModule) {
                     $activeModule = $module;
                 }
 
-                // Masukkan ke daftar modul untuk bagian Learning Modules di bawah (misal dibatasi 2 modul)
                 if ($percentage < 100) {
                     $learningModules[] = $module;
                 }
             }
 
-            // Batasi hanya 2 modul aktif yang tampil di bagian bawah dashboard
             $learningModules = array_slice($learningModules, 0, 2);
         }
 
@@ -453,13 +446,17 @@ class UserController extends Controller
         $pathTitle = $path ? $path->title : 'Your Modules';
 
         $modules = Module::where('learning_path_id', $pathId)
-            ->withCount('subModules')           
+            ->withCount('subModules')          
             ->withSum('subModules', 'time')  
             ->with('subModules') 
             ->get();
 
         $passingGrade = 70;
-        $totalXpOverall = 0;
+        
+        $quizXpOverall = UserQuizHistory::where('user_id', $user->id)->sum('xp_earned');
+        $finalQuizXpOverall = FinalQuizAttempt::where('user_id', $user->id)->sum('xp_earned');
+        $totalXpOverall = $quizXpOverall + $finalQuizXpOverall;
+
         $completedSubModuleIdsOverall = [];
 
         foreach ($modules as $module) {
@@ -467,13 +464,12 @@ class UserController extends Controller
 
             $highestScores = UserQuizHistory::where('user_id', $user->id)
                 ->whereIn('sub_module_id', $subModuleIds)
-                ->selectRaw('sub_module_id, MAX(score) as max_score, MAX(xp_earned) as max_xp')
+                ->selectRaw('sub_module_id, MAX(score) as max_score')
                 ->groupBy('sub_module_id')
                 ->get()
                 ->keyBy('sub_module_id');
 
             $completedCount = 0;
-            $moduleXp = 0;
 
             foreach ($module->subModules as $subModule) {
                 $history = $highestScores[$subModule->id] ?? null;
@@ -481,8 +477,6 @@ class UserController extends Controller
 
                 if ($score >= $passingGrade) {
                     $completedCount++;
-                    $moduleXp += $history->max_xp ?? 0;
-                    
                     $completedSubModuleIdsOverall[] = $subModule->id;
                 }
             }
@@ -490,23 +484,8 @@ class UserController extends Controller
             $totalSubModules = $module->sub_modules_count;
             $percentage = $totalSubModules > 0 ? round(($completedCount / $totalSubModules) * 100) : 0;
 
-            if ($percentage == 100) {
-                $moduleXp += $module->point ?? 0;
-            }
-
-            $finalQuizAttempt = FinalQuizAttempt::where('user_id', $user->id)
-                ->where('module_id', $module->id)
-                ->where('status', 'passed')
-                ->first();
-
-            if ($finalQuizAttempt) {
-                $moduleXp += $finalQuizAttempt->xp_earned ?? 0;
-            }
-
             $module->completed_count = $completedCount;
             $module->progress_percentage = $percentage;
-            
-            $totalXpOverall += $moduleXp;
         }
 
         $wordsMasteredOverall = Vocabulary::whereIn('sub_module_id', array_unique($completedSubModuleIdsOverall))->count();
@@ -784,7 +763,119 @@ class UserController extends Controller
     }
     public function UserProfile (Request $request)
     {
-        return view('user.general.profile');
+        $user = Auth::user();
+        $userId = $user->id;
+
+        $quizXp = UserQuizHistory::where('user_id', $userId)->sum('xp_earned');
+        $finalQuizXp = FinalQuizAttempt::where('user_id', $userId)->sum('xp_earned');
+        $totalXp = $quizXp + $finalQuizXp;
+
+        $quizPassed = UserQuizHistory::where('user_id', $userId)->count();
+
+        $modulesDone = FinalQuizAttempt::where('user_id', $userId)
+                                    ->where('status', 'passed')
+                                    ->count();
+
+        $completedSubModules = UserQuizHistory::where('user_id', $userId)
+                                            ->pluck('sub_module_id');
+                                            
+        $wordsLearned = Vocabulary::whereIn('sub_module_id', $completedSubModules)->count(); 
+
+        $progress = UserProgress::where('user_id', $userId)->first();
+
+        // $languageName = 'Not Set';
+        // if ($progress && $progress->language_id) {
+        //     $language = Language::find($progress->language_id);
+        //     $languageName = $language ? $language->name : 'Not Set';
+        // }
+
+        // $pathTitle = 'General Learning';
+        // if ($progress && $progress->learning_path_id) {
+        //     $path = LearningPath::find($progress->learning_path_id);
+        //     $pathTitle = $path ? $path->title : 'General Learning';
+        // }
+
+        return view('user.general.profile', compact(
+            'user', 
+            'totalXp', 
+            'quizPassed', 
+            'modulesDone', 
+            'wordsLearned',
+            'progress'
+        ));
+    }
+
+
+    public function UserEditProfile()
+    {
+        $user = Auth::guard('user')->user();
+        return view('user.general.edit_profile', compact('user'));
+    }
+
+    public function UserEditProfileSubmit(Request $request)
+    {
+        $user_data = Auth::user();
+
+        if (!$user_data) {
+            return redirect()->route('user.login')->with('error', 'Your session has expired. Please log in again.');
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user_data->id,
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048' 
+        ]);
+
+        $user_data->name = $request->name;
+        $user_data->email = $request->email;
+
+        if ($request->hasFile('photo')) {
+            $photo = $request->file('photo');
+            $ext = $photo->extension();
+            
+            $final_name = 'user_' . $user_data->id . '_' . time() . '.' . $ext;
+
+            if ($user_data->photo && file_exists(public_path('uploads/' . $user_data->photo))) {
+                unlink(public_path('uploads/' . $user_data->photo));
+            }
+
+            $photo->move(public_path('uploads/'), $final_name);
+
+            $user_data->photo = $final_name;
+        }
+
+        $user_data->update();
+
+        return redirect()->back()->with('success', 'Profile information is saved successfully!');
+    }
+
+    public function UserChangePassword()
+    {
+        return view('user.general.change_password');
+    }
+
+    public function UserUpdatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|string|min:8|confirmed', 
+        ], [
+            'current_password.required' => 'The current password field is required.',
+            'password.required' => 'The new password field is required.',
+            'password.min' => 'The new password must be at least 8 characters.',
+            'password.confirmed' => 'The new password confirmation does not match.',
+        ]);
+
+        $user = Auth::user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->with('error', 'The current password you entered is incorrect!');
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->update();
+
+        return back()->with('success', 'Password updated successfully!');
     }
 
     // Test Prep

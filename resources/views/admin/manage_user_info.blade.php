@@ -1,7 +1,7 @@
 @extends('admin.layouts.admin')
 
 @section('content')
-<div class="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6 w-full space-y-6">
+{{-- <div class="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6 w-full space-y-6">
 
   <!-- Breadcrumb & Header Title -->
   <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -179,6 +179,114 @@
             <td class="px-6 py-4 font-semibold text-gray-800 dark:text-gray-200">+300 XP</td>
             <td class="px-6 py-4 text-right text-xs">1 week ago</td>
           </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div> --}}
+
+<div class="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6 w-full space-y-6">
+
+  <!-- Breadcrumb & Header Title -->
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <h2 class="text-xl font-bold text-gray-800 dark:text-white">
+      User Profile Details
+    </h2>
+    <a href="{{ route('admin.manage-user.show') }}" class="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors">
+      ← Back to User List
+    </a>
+  </div>
+
+  <!-- Single Clean Card: User Info & Core Details -->
+  <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+      
+      <!-- Left: Avatar, Name & Email -->
+      <div class="flex items-center gap-4">
+        <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-xl font-bold text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400">
+          {{ strtoupper(substr($user->name ?? 'A', 0, 1)) }}
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-gray-800 dark:text-white/90">
+            {{ $user->name ?? 'Azlia Nisrina' }}
+          </h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            {{ $user->email ?? 'azlia@example.com' }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Right: Language & Learning Path Badges -->
+      <div class="flex flex-wrap items-center gap-3 border-t border-gray-100 pt-4 md:border-t-0 md:pt-0 dark:border-gray-800">
+        
+        <!-- Language Info -->
+        <div class="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 dark:border-gray-800 dark:bg-gray-900/50">
+          <span class="block text-xs font-medium uppercase tracking-wider text-gray-400">Language</span>
+          <span class="mt-1 block text-sm font-semibold text-gray-800 dark:text-white">
+            {{ $user->progress->language->language }}
+          </span>
+        </div>
+
+        <!-- Learning Path Info -->
+        <div class="rounded-xl border border-purple-100 bg-purple-50/50 px-4 py-3 dark:border-purple-900/30 dark:bg-purple-950/20">
+          <span class="block text-xs font-medium uppercase tracking-wider text-purple-500 dark:text-purple-400">Learning Path</span>
+          <span class="mt-1 block text-sm font-semibold text-purple-700 dark:text-purple-300">
+            @if(isset($user->progress->learning_type) && $user->progress->learning_type == 'test_prep')
+              Test Preparation
+            @else
+              General Learning
+            @endif
+          </span>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Row 2: Learning Progress Table (Opsional, tetap dibersihkan agar selaras) -->
+  <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+    <div class="border-b border-gray-100 px-5 py-4 sm:px-6 sm:py-5 dark:border-gray-800 flex items-center justify-between">
+      <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+        Module Learning Progress History
+      </h3>
+      <span class="text-xs text-gray-500">Activity Records</span>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+        <thead class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-900/50 dark:text-gray-300 border-b border-gray-100 dark:border-gray-800">
+          <tr>
+            <th class="px-6 py-3.5">Module Title</th>
+            <th class="px-6 py-3.5">Status</th>
+            <th class="px-6 py-3.5">XP Earned</th>
+            <th class="px-6 py-3.5 text-right">Last Activity</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+          
+          @forelse($activities as $item)
+            <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+              <td class="px-6 py-4 font-medium text-gray-800 dark:text-white">
+                {{ $item->subModule->title ?? 'Learning Module' }}
+              </td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
+                  Completed
+                </span>
+              </td>
+              <td class="px-6 py-4 font-semibold text-gray-800 dark:text-gray-200">+{{ $item->xp_earned }} XP</td>
+              <td class="px-6 py-4 text-right text-xs">{{ $item->created_at->diffForHumans() }}</td>
+            </tr>
+          @empty
+            <tr>
+              <td colspan="4" class="px-6 py-8 text-center text-gray-400">
+                No learning activity recorded for this user yet.
+              </td>
+            </tr>
+          @endforelse
 
         </tbody>
       </table>

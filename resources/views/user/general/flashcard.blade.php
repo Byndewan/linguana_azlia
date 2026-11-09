@@ -67,39 +67,71 @@
     </main>
 
     <script>
-        const totalCards = {{ count($vocabularies) }};
-        const subModuleId = {{ $sub_module_id }};
+    const totalCards = {{ count($vocabularies) }};
+    const subModuleId = {{ $sub_module_id }};
 
-        function toggleFlip(index) {
-            const card = document.getElementById('flashcard-' + index);
-            const actions = document.getElementById('actions-' + index);
-            
-            card.classList.toggle('rotate-y-180');
-            
-            if(card.classList.contains('rotate-y-180')) {
-                actions.classList.remove('opacity-0', 'pointer-events-none');
-                actions.classList.add('opacity-100');
-            } else {
-                actions.classList.add('opacity-0', 'pointer-events-none');
-                actions.classList.remove('opacity-100');
+    // Ambil posisi flashcard terakhir dari sessionStorage, jika kosong mulai dari 0
+    let currentCardIndex = parseInt(sessionStorage.getItem('ling_current_fc_' + subModuleId)) || 0;
+
+    // Jalankan saat halaman pertama kali dimuat untuk menyesuaikan slide aktif
+    document.addEventListener("DOMContentLoaded", function() {
+        for (let i = 0; i < totalCards; i++) {
+            const slide = document.getElementById('slide-' + i);
+            if (slide) {
+                slide.classList.replace('block', 'hidden');
             }
         }
 
-        function nextCard(currentIndex) {
-            if (currentIndex < totalCards - 1) {
-                document.getElementById('slide-' + currentIndex).classList.replace('block', 'hidden');
-                document.getElementById('slide-' + (currentIndex + 1)).classList.replace('hidden', 'block');
-            } else {
-                window.location.href = `/general/quiz/${subModuleId}`; 
-            }
+        // Tampilkan slide sesuai posisi terakhir sebelum di-refresh
+        const activeSlide = document.getElementById('slide-' + currentCardIndex);
+        if (activeSlide) {
+            activeSlide.classList.replace('hidden', 'block');
+        } else {
+            // Jaga-jaga jika index melebihi total karena perubahan data, reset ke 0
+            currentCardIndex = 0;
+            const firstSlide = document.getElementById('slide-0');
+            if (firstSlide) firstSlide.classList.replace('hidden', 'block');
         }
+    });
 
-        function playAudio(text, langCode) {
-            window.speechSynthesis.cancel();
-            const speech = new SpeechSynthesisUtterance(text);
-            speech.lang = langCode; 
-            window.speechSynthesis.speak(speech);
+    function toggleFlip(index) {
+        const card = document.getElementById('flashcard-' + index);
+        const actions = document.getElementById('actions-' + index);
+        
+        card.classList.toggle('rotate-y-180');
+        
+        if(card.classList.contains('rotate-y-180')) {
+            actions.classList.remove('opacity-0', 'pointer-events-none');
+            actions.classList.add('opacity-100');
+        } else {
+            actions.classList.add('opacity-0', 'pointer-events-none');
+            actions.classList.remove('opacity-100');
         }
-    </script>
+    }
+
+    function nextCard(currentIndex) {
+        if (currentIndex < totalCards - 1) {
+            document.getElementById('slide-' + currentIndex).classList.replace('block', 'hidden');
+            
+            const nextIndex = currentIndex + 1;
+            document.getElementById('slide-' + nextIndex).classList.replace('hidden', 'block');
+            
+            // Simpan posisi kartu saat ini ke sessionStorage berdasarkan sub_module_id
+            sessionStorage.setItem('ling_current_fc_' + subModuleId, nextIndex);
+        } else {
+            // Hapus session jika flashcard sudah selesai dan lanjut ke quiz
+            sessionStorage.removeItem('ling_current_fc_' + subModuleId);
+            window.location.href = `/general/quiz/${subModuleId}`; 
+        }
+    }
+
+    function playAudio(text, langCode) {
+        window.speechSynthesis.cancel();
+        const speech = new SpeechSynthesisUtterance(text);
+        speech.lang = langCode; 
+        speech.rate = 0.9;
+        window.speechSynthesis.speak(speech);
+    }
+</script>
 </body>
 </html>

@@ -66,6 +66,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/general/final-quiz/{module_id}/submit', [UserController::class, 'UserFinalQuizSubmit'])->name('user.general.final-quiz.submit');
     Route::get('/general/final-quiz/{module_id}/result/{attempt}', [UserController::class, 'UserQuizResult'])->name('user.general.quiz-result');
     Route::get('/general/profile', [UserController::class, 'UserProfile'])->name('user.profile');
+    Route::get('/general/edit-profile', [UserController::class, 'UserEditProfile'])->name('user.edit.profile');
+    Route::post('/general/update-profile', [UserController::class, 'UserEditProfileSubmit'])->name('user.profile.update');
+    Route::get('/general/change-password', [UserController::class, 'UserChangePassword'])->name('user.change.password');
+    Route::post('/general/update-password', [UserController::class, 'UserUpdatePassword'])->name('user.update.password');
 
     // Test Prep
     Route::get('/test-prep/dashboard', [UserController::class, 'UserTestDashboard'])->name('user.test-prep.dashboard');
@@ -150,7 +154,7 @@ Route::middleware([Admin::class])->group(function () {
 
     // Manage User
     Route::get('/admin/manage-user/show', [AdminController::class, 'AdminManageUserShow'])->name('admin.manage-user.show');
-    Route::get('/admin/manage-user/info', [AdminController::class, 'AdminManageUserInfo'])->name('admin.manage-user.info');
+    Route::get('/admin/manage-user/info/{id}', [AdminController::class, 'AdminManageUserInfo'])->name('admin.manage-user.info');
 
     // Manage Module
     Route::get('/admin/manage-module/show', [AdminController::class, 'AdminManageModuleShow'])->name('admin.manage-module.show');
