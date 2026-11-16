@@ -67,6 +67,5 @@
             @endforeach
         @endif
     </script>
-
 </body>
 </html>
