@@ -86,7 +86,7 @@
 
             <p class="text-center text-sm text-slate-500 mt-6 md:mt-8">
                 No Account?
-                <a href="{{ url('/sign-up') }}" class="text-slate-900 font-bold underline hover:text-[#55BCC9] transition-colors">Sign Up</a>
+                <a href="{{ route('choose-language') }}" class="text-slate-900 font-bold underline hover:text-[#55BCC9] transition-colors">Sign Up</a>
             </p>
 
         </div>
